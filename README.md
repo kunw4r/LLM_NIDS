@@ -136,9 +136,14 @@ python test_tools.py
 
 ## 📝 Development Log
 
+- **2025-10-06**: Git repository setup ✅
+  - Repository: [github.com/kunw4r/LLM_NIDS](https://github.com/kunw4r/LLM_NIDS)
+  - Configured .gitignore for large datasets
+  - All code committed and pushed
+  
 - **2025-10-05**: Project initialization
-  - Dataset split with stratification
-  - MCP server architecture designed
+  - Dataset split with stratification ✅
+  - MCP server architecture designed ✅
   - IP geolocation tool implemented and tested ✅
 
 ## 🤝 Contributing
