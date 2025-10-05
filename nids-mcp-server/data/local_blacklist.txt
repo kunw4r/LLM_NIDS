@@ -1,0 +1,9 @@
+# Local IP Blacklist
+# Add known malicious IPs here (one per line)
+# Lines starting with # are comments
+
+# Example malicious IPs (for testing)
+# 192.0.2.1
+# 198.51.100.1
+
+# Add your custom IPs below:

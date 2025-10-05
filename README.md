@@ -57,12 +57,14 @@ LLM_NIDS/
 - Handles private IPs correctly
 - **API**: ip-api.com (free, no key required)
 
-### 🔜 In Progress
-
 #### 2. **IP Threat Intelligence** (`check_ip_reputation`)
-- Check IPs against threat databases
-- Sources: abuse.ch, open threat feeds
-- Returns: Abuse confidence, threat categories
+- Checks IPs against multiple threat feeds
+- Sources: Feodo Tracker, SSL Blacklist (abuse.ch), local blacklist
+- Returns: Malicious status, confidence, detailed findings
+- Identifies: Botnets, C&C servers, SSL threats
+- Auto-updates feeds (cached for 1 hour)
+
+### 🔜 In Progress
 
 #### 3. **MITRE ATT&CK Lookup** (`query_mitre_attack`)
 - Query attack techniques via TAXII
@@ -122,7 +124,8 @@ python test_tools.py
 ### Through LLM (Cline)
 ```
 "Can you geolocate the IP address 8.8.8.8?"
-"Is 192.168.1.100 doing anything suspicious based on NetFlow data?"
+"Is 185.220.101.1 a known malicious IP?"
+"Check the reputation of 192.168.1.100"
 "What MITRE ATT&CK technique is associated with SSH brute forcing?"
 ```
 
@@ -136,6 +139,14 @@ python test_tools.py
 
 ## 📝 Development Log
 
+- **2025-10-06**: Tool 2 - IP Threat Intelligence ✅
+  - Implemented threat feed integration (abuse.ch)
+  - Added Feodo Tracker (botnet C&C) support
+  - Added SSL Blacklist support
+  - Local blacklist functionality
+  - Auto-caching with 1-hour refresh
+  - All tests passing ✅
+  
 - **2025-10-06**: Git repository setup ✅
   - Repository: [github.com/kunw4r/LLM_NIDS](https://github.com/kunw4r/LLM_NIDS)
   - Configured .gitignore for large datasets
@@ -160,4 +171,4 @@ Kunwar - [GitHub](https://github.com/kunw4r)
 
 ---
 
-**Status**: 🚧 Active Development | **Progress**: 1/4 tools complete
+**Status**: 🚧 Active Development | **Progress**: 2/4 tools complete

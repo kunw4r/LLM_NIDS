@@ -67,6 +67,49 @@ Geolocate any IP address and get enriched information.
 
 ---
 
+### ✅ Tool 2: `check_ip_reputation`
+
+Check IP addresses against threat intelligence feeds to identify known malicious sources.
+
+**Input:**
+```json
+{
+  "ip": "185.220.101.1",
+  "update_feeds": true
+}
+```
+
+**Output:**
+```json
+{
+  "success": true,
+  "ip": "185.220.101.1",
+  "is_malicious": false,
+  "confidence": "none",
+  "threat_count": 0,
+  "findings": [],
+  "checked_sources": [
+    "Feodo Tracker (abuse.ch)",
+    "SSL Blacklist (abuse.ch)",
+    "Local Blacklist"
+  ]
+}
+```
+
+**Threat Sources:**
+- **Feodo Tracker** (abuse.ch) - Botnet C&C servers
+- **SSL Blacklist** (abuse.ch) - Malicious SSL/TLS certificates
+- **Local Blacklist** - Custom threat list (`data/local_blacklist.txt`)
+
+**Use Cases:**
+- Identify known malicious IPs in network traffic
+- Flag botnet C&C communications
+- Detect SSL-based threats
+- Validate IP reputation before allowing connections
+- Correlate with NetFlow data to find compromised hosts
+
+---
+
 ## 📦 Installation
 
 ### 1. Install Dependencies
@@ -143,8 +186,8 @@ Tools can access:
 
 ## 🚀 Roadmap
 
-- [x] Tool 1: IP Geolocation
-- [ ] Tool 2: IP Threat Intelligence (abuse.ch feeds)
+- [x] Tool 1: IP Geolocation ✅
+- [x] Tool 2: IP Threat Intelligence ✅
 - [ ] Tool 3: MITRE ATT&CK Integration
 - [ ] Tool 4: NetFlow Analyzer
 

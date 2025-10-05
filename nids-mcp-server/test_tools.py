@@ -12,6 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from tools.ip_geolocation import geolocate_ip, format_geolocation_summary
+from tools.ip_threat_intel import check_ip_reputation, format_threat_summary
 
 
 async def test_ip_geolocation():
@@ -39,11 +40,36 @@ async def test_ip_geolocation():
         print()
 
 
+async def test_ip_threat_intel():
+    """Test the IP threat intelligence tool"""
+    print("=" * 70)
+    print("Testing IP Threat Intelligence Tool")
+    print("=" * 70)
+    
+    test_ips = [
+        "8.8.8.8",           # Google DNS (should be clean)
+        "1.1.1.1",           # Cloudflare DNS (should be clean)
+        "192.168.1.1",       # Private IP
+        "185.220.101.1",     # Example Tor exit node (might be flagged)
+    ]
+    
+    for ip in test_ips:
+        print(f"\n🔍 Testing IP: {ip}")
+        print("-" * 70)
+        
+        result = await check_ip_reputation(ip, update_feeds=True)
+        summary = format_threat_summary(result)
+        
+        print(summary)
+        print()
+
+
 async def main():
     """Run all tests"""
     print("\n🧪 NIDS MCP Server - Tool Tests\n")
     
     await test_ip_geolocation()
+    await test_ip_threat_intel()
     
     print("\n" + "=" * 70)
     print("✅ All tests complete!")
