@@ -1,0 +1,20 @@
+# MCP Server for Network Intrusion Detection System
+# Core MCP framework
+mcp>=1.0.0
+
+# HTTP requests for API calls
+requests>=2.31.0
+
+# MITRE ATT&CK TAXII integration
+stix2>=3.0.0
+taxii2-client>=2.3.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# IP address utilities
+ipaddress>=1.0.23
+
+# Optional: For future enhancements
+# python-whois>=0.8.0
