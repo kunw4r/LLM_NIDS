@@ -7,3 +7,7 @@
 # 198.51.100.1
 
 # Add your custom IPs below:
+
+# Test malicious IP (added by test script)
+
+# Test entry (Google DNS - for testing only)
