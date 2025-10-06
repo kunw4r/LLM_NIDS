@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from tools.ip_geolocation import geolocate_ip, format_geolocation_summary
 from tools.ip_threat_intel import check_ip_reputation, format_threat_summary
+from tools.mitre_attack import query_technique, map_attack_to_mitre
 
 
 async def test_ip_geolocation():
@@ -64,12 +65,38 @@ async def test_ip_threat_intel():
         print()
 
 
+async def test_mitre_integration():
+    """Test MITRE ATT&CK integration briefly"""
+    print("=" * 70)
+    print("Testing MITRE ATT&CK Integration (Brief)")
+    print("=" * 70)
+    
+    # Test a few key techniques
+    print(f"\n🔍 Testing T1110 - Brute Force")
+    print("-" * 70)
+    result = await query_technique("T1110")
+    if result.get("success"):
+        print(f"✅ {result['name']}")
+        print(f"   Tactics: {', '.join(result['tactics'])}")
+    
+    # Test attack mapping
+    print(f"\n🎯 Mapping SSH bruteforce to MITRE")
+    print("-" * 70)
+    result = await map_attack_to_mitre("ssh_bruteforce")
+    if result.get("success"):
+        print(f"✅ Mapped to {result['technique_count']} technique(s)")
+        for tech in result.get('techniques', [])[:2]:
+            print(f"   - {tech['technique_id']}: {tech['name']}")
+    print()
+
+
 async def main():
     """Run all tests"""
     print("\n🧪 NIDS MCP Server - Tool Tests\n")
     
     await test_ip_geolocation()
     await test_ip_threat_intel()
+    await test_mitre_integration()
     
     print("\n" + "=" * 70)
     print("✅ All tests complete!")

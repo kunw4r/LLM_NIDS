@@ -14,6 +14,11 @@ from mcp.types import Tool, TextContent
 # Import tools
 from tools.ip_geolocation import geolocate_ip, format_geolocation_summary, IP_GEOLOCATION_TOOL
 from tools.ip_threat_intel import check_ip_reputation, format_threat_summary, IP_THREAT_INTEL_TOOL
+from tools.mitre_attack import (
+    query_technique, search_techniques, map_attack_to_mitre,
+    format_technique_summary,
+    QUERY_TECHNIQUE_TOOL, SEARCH_TECHNIQUES_TOOL, MAP_ATTACK_TOOL
+)
 
 # Initialize MCP server
 app = Server("nids-mcp-server")
@@ -34,6 +39,21 @@ async def list_tools() -> list[Tool]:
             name=IP_THREAT_INTEL_TOOL["name"],
             description=IP_THREAT_INTEL_TOOL["description"],
             inputSchema=IP_THREAT_INTEL_TOOL["inputSchema"]
+        ),
+        Tool(
+            name=QUERY_TECHNIQUE_TOOL["name"],
+            description=QUERY_TECHNIQUE_TOOL["description"],
+            inputSchema=QUERY_TECHNIQUE_TOOL["inputSchema"]
+        ),
+        Tool(
+            name=SEARCH_TECHNIQUES_TOOL["name"],
+            description=SEARCH_TECHNIQUES_TOOL["description"],
+            inputSchema=SEARCH_TECHNIQUES_TOOL["inputSchema"]
+        ),
+        Tool(
+            name=MAP_ATTACK_TOOL["name"],
+            description=MAP_ATTACK_TOOL["description"],
+            inputSchema=MAP_ATTACK_TOOL["inputSchema"]
         ),
         # More tools will be added here as we build them
     ]
@@ -94,6 +114,69 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         return [TextContent(
             type="text",
             text=json.dumps(response, indent=2)
+        )]
+    
+    elif name == "query_mitre_technique":
+        technique_id = arguments.get("technique_id")
+        
+        if not technique_id:
+            return [TextContent(
+                type="text",
+                text=json.dumps({
+                    "error": "Missing required parameter: technique_id"
+                }, indent=2)
+            )]
+        
+        # Execute the MITRE query
+        result = await query_technique(technique_id)
+        
+        # Format as JSON and summary
+        response = {
+            "data": result,
+            "summary": format_technique_summary(result)
+        }
+        
+        return [TextContent(
+            type="text",
+            text=json.dumps(response, indent=2)
+        )]
+    
+    elif name == "search_mitre_techniques":
+        query = arguments.get("query")
+        
+        if not query:
+            return [TextContent(
+                type="text",
+                text=json.dumps({
+                    "error": "Missing required parameter: query"
+                }, indent=2)
+            )]
+        
+        # Execute the search
+        result = await search_techniques(query)
+        
+        return [TextContent(
+            type="text",
+            text=json.dumps(result, indent=2)
+        )]
+    
+    elif name == "map_attack_to_mitre":
+        attack_type = arguments.get("attack_type")
+        
+        if not attack_type:
+            return [TextContent(
+                type="text",
+                text=json.dumps({
+                    "error": "Missing required parameter: attack_type"
+                }, indent=2)
+            )]
+        
+        # Execute the mapping
+        result = await map_attack_to_mitre(attack_type)
+        
+        return [TextContent(
+            type="text",
+            text=json.dumps(result, indent=2)
         )]
     
     # Handle unknown tools
