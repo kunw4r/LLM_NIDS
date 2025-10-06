@@ -20,6 +20,7 @@ from tools.mitre_attack import (
     QUERY_TECHNIQUE_TOOL, SEARCH_TECHNIQUES_TOOL, MAP_ATTACK_TOOL
 )
 from tools.abuseipdb import check_ip as abuseipdb_check, format_check_result as format_abuseipdb
+from tools.alienvault_otx import check_ip_otx, search_pulses, format_otx_summary
 
 # AbuseIPDB Tool Definition
 ABUSEIPDB_TOOL = {
@@ -44,6 +45,42 @@ ABUSEIPDB_TOOL = {
             }
         },
         "required": ["ip"]
+    }
+}
+
+# AlienVault OTX Tool Definitions
+OTX_CHECK_IP_TOOL = {
+    "name": "check_ip_otx",
+    "description": "Check IP address against AlienVault OTX open-source threat intelligence. Returns threat pulses, malware families, MITRE ATT&CK techniques, and IOC context from 100K+ security researchers.",
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "ip": {
+                "type": "string",
+                "description": "IP address to check against OTX database"
+            }
+        },
+        "required": ["ip"]
+    }
+}
+
+OTX_SEARCH_PULSES_TOOL = {
+    "name": "search_otx_pulses",
+    "description": "Search AlienVault OTX threat pulses for specific attack types, malware families, or threat actors. Returns curated threat intelligence collections with IOCs and MITRE ATT&CK mappings.",
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "query": {
+                "type": "string",
+                "description": "Search query (e.g., 'DDoS', 'botnet', 'ransomware', 'SSH bruteforce')"
+            },
+            "limit": {
+                "type": "integer",
+                "description": "Maximum number of pulses to return (default: 10)",
+                "default": 10
+            }
+        },
+        "required": ["query"]
     }
 }
 
@@ -86,6 +123,16 @@ async def list_tools() -> list[Tool]:
             name=ABUSEIPDB_TOOL["name"],
             description=ABUSEIPDB_TOOL["description"],
             inputSchema=ABUSEIPDB_TOOL["inputSchema"]
+        ),
+        Tool(
+            name=OTX_CHECK_IP_TOOL["name"],
+            description=OTX_CHECK_IP_TOOL["description"],
+            inputSchema=OTX_CHECK_IP_TOOL["inputSchema"]
+        ),
+        Tool(
+            name=OTX_SEARCH_PULSES_TOOL["name"],
+            description=OTX_SEARCH_PULSES_TOOL["description"],
+            inputSchema=OTX_SEARCH_PULSES_TOOL["inputSchema"]
         ),
         # More tools will be added here as we build them
     ]
@@ -236,6 +283,51 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         return [TextContent(
             type="text",
             text=json.dumps(response, indent=2)
+        )]
+    
+    elif name == "check_ip_otx":
+        ip = arguments.get("ip")
+        
+        if not ip:
+            return [TextContent(
+                type="text",
+                text=json.dumps({
+                    "error": "Missing required parameter: ip"
+                }, indent=2)
+            )]
+        
+        # Execute the OTX check
+        result = check_ip_otx(ip)
+        
+        # Format response with both JSON data and human-readable summary
+        response = {
+            "data": result,
+            "summary": format_otx_summary(result)
+        }
+        
+        return [TextContent(
+            type="text",
+            text=json.dumps(response, indent=2)
+        )]
+    
+    elif name == "search_otx_pulses":
+        query = arguments.get("query")
+        limit = arguments.get("limit", 10)
+        
+        if not query:
+            return [TextContent(
+                type="text",
+                text=json.dumps({
+                    "error": "Missing required parameter: query"
+                }, indent=2)
+            )]
+        
+        # Execute the pulse search
+        result = search_pulses(query, limit=limit)
+        
+        return [TextContent(
+            type="text",
+            text=json.dumps(result, indent=2)
         )]
     
     # Handle unknown tools

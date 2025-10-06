@@ -187,9 +187,12 @@ Tools can access:
 ## 🚀 Roadmap
 
 - [x] Tool 1: IP Geolocation ✅
-- [x] Tool 2: IP Threat Intelligence ✅
-- [ ] Tool 3: MITRE ATT&CK Integration
-- [ ] Tool 4: NetFlow Analyzer
+- [x] Tool 2: IP Threat Intelligence (abuse.ch feeds) ✅
+- [x] Tool 3: MITRE ATT&CK Integration (691 techniques from GitHub) ✅
+- [x] Tool 4: AbuseIPDB Community Reputation (attack categories) ✅
+- [x] Tool 5: AlienVault OTX (open threat intelligence) ✅
+- [ ] Tool 6: NetFlow Analyzer (heuristic detection + MITRE mapping)
+- [ ] Tool 7: Comprehensive Test Suite
 
 ---
 
