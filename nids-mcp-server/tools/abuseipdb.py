@@ -16,14 +16,19 @@ API docs: https://docs.abuseipdb.com/
 """
 
 import os
+import sys
 import requests
 import json
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timedelta
+from pathlib import Path
+
+# Add parent directory to path to import config
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from config import ABUSEIPDB_API_KEY
 
 # AbuseIPDB API configuration
 ABUSEIPDB_API_URL = "https://api.abuseipdb.com/api/v2"
-ABUSEIPDB_API_KEY = os.getenv("ABUSEIPDB_API_KEY", "")  # Optional: set in environment
 
 # Attack category mappings (AbuseIPDB category IDs)
 # Reference: https://www.abuseipdb.com/categories
