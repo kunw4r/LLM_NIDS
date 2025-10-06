@@ -64,14 +64,30 @@ LLM_NIDS/
 - Identifies: Botnets, C&C servers, SSL threats
 - Auto-updates feeds (cached for 1 hour)
 
+#### 3. **MITRE ATT&CK Framework** (`query_mitre_technique`, `search_mitre_techniques`, `map_attack_to_mitre`)
+- **691 techniques** dynamically loaded from official MITRE GitHub
+- Query specific techniques by ID (e.g., T1110.001)
+- Search techniques by keywords
+- Map CICIDS2018 attacks to MITRE tactics
+- Auto-updates weekly from: https://github.com/mitre/cti
+
+#### 4. **AbuseIPDB** (`check_ip_abuseipdb`)
+- Community-driven IP reputation (800K+ researchers)
+- Attack category classification (SSH, DDoS, port scan, etc.)
+- Abuse confidence score (0-100%)
+- Report history and context
+- **API**: Free tier - 1,000 requests/day
+- **Setup**: See [ABUSEIPDB_SETUP.md](nids-mcp-server/ABUSEIPDB_SETUP.md)
+
 ### 🔜 In Progress
 
-#### 3. **MITRE ATT&CK Lookup** (`query_mitre_attack`)
-- Query attack techniques via TAXII
-- Map network behaviors to tactics/techniques
-- Provide technique descriptions and mitigations
+#### 5. **AlienVault OTX** (`check_ip_otx`)
+- Open-source threat intelligence platform
+- IOC (Indicators of Compromise) with context
+- Pulse feeds from global community
+- Network indicators (IPs, domains, URLs, hashes)
 
-#### 4. **NetFlow Analyzer** (`analyze_netflow`)
+#### 6. **NetFlow Analyzer** (`analyze_netflow`)
 - Heuristic-based anomaly detection
 - Pattern matching for known attacks
 - Statistical analysis of traffic flows

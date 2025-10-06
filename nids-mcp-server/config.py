@@ -67,4 +67,4 @@ ATTACK_PORT_PATTERNS = {
 }
 
 # API Keys (optional, set via environment variables)
-ABUSEIPDB_API_KEY = os.getenv("ABUSEIPDB_API_KEY", None)
+ABUSEIPDB_API_KEY = os.getenv("ABUSEIPDB_API_KEY", "e5b9090d652537dbad0461bac957ea14738d2ef20bc713ae16524af49e28ab51dcc8c6376236ef19")

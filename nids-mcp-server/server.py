@@ -19,6 +19,33 @@ from tools.mitre_attack import (
     format_technique_summary,
     QUERY_TECHNIQUE_TOOL, SEARCH_TECHNIQUES_TOOL, MAP_ATTACK_TOOL
 )
+from tools.abuseipdb import check_ip as abuseipdb_check, format_check_result as format_abuseipdb
+
+# AbuseIPDB Tool Definition
+ABUSEIPDB_TOOL = {
+    "name": "check_ip_abuseipdb",
+    "description": "Check IP address reputation using AbuseIPDB community database. Returns abuse confidence score (0-100%), attack categories (SSH bruteforce, DDoS, port scan, etc.), and report history from 800K+ security researchers.",
+    "inputSchema": {
+        "type": "object",
+        "properties": {
+            "ip": {
+                "type": "string",
+                "description": "IP address to check against AbuseIPDB"
+            },
+            "max_age_days": {
+                "type": "integer",
+                "description": "Maximum age of reports to consider (default: 90 days)",
+                "default": 90
+            },
+            "verbose": {
+                "type": "boolean",
+                "description": "Include detailed report history (default: true)",
+                "default": True
+            }
+        },
+        "required": ["ip"]
+    }
+}
 
 # Initialize MCP server
 app = Server("nids-mcp-server")
@@ -54,6 +81,11 @@ async def list_tools() -> list[Tool]:
             name=MAP_ATTACK_TOOL["name"],
             description=MAP_ATTACK_TOOL["description"],
             inputSchema=MAP_ATTACK_TOOL["inputSchema"]
+        ),
+        Tool(
+            name=ABUSEIPDB_TOOL["name"],
+            description=ABUSEIPDB_TOOL["description"],
+            inputSchema=ABUSEIPDB_TOOL["inputSchema"]
         ),
         # More tools will be added here as we build them
     ]
@@ -177,6 +209,33 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
         return [TextContent(
             type="text",
             text=json.dumps(result, indent=2)
+        )]
+    
+    elif name == "check_ip_abuseipdb":
+        ip = arguments.get("ip")
+        max_age_days = arguments.get("max_age_days", 90)
+        verbose = arguments.get("verbose", True)
+        
+        if not ip:
+            return [TextContent(
+                type="text",
+                text=json.dumps({
+                    "error": "Missing required parameter: ip"
+                }, indent=2)
+            )]
+        
+        # Execute the AbuseIPDB check
+        result = abuseipdb_check(ip, max_age_days=max_age_days, verbose=verbose)
+        
+        # Format response with both JSON data and human-readable summary
+        response = {
+            "data": result,
+            "summary": format_abuseipdb(result)
+        }
+        
+        return [TextContent(
+            type="text",
+            text=json.dumps(response, indent=2)
         )]
     
     # Handle unknown tools
