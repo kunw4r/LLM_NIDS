@@ -1,0 +1,24 @@
+flow_id,verdict,confidence,attack_type,key_indicators,mitre,recommendation,tools_used
+5,ATTACK,HIGH,FTP-BruteForce,Port 21; RST flag; 1ms duration; failed auth pattern; IP clean but behavior suspicious,T1110,BLOCK,IP-Reputation;Geo
+43,ATTACK,HIGH,SSH-Bruteforce,Port 22; RST flag; instant failure; datacenter source; classic bruteforce,T1110.001,BLOCK,IP-Reputation;Geo
+4,BENIGN,HIGH,N/A,Port 3389; 3.5s duration; TCP flags 222; IP clean,TBD,ALLOW,IP-Reputation
+11,BENIGN,HIGH,N/A,Port 80; 18ms duration; TCP flags 219; IP clean,TBD,ALLOW,IP-Reputation
+0,BENIGN,HIGH,N/A,Port 53; DNS query; private IP; normal timing,N/A,ALLOW,None
+1,BENIGN,HIGH,N/A,Port 53; DNS query; private IP; normal timing,N/A,ALLOW,None
+2,BENIGN,HIGH,N/A,Port 3389; private IP; TCP flags 20; short duration,N/A,ALLOW,None
+3,BENIGN,HIGH,N/A,Port 53; DNS query; private IP; normal timing,N/A,ALLOW,None
+22,BENIGN,HIGH,N/A,Port 80; 4ms duration; TCP flags 219; IP clean,TBD,ALLOW,IP-Reputation
+20,BENIGN,HIGH,N/A,Port 80; 1ms duration; TCP flags 24; IP clean,TBD,ALLOW,IP-Reputation
+1,BENIGN,HIGH,N/A,Port 55453; DNS query; private IP; normal timing,N/A,ALLOW,None
+22,BENIGN,HIGH,N/A,Port 64908; 4ms duration; TCP flags 219; IP clean,TBD,ALLOW,IP-Reputation
+43,BENIGN,HIGH,N/A,Port 22; 369ms duration; TCP flags 27; IP clean; AWS hosting,TBD,ALLOW,IP-Reputation;Geo
+4,BENIGN,HIGH,N/A,Port 3389; 3.5s duration; TCP flags 222; IP clean,TBD,ALLOW,IP-Reputation
+11,BENIGN,HIGH,N/A,Port 80; 18ms duration; TCP flags 219; IP clean,TBD,ALLOW,IP-Reputation
+0,BENIGN,HIGH,N/A,Port 53; DNS query; private IP; normal timing,N/A,ALLOW,None
+1,BENIGN,HIGH,N/A,Port 53; DNS query; private IP; normal timing,N/A,ALLOW,None
+2,BENIGN,HIGH,N/A,Port 3389; private IP; TCP flags 20; short duration,N/A,ALLOW,None
+3,BENIGN,HIGH,N/A,Port 53; DNS query; private IP; normal timing,N/A,ALLOW,None
+22,BENIGN,HIGH,N/A,Port 80; 4ms duration; TCP flags 219; IP clean,TBD,ALLOW,IP-Reputation
+20,BENIGN,HIGH,N/A,Port 80; 1ms duration; TCP flags 24; IP clean,TBD,ALLOW,IP-Reputation
+1,BENIGN,HIGH,N/A,Port 55453; DNS query; private IP; normal timing,N/A,ALLOW,None
+22,BENIGN,HIGH,N/A,Port 64908; 4ms duration; TCP flags 219; IP clean,TBD,ALLOW,IP-Reputation

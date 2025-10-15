@@ -1,0 +1,610 @@
+{
+  "batch_name": "batch_100",
+  "description": "100 flows (stratified sample)",
+  "total_flows": 100,
+  "attack_count": 12,
+  "benign_count": 88,
+  "attack_ratio": 0.12,
+  "ground_truth": [
+    {
+      "flow_id": 1048197,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 277758,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6905001,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4498669,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2696718,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1219241,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4066179,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 720327,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1211820,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDOS_attack-HOIC"
+    },
+    {
+      "flow_id": 592182,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDOS_attack-HOIC"
+    },
+    {
+      "flow_id": 4953443,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6980303,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6836266,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6400219,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3375880,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6874196,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "FTP-BruteForce"
+    },
+    {
+      "flow_id": 6454999,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 5159921,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6513292,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4151744,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 678388,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6152533,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4458162,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2570909,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2414679,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 5486944,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6437213,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1529469,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6529669,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "FTP-BruteForce"
+    },
+    {
+      "flow_id": 1299317,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 5629569,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "FTP-BruteForce"
+    },
+    {
+      "flow_id": 6498106,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3587205,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2981529,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 457670,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2581311,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DoS_attacks-Hulk"
+    },
+    {
+      "flow_id": 5891056,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3707031,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3965079,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1528775,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 5572966,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1917511,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3586822,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "Infilteration"
+    },
+    {
+      "flow_id": 3821496,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1106301,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 5337855,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1778739,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 471375,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 5964491,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 5602039,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2228589,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3380524,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDOS_attack-HOIC"
+    },
+    {
+      "flow_id": 5857604,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4940513,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 61292,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "FTP-BruteForce"
+    },
+    {
+      "flow_id": 2764618,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2399885,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDOS_attack-HOIC"
+    },
+    {
+      "flow_id": 5540424,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4339859,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4470344,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4490775,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3764344,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 820522,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4723564,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2222613,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4119454,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2259089,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1072527,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2318311,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2197144,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 7020263,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1860952,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2327592,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2699160,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4253132,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1877220,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6347823,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6128426,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1255628,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4851434,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3631048,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6940294,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6634803,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3978352,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6299135,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDOS_attack-HOIC"
+    },
+    {
+      "flow_id": 572864,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4431018,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4712448,
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "FTP-BruteForce"
+    },
+    {
+      "flow_id": 2326863,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4100208,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6191334,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3020832,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 3757908,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6469052,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6653478,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 6445698,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 836599,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 1377853,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 4430692,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    },
+    {
+      "flow_id": 2042746,
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": null
+    }
+  ]
+}

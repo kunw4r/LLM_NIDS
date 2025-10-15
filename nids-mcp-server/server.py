@@ -21,7 +21,7 @@ from tools.mitre_attack import (
 )
 from tools.abuseipdb import check_ip as abuseipdb_check, format_check_result as format_abuseipdb
 from tools.alienvault_otx import check_ip_otx, search_pulses, format_otx_summary
-from tools.netflow_analyzer import get_notebook
+# from tools.netflow_analyzer import get_notebook  # Disabled for now
 
 # AbuseIPDB Tool Definition
 ABUSEIPDB_TOOL = {
@@ -85,95 +85,95 @@ OTX_SEARCH_PULSES_TOOL = {
     }
 }
 
-# NetFlow Analyzer Tool Definitions
-RECORD_FLOW_TOOL = {
-    "name": "record_flow",
-    "description": "Record a NetFlow entry into working memory for behavioral analysis. Maintains per-IP queues (last 20 flows) enabling temporal pattern detection without full dataset memorization. Returns queue status and new IP indicators.",
-    "inputSchema": {
-        "type": "object",
-        "properties": {
-            "flow_data": {
-                "type": "object",
-                "description": "NetFlow record containing: src_ip (required), dst_ip, src_port, dst_port, protocol, duration, tot_fwd_pkts, tot_bwd_pkts, and other flow features",
-                "required": ["src_ip"]
-            }
-        },
-        "required": ["flow_data"]
-    }
-}
+# NetFlow Analyzer Tool Definitions (Disabled for now)
+# RECORD_FLOW_TOOL = {
+#     "name": "record_flow",
+#     "description": "Record a NetFlow entry into working memory for behavioral analysis. Maintains per-IP queues (last 20 flows) enabling temporal pattern detection without full dataset memorization. Returns queue status and new IP indicators.",
+#     "inputSchema": {
+#         "type": "object",
+#         "properties": {
+#             "flow_data": {
+#                 "type": "object",
+#                 "description": "NetFlow record containing: src_ip (required), dst_ip, src_port, dst_port, protocol, duration, tot_fwd_pkts, tot_bwd_pkts, and other flow features",
+#                 "required": ["src_ip"]
+#             }
+#         },
+#         "required": ["flow_data"]
+#     }
+# }
 
-GET_IP_HISTORY_TOOL = {
-    "name": "get_ip_history",
-    "description": "Retrieve recent flow history for a specific IP from working memory. Returns last N flows (up to queue size) in chronological order, plus analyst observations. Use this to review what an IP has been doing recently.",
-    "inputSchema": {
-        "type": "object",
-        "properties": {
-            "ip_address": {
-                "type": "string",
-                "description": "IP address to query"
-            },
-            "limit": {
-                "type": "integer",
-                "description": "Maximum flows to return (default: all in queue)"
-            }
-        },
-        "required": ["ip_address"]
-    }
-}
+# GET_IP_HISTORY_TOOL = {
+#     "name": "get_ip_history",
+#     "description": "Retrieve recent flow history for a specific IP from working memory. Returns last N flows (up to queue size) in chronological order, plus analyst observations. Use this to review what an IP has been doing recently.",
+#     "inputSchema": {
+#         "type": "object",
+#         "properties": {
+#             "ip_address": {
+#                 "type": "string",
+#                 "description": "IP address to query"
+#             },
+#             "limit": {
+#                 "type": "integer",
+#                 "description": "Maximum flows to return (default: all in queue)"
+#             }
+#         },
+#         "required": ["ip_address"]
+#     }
+# }
 
-ANALYZE_IP_PATTERN_TOOL = {
-    "name": "analyze_ip_pattern",
-    "description": "Analyze behavioral patterns in IP's recent activity. Detects port scanning (high port diversity), reconnaissance (many targets), rapid-fire connections, protocol switching. Returns statistical analysis and behavioral flags for common attack patterns.",
-    "inputSchema": {
-        "type": "object",
-        "properties": {
-            "ip_address": {
-                "type": "string",
-                "description": "IP address to analyze"
-            }
-        },
-        "required": ["ip_address"]
-    }
-}
+# ANALYZE_IP_PATTERN_TOOL = {
+#     "name": "analyze_ip_pattern",
+#     "description": "Analyze behavioral patterns in IP's recent activity. Detects port scanning (high port diversity), reconnaissance (many targets), rapid-fire connections, protocol switching. Returns statistical analysis and behavioral flags for common attack patterns.",
+#     "inputSchema": {
+#         "type": "object",
+#         "properties": {
+#             "ip_address": {
+#                 "type": "string",
+#                 "description": "IP address to analyze"
+#             }
+#         },
+#         "required": ["ip_address"]
+#     }
+# }
 
-DETECT_BEHAVIOR_CHANGE_TOOL = {
-    "name": "detect_behavior_change",
-    "description": "Detect significant behavioral shifts in IP activity by comparing recent flows to historical baseline. Identifies new ports, new targets, traffic volume spikes/drops. Useful for detecting attack escalation or compromised hosts.",
-    "inputSchema": {
-        "type": "object",
-        "properties": {
-            "ip_address": {
-                "type": "string",
-                "description": "IP address to analyze"
-            },
-            "window_size": {
-                "type": "integer",
-                "description": "Number of recent flows to compare (default: 5)",
-                "default": 5
-            }
-        },
-        "required": ["ip_address"]
-    }
-}
+# DETECT_BEHAVIOR_CHANGE_TOOL = {
+#     "name": "detect_behavior_change",
+#     "description": "Detect significant behavioral shifts in IP activity by comparing recent flows to historical baseline. Identifies new ports, new targets, traffic volume spikes/drops. Useful for detecting attack escalation or compromised hosts.",
+#     "inputSchema": {
+#         "type": "object",
+#         "properties": {
+#             "ip_address": {
+#                 "type": "string",
+#                 "description": "IP address to analyze"
+#             },
+#             "window_size": {
+#                 "type": "integer",
+#                 "description": "Number of recent flows to compare (default: 5)",
+#                 "default": 5
+#             }
+#         },
+#         "required": ["ip_address"]
+#     }
+# }
 
-ADD_OBSERVATION_TOOL = {
-    "name": "add_observation",
-    "description": "Add a freeform observation or hypothesis to IP's investigation notes. Maintains context and reasoning across multiple tool calls - like an analyst writing notes. Use this to document your analysis, suspicions, or conclusions about an IP.",
-    "inputSchema": {
-        "type": "object",
-        "properties": {
-            "ip_address": {
-                "type": "string",
-                "description": "IP address being investigated"
-            },
-            "observation": {
-                "type": "string",
-                "description": "Freeform text observation or hypothesis"
-            }
-        },
-        "required": ["ip_address", "observation"]
-    }
-}
+# ADD_OBSERVATION_TOOL = {
+#     "name": "add_observation",
+#     "description": "Add a freeform observation or hypothesis to IP's investigation notes. Maintains context and reasoning across multiple tool calls - like an analyst writing notes. Use this to document your analysis, suspicions, or conclusions about an IP.",
+#     "inputSchema": {
+#         "type": "object",
+#         "properties": {
+#             "ip_address": {
+#                 "type": "string",
+#                 "description": "IP address being investigated"
+#             },
+#             "observation": {
+#                 "type": "string",
+#                 "description": "Freeform text observation or hypothesis"
+#             }
+#         },
+#         "required": ["ip_address", "observation"]
+#     }
+# }
 
 # Initialize MCP server
 app = Server("nids-mcp-server")
@@ -225,31 +225,32 @@ async def list_tools() -> list[Tool]:
             description=OTX_SEARCH_PULSES_TOOL["description"],
             inputSchema=OTX_SEARCH_PULSES_TOOL["inputSchema"]
         ),
-        Tool(
-            name=RECORD_FLOW_TOOL["name"],
-            description=RECORD_FLOW_TOOL["description"],
-            inputSchema=RECORD_FLOW_TOOL["inputSchema"]
-        ),
-        Tool(
-            name=GET_IP_HISTORY_TOOL["name"],
-            description=GET_IP_HISTORY_TOOL["description"],
-            inputSchema=GET_IP_HISTORY_TOOL["inputSchema"]
-        ),
-        Tool(
-            name=ANALYZE_IP_PATTERN_TOOL["name"],
-            description=ANALYZE_IP_PATTERN_TOOL["description"],
-            inputSchema=ANALYZE_IP_PATTERN_TOOL["inputSchema"]
-        ),
-        Tool(
-            name=DETECT_BEHAVIOR_CHANGE_TOOL["name"],
-            description=DETECT_BEHAVIOR_CHANGE_TOOL["description"],
-            inputSchema=DETECT_BEHAVIOR_CHANGE_TOOL["inputSchema"]
-        ),
-        Tool(
-            name=ADD_OBSERVATION_TOOL["name"],
-            description=ADD_OBSERVATION_TOOL["description"],
-            inputSchema=ADD_OBSERVATION_TOOL["inputSchema"]
-        ),
+        # NetFlow Analyzer Tools (Disabled for now)
+        # Tool(
+        #     name=RECORD_FLOW_TOOL["name"],
+        #     description=RECORD_FLOW_TOOL["description"],
+        #     inputSchema=RECORD_FLOW_TOOL["inputSchema"]
+        # ),
+        # Tool(
+        #     name=GET_IP_HISTORY_TOOL["name"],
+        #     description=GET_IP_HISTORY_TOOL["description"],
+        #     inputSchema=GET_IP_HISTORY_TOOL["inputSchema"]
+        # ),
+        # Tool(
+        #     name=ANALYZE_IP_PATTERN_TOOL["name"],
+        #     description=ANALYZE_IP_PATTERN_TOOL["description"],
+        #     inputSchema=ANALYZE_IP_PATTERN_TOOL["inputSchema"]
+        # ),
+        # Tool(
+        #     name=DETECT_BEHAVIOR_CHANGE_TOOL["name"],
+        #     description=DETECT_BEHAVIOR_CHANGE_TOOL["description"],
+        #     inputSchema=DETECT_BEHAVIOR_CHANGE_TOOL["inputSchema"]
+        # ),
+        # Tool(
+        #     name=ADD_OBSERVATION_TOOL["name"],
+        #     description=ADD_OBSERVATION_TOOL["description"],
+        #     inputSchema=ADD_OBSERVATION_TOOL["inputSchema"]
+        # ),
         # More tools will be added here as we build them
     ]
 
@@ -446,108 +447,109 @@ async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             text=json.dumps(result, indent=2)
         )]
     
-    elif name == "record_flow":
-        flow_data = arguments.get("flow_data")
-        
-        if not flow_data:
-            return [TextContent(
-                type="text",
-                text=json.dumps({
-                    "error": "Missing required parameter: flow_data"
-                }, indent=2)
-            )]
-        
-        # Get the notebook instance and record the flow
-        notebook = get_notebook()
-        result = notebook.record_flow(flow_data)
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2)
-        )]
-    
-    elif name == "get_ip_history":
-        ip_address = arguments.get("ip_address")
-        limit = arguments.get("limit")
-        
-        if not ip_address:
-            return [TextContent(
-                type="text",
-                text=json.dumps({
-                    "error": "Missing required parameter: ip_address"
-                }, indent=2)
-            )]
-        
-        # Get the notebook instance and retrieve history
-        notebook = get_notebook()
-        result = notebook.get_ip_history(ip_address, limit=limit)
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2)
-        )]
-    
-    elif name == "analyze_ip_pattern":
-        ip_address = arguments.get("ip_address")
-        
-        if not ip_address:
-            return [TextContent(
-                type="text",
-                text=json.dumps({
-                    "error": "Missing required parameter: ip_address"
-                }, indent=2)
-            )]
-        
-        # Get the notebook instance and analyze patterns
-        notebook = get_notebook()
-        result = notebook.analyze_ip_pattern(ip_address)
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2)
-        )]
-    
-    elif name == "detect_behavior_change":
-        ip_address = arguments.get("ip_address")
-        window_size = arguments.get("window_size", 5)
-        
-        if not ip_address:
-            return [TextContent(
-                type="text",
-                text=json.dumps({
-                    "error": "Missing required parameter: ip_address"
-                }, indent=2)
-            )]
-        
-        # Get the notebook instance and detect changes
-        notebook = get_notebook()
-        result = notebook.detect_behavior_change(ip_address, window_size=window_size)
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2)
-        )]
-    
-    elif name == "add_observation":
-        ip_address = arguments.get("ip_address")
-        observation = arguments.get("observation")
-        
-        if not ip_address or not observation:
-            return [TextContent(
-                type="text",
-                text=json.dumps({
-                    "error": "Missing required parameters: ip_address and observation"
-                }, indent=2)
-            )]
-        
-        # Get the notebook instance and add observation
-        notebook = get_notebook()
-        result = notebook.add_observation(ip_address, observation)
-        
-        return [TextContent(
-            type="text",
-            text=json.dumps(result, indent=2)
-        )]
+    # NetFlow Analyzer Tool Handlers (Disabled for now)
+    # elif name == "record_flow":
+    #     flow_data = arguments.get("flow_data")
+    #     
+    #     if not flow_data:
+    #         return [TextContent(
+    #             type="text",
+    #             text=json.dumps({
+    #                 "error": "Missing required parameter: flow_data"
+    #             }, indent=2)
+    #         )]
+    #     
+    #     # Get the notebook instance and record the flow
+    #     notebook = get_notebook()
+    #     result = notebook.record_flow(flow_data)
+    #     
+    #     return [TextContent(
+    #         type="text",
+    #         text=json.dumps(result, indent=2)
+    #     )]
+    # 
+    # elif name == "get_ip_history":
+    #     ip_address = arguments.get("ip_address")
+    #     limit = arguments.get("limit")
+    #     
+    #     if not ip_address:
+    #         return [TextContent(
+    #             type="text",
+    #             text=json.dumps({
+    #                 "error": "Missing required parameter: ip_address"
+    #             }, indent=2)
+    #         )]
+    #     
+    #     # Get the notebook instance and retrieve history
+    #     notebook = get_notebook()
+    #     result = notebook.get_ip_history(ip_address, limit=limit)
+    #     
+    #     return [TextContent(
+    #         type="text",
+    #         text=json.dumps(result, indent=2)
+    #     )]
+    # 
+    # elif name == "analyze_ip_pattern":
+    #     ip_address = arguments.get("ip_address")
+    #     
+    #     if not ip_address:
+    #         return [TextContent(
+    #             type="text",
+    #             text=json.dumps({
+    #                 "error": "Missing required parameter: ip_address"
+    #             }, indent=2)
+    #         )]
+    #     
+    #     # Get the notebook instance and analyze patterns
+    #     notebook = get_notebook()
+    #     result = notebook.analyze_ip_pattern(ip_address)
+    #     
+    #     return [TextContent(
+    #         type="text",
+    #         text=json.dumps(result, indent=2)
+    #     )]
+    # 
+    # elif name == "detect_behavior_change":
+    #     ip_address = arguments.get("ip_address")
+    #     window_size = arguments.get("window_size", 5)
+    #     
+    #     if not ip_address:
+    #         return [TextContent(
+    #             type="text",
+    #             text=json.dumps({
+    #                 "error": "Missing required parameter: ip_address"
+    #             }, indent=2)
+    #         )]
+    #     
+    #     # Get the notebook instance and detect changes
+    #     notebook = get_notebook()
+    #     result = notebook.detect_behavior_change(ip_address, window_size=window_size)
+    #     
+    #     return [TextContent(
+    #         type="text",
+    #         text=json.dumps(result, indent=2)
+    #     )]
+    # 
+    # elif name == "add_observation":
+    #     ip_address = arguments.get("ip_address")
+    #     observation = arguments.get("observation")
+    #     
+    #     if not ip_address or not observation:
+    #         return [TextContent(
+    #             type="text",
+    #             text=json.dumps({
+    #                 "error": "Missing required parameters: ip_address and observation"
+    #             }, indent=2)
+    #         )]
+    #     
+    #     # Get the notebook instance and add observation
+    #     notebook = get_notebook()
+    #     result = notebook.add_observation(ip_address, observation)
+    #     
+    #     return [TextContent(
+    #         type="text",
+    #         text=json.dumps(result, indent=2)
+    #     )]
     
     # Handle unknown tools
     return [TextContent(

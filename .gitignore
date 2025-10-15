@@ -58,3 +58,18 @@ Thumbs.db
 # Test outputs
 test_output/
 results/
+
+# Batch data - large flow files
+netflow_batches/batch_data/**/flows.txt
+netflow_batches/batch_data/**/flows.json
+medium_batches/batch_data/**/flows.txt
+medium_batches/batch_data/**/flows.json
+large_samples/**/flows.txt
+large_samples/**/flows.json
+
+# Keep structure and metadata
+!netflow_batches/batch_data/**/README.md
+!netflow_batches/batch_data/**/*.csv
+!medium_batches/labels/*.json
+!large_samples/**/ground_truth.json
+!large_samples/**/README.md

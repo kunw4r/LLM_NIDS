@@ -1,0 +1,30 @@
+{
+    "folders": [
+        {
+            "name": "Thesis - LLM NIDS",
+            "path": "."
+        }
+    ],
+    "settings": {
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "files.exclude": {
+            ".git": true,
+            ".history": true,
+            "**/__pycache__": true,
+            "**/*.pyc": true
+        },
+        "search.exclude": {
+            ".git": true,
+            ".history": true,
+            "**/node_modules": true,
+            "**/__pycache__": true
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.pylint",
+            "ms-toolsai.jupyter"
+        ]
+    }
+}

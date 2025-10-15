@@ -1,0 +1,11 @@
+flow_id,verdict,confidence,attack_type,key_indicators,mitre,recommendation,tools_used
+0,BENIGN,HIGH,N/A,Internal DNS; port 53; normal timing; standard query,N/A,ALLOW,None
+1,BENIGN,HIGH,N/A,Internal DNS; port 53; very short duration; standard query,N/A,ALLOW,None
+2,BENIGN,MEDIUM,N/A,Internal RDP; single packet; TCP flags 20; no response,N/A,ALLOW,None
+3,BENIGN,HIGH,N/A,Internal DNS; port 53; very short duration; standard query,N/A,ALLOW,None
+4,BENIGN,MEDIUM,N/A,External RDP; normal duration; TCP flags 222; no malicious IP,N/A,ALLOW,IP-Reputation;Geo
+6,BENIGN,HIGH,N/A,Internal DNS; port 53; normal timing; standard query,N/A,ALLOW,None
+7,BENIGN,MEDIUM,N/A,External HTTP; normal duration; TCP flags 211; no malicious IP,N/A,ALLOW,IP-Reputation;Geo
+8,BENIGN,MEDIUM,N/A,External RDP; normal duration; TCP flags 222; no malicious IP,N/A,ALLOW,IP-Reputation;Geo
+9,BENIGN,MEDIUM,N/A,External RDP; normal duration; TCP flags 222; no malicious IP,N/A,ALLOW,IP-Reputation;Geo
+10,BENIGN,MEDIUM,N/A,Internal SMB; single packet; TCP flags 20; no response,N/A,ALLOW,None
