@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NIDS // Threat Monitor</title>
+  <meta name="description" content="LLM-augmented NIDS evaluation dashboard for CICIDS2018 NetFlow analysis" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x2B21;</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body, #root { background: #09090b; min-height: 100vh; }
+    ::selection { background: rgba(139, 92, 246, 0.3); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script>
+    "use strict";
+    var h = React.createElement;
+    var useState = React.useState;
+
+    /* ── Data ─────────────────────────────────────────────────────────────── */
+    var FLOWS = [
+      { id:0,  src:"172.31.0.2",      dst:"172.31.66.58",    port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0745, time:23, hit:true,  reasoning:"Single DNS response from internal DNS server. Normal UDP port 53 pattern with reasonable 156-byte response. No malicious indicators \u2014 private IPs, standard TTL, single packet exchange." },
+      { id:1,  src:"18.221.219.4",    dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"FTP-BruteForce",  conf:0.50, tier:1, tools:4, cost:0.0727, time:27, hit:true,  reasoning:"AbuseIPDB: 0 reports. OTX: no threats. Geolocation: AWS Ohio. Despite 0% external intel return, flagged as suspicious due to FTP port 21 pattern from datacenter IP." },
+      { id:2,  src:"18.221.219.4",    dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"FTP-BruteForce",  conf:0.50, tier:1, tools:4, cost:0.0707, time:26, hit:true,  reasoning:"Repeated FTP connection from same AWS IP. Continuing pattern of port 21 connections with SYN-ACK flags \u2014 incremented source port suggests automated tooling." },
+      { id:3,  src:"18.221.219.4",    dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"FTP-BruteForce",  conf:0.50, tier:1, tools:8, cost:0.0884, time:41, hit:true,  reasoning:"Three consecutive FTP flows, same target, incrementing source ports (39924\u219239934\u219240030). IP history confirms repeated brute-force pattern. Observation recorded: service enumeration behaviour." },
+      { id:4,  src:"172.31.66.58",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0799, time:42, hit:true,  reasoning:"DNS A record query from internal host. 65-byte query, 185-byte response \u2014 within normal DNS range. TTL 60s reasonable. Confirmed benign \u2014 legitimate IPv6 address resolution." },
+      { id:5,  src:"13.58.98.64",     dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"SSH-Bruteforce",  conf:0.50, tier:1, tools:4, cost:0.0720, time:38, hit:true,  reasoning:"New AWS Ohio IP targeting FTP port. AbuseIPDB: 0 reports. OTX: clean. Geolocation returns identical AWS EC2 profile \u2014 all 2018 lab IPs resolve to same datacenter with zero history." },
+      { id:6,  src:"13.58.98.64",     dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"SSH-Bruteforce",  conf:0.50, tier:1, tools:4, cost:0.0702, time:41, hit:true,  reasoning:"Second flow from same IP. Pattern building: same target, FTP port, minimal packets (1 fwd / 1 bwd). External tools remain silent \u2014 zero threat intelligence for recycled 2018 AWS IPs." },
+      { id:7,  src:"172.31.66.29",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"SUSPICIOUS", actual:"Benign",         conf:0.50, tier:4, tools:4, cost:0.0724, time:34, hit:false, reasoning:"Single DNS A record query. Private RFC1918 addressing. Normal packet sizes (69/85 bytes). Agent flagged suspicious despite no anomalies \u2014 false positive from over-cautious base behaviour." },
+      { id:8,  src:"13.58.98.64",     dst:"172.31.69.25",    port:22,   proto:"TCP", verdict:"SUSPICIOUS", actual:"SSH-Bruteforce",  conf:0.50, tier:1, tools:4, cost:0.0690, time:47, hit:true,  reasoning:"SSH connection (port 22) from same IP that was doing FTP probes. Duration 373ms, 23 packets each direction \u2014 consistent with SSH brute force handshake sequence." },
+      { id:9,  src:"18.219.211.138",  dst:"172.31.69.25",    port:80,   proto:"TCP", verdict:"SUSPICIOUS", actual:"DoS_GoldenEye",   conf:0.50, tier:2, tools:4, cost:0.0697, time:27, hit:true,  reasoning:"HTTP connections (port 80) from AWS Ohio. Duration ~4.3s, 5 fwd / 3 bwd packets per flow. AbuseIPDB: 0 reports. Flow characteristics consistent with slow-rate DoS preamble." },
+      { id:12, src:"172.31.66.58",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0787, time:27, hit:true,  reasoning:"DNS AAAA query (IPv6 lookup). Query type 28, normal for modern networks. Packet sizes 69/97 bytes typical. Confirmed benign \u2014 legitimate IPv6 address resolution." },
+      { id:20, src:"172.31.66.29",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.98, tier:4, tools:4, cost:0.0829, time:30, hit:true,  reasoning:"DNS A record from host with prior HTTPS to Google infrastructure. Protocol switching (TCP\u2192UDP) flagged low-severity but fully explained by DNS+web usage pattern. Benign confirmed." },
+      { id:23, src:"18.219.193.20",   dst:"172.31.69.25",    port:80,   proto:"TCP", verdict:"BENIGN",     actual:"DoS_Hulk",       conf:0.95, tier:2, tools:6, cost:0.0860, time:28, hit:false, reasoning:"MISSED: Agent saw 3 HTTP flows targeting same server, classified as benign web browsing. Hulk DoS requires volume detection across many concurrent connections \u2014 single-flow analysis insufficient." },
+      { id:25, src:"52.14.136.135",   dst:"172.31.69.25",    port:80,   proto:"TCP", verdict:"SUSPICIOUS", actual:"DDoS_LOIC-HTTP",  conf:0.50, tier:2, tools:4, cost:0.0635, time:135, hit:true, reasoning:"Tool errors on all calls (MCP timeout). Agent defaulted to SUSPICIOUS \u2014 correct verdict from baseline caution rather than evidence. Cost reflects 135s timeout waiting for tools." },
+      { id:43, src:"172.31.69.28",    dst:"172.31.69.1",     port:67,   proto:"UDP", verdict:"BENIGN",     actual:"Brute_Force_XSS", conf:0.98, tier:3, tools:4, cost:0.0704, time:146, hit:false, reasoning:"MISSED: Agent identified DHCP pattern (port 67/68, UDP, 328/357 bytes) and confidently classified as benign infrastructure. XSS brute force camouflaged with DHCP-like flow characteristics." },
+      { id:44, src:"172.31.69.28",    dst:"172.31.69.1",     port:67,   proto:"UDP", verdict:"BENIGN",     actual:"Brute_Force_XSS", conf:0.98, tier:3, tools:4, cost:0.0715, time:147, hit:false, reasoning:"MISSED: Repeated DHCP flow pattern. Agent gave detailed DHCP analysis with 98% confidence. Without cross-flow context showing repeated UDP 67/68 at machine speed, XSS disguise is convincing." },
+      { id:50, src:"172.31.69.12",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Infilteration",  conf:0.95, tier:3, tools:4, cost:0.0707, time:145, hit:false, reasoning:"MISSED: Single DNS AAAA query from internal IP. Agent correctly identified as legitimate DNS. But this is part of a 30-flow burst from 2 IPs in 3.2 seconds \u2014 temporal context required." },
+      { id:51, src:"172.31.69.12",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Infilteration",  conf:0.95, tier:3, tools:4, cost:0.0738, time:152, hit:false, reasoning:"MISSED: Identical DNS pattern. Without memory of flow 50, no anomaly visible. The infiltration signature is 30 consecutive DNS queries in 3.2 seconds \u2014 invisible to single-flow analysis." },
+      { id:52, src:"172.31.69.12",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"SUSPICIOUS", actual:"Infilteration",  conf:0.50, tier:3, tools:4, cost:0.0642, time:135, hit:true,  reasoning:"Tool errors led to default SUSPICIOUS. Ironically correct verdict \u2014 but from tool failure, not actual detection. Highlights need for temporal correlation agent." },
+      { id:53, src:"172.31.67.91",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"SUSPICIOUS", actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0695, time:145, hit:false, reasoning:"FALSE POSITIVE: Agent output says BENIGN in reasoning but verdict field shows SUSPICIOUS. Parsing inconsistency \u2014 agent gave detailed benign analysis but default SUSPICIOUS was recorded." },
+    ];
+
+    var AGENTS = [
+      { id:"orchestrator", name:"Orchestrator", model:"claude-opus-4-6", role:"Coordinates specialist agents, makes final verdicts, triggers retroactive reclassification", color:"#8b5cf6", icon:"\u2B21",
+        systemPrompt:"You are the NIDS Orchestrator. Your role is to:\n1. Receive NetFlow records and distribute to specialist agents\n2. Aggregate findings from Flow Analyst, Pattern Correlator, and Temporal Correlation agents\n3. Make final VERDICT decisions (BENIGN / SUSPICIOUS / MALICIOUS)\n4. Trigger retroactive reclassification when new evidence changes prior assessments\n5. Maintain awareness of the investigation context across all flows",
+        stats:{ processed:58, accuracy:"72.4%", avgTime:"91s" }, note:"highlight", noteText:"Retroactive reclassification is the core thesis contribution. When the temporal agent detects an infiltration burst, the orchestrator retroactively reclassifies all prior DNS flows from BENIGN \u2192 SUSPICIOUS." },
+      { id:"flow_analyst", name:"Flow Analyst", model:"claude-sonnet-4-6", role:"Analyses individual NetFlow records for statistical anomalies and protocol violations", color:"#3b82f6", icon:"\u25C8",
+        systemPrompt:"You are the Flow Analyst agent. Your role is to:\n1. Examine individual NetFlow records for statistical anomalies\n2. Check packet ratios, byte distributions, duration patterns\n3. Identify protocol violations and unusual flag combinations\n4. Compare against known attack signatures in flow features",
+        stats:{ processed:58, accuracy:"78%", avgTime:"45s" }, note:"warn", noteText:"Benign bias issue: Over-triggering on flows with normal statistical profiles. 13/15 benign flows were flagged suspicious. Consider adding explicit benign pattern recognition." },
+      { id:"pattern_correlator", name:"Pattern Correlator", model:"claude-sonnet-4-6", role:"Clusters related flows, identifies multi-stage attacks and C2 patterns", color:"#06b6d4", icon:"\u25CE",
+        systemPrompt:"You are the Pattern Correlator agent. Your role is to:\n1. Group flows by source IP, destination, and time window\n2. Identify coordinated multi-source attacks (DDoS)\n3. Detect C2 beaconing patterns (regular interval connections)\n4. Correlate port scanning sequences across multiple flows",
+        stats:{ processed:58, accuracy:"85%", avgTime:"38s" } },
+      { id:"temporal_agent", name:"Temporal Correlation", model:"claude-sonnet-4-6", role:"Detects slow-burn attacks, APTs, and patterns only visible across time", color:"#f59e0b", icon:"\u25F7",
+        systemPrompt:"You are the Temporal Correlation agent. Your role is to:\n1. Maintain a rolling window of flow history (last 500 flows)\n2. Detect low-and-slow attacks invisible in single-flow analysis\n3. Identify infiltration via anomalous internal DNS burst patterns\n4. Flag when an IP's behaviour changes significantly over time\n5. Trigger RETROACTIVE alerts when current evidence re-contextualises prior benign flows",
+        stats:{ processed:58, accuracy:"67%", avgTime:"120s" }, note:"error", noteText:"Phase 1 Gap: This agent has no shared memory across flows in the current single-agent architecture. The Infiltration class (33.3% detection rate) is entirely attributable to the absence of this agent's cross-flow temporal window." },
+      { id:"explainability", name:"Explainability", model:"claude-sonnet-4-6", role:"Generates human-readable reports, explains missed detections, suggests prompt improvements", color:"#ec4899", icon:"\u25C9",
+        systemPrompt:"You are the Explainability agent. Your role is to:\n1. Generate human-readable summaries of detections and missed cases\n2. Analyse false positives and false negatives to identify systematic weaknesses\n3. Suggest improvements to other agents' system prompts\n4. Produce comparison reports between experiment runs",
+        stats:{ processed:15, accuracy:"N/A", avgTime:"60s" } },
+    ];
+
+    var EXPERIMENTS = [
+      { id:"exp_003", name:"Phase 1 MCP Evaluation", date:"2026-02-19", status:"complete", flows:58, cost:"$3.98", accuracy:"72.4%", f1:"83.3%", precision:"75.5%", recall:"93.0%",
+        changes:"Baseline MCP single-agent evaluation. max_iterations=5, model=sonnet-4-6",
+        notes:"0/142 external tool calls returned meaningful data. Benign detection rate 13.3%.",
+        variables:{ max_iterations:5, model:"claude-sonnet-4-20250514", batch_size:58, tools_enabled:"all", external_tools:true } },
+      { id:"exp_002", name:"Mini Batch Pilot", date:"2026-02-19", status:"complete", flows:9, cost:"$0.73", accuracy:"78%", f1:"N/A", precision:"N/A", recall:"N/A",
+        changes:"Early run before billing fix. Confirmed tool return rate = 0%.",
+        notes:"Credit exhaustion after 9 flows. Sufficient to confirm thesis.",
+        variables:{ max_iterations:5, model:"claude-sonnet-4-20250514", batch_size:9, tools_enabled:"all", external_tools:true } },
+      { id:"exp_001", name:"Timeout Debug Run", date:"2026-02-19", status:"abandoned", flows:4, cost:"$0.31", accuracy:"N/A", f1:"N/A", precision:"N/A", recall:"N/A",
+        changes:"All flows returned TIMEOUT. Agent never concluded within 10 iterations.",
+        notes:"Fixed by forcing text-only final iteration.",
+        variables:{ max_iterations:10, model:"claude-sonnet-4-20250514", batch_size:4, tools_enabled:"all", external_tools:true } },
+    ];
+
+    var MISSED = FLOWS.filter(function(f){ return f.reasoning.startsWith("MISSED") || f.reasoning.startsWith("FALSE POSITIVE"); });
+    var HITS = FLOWS.filter(function(f){ return !f.reasoning.startsWith("MISSED") && !f.reasoning.startsWith("FALSE POSITIVE") && f.hit; });
+
+    var vc = function(v) {
+      return { BENIGN:{bg:"#052e16",border:"#16a34a",text:"#4ade80"}, SUSPICIOUS:{bg:"#422006",border:"#d97706",text:"#fbbf24"}, MALICIOUS:{bg:"#450a0a",border:"#dc2626",text:"#f87171"} }[v] || {bg:"#18181b",border:"#3f3f46",text:"#a1a1aa"};
+    };
+    var tierLabel = function(t){ return ["","External Tool","Feature-Rich","Temporal","Benign Baseline"][t]||""; };
+    var tierColor = function(t){ return ["","#3b82f6","#a855f7","#f59e0b","#71717a"][t]||"#71717a"; };
+
+    /* ── CSS ───────────────────────────────────────────────────────────────── */
+    var css = '\
+      .app { font-family:"Inter",system-ui,-apple-system,sans-serif; background:#09090b; color:#e4e4e7; min-height:100vh; }\
+      \
+      /* Header */\
+      .hdr { padding:0 32px; height:56px; display:flex; align-items:center; gap:20px; border-bottom:1px solid #18181b; background:#09090b; position:sticky; top:0; z-index:10; }\
+      .hdr-dot { width:8px; height:8px; border-radius:50%; background:#8b5cf6; box-shadow:0 0 8px #8b5cf640; animation:pulse 2.5s ease-in-out infinite; }\
+      @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.35} }\
+      .hdr-title { font-weight:700; font-size:15px; color:#fafafa; letter-spacing:.02em; }\
+      .hdr-title span { color:#8b5cf6; }\
+      .hdr-stats { display:flex; gap:24px; margin-left:auto; }\
+      .hdr-stat { display:flex; align-items:baseline; gap:6px; }\
+      .hdr-stat-val { font-family:"JetBrains Mono",monospace; font-weight:600; font-size:13px; }\
+      .hdr-stat-lbl { font-size:11px; color:#52525b; font-weight:500; text-transform:uppercase; letter-spacing:.06em; }\
+      .hdr-sub { font-size:11px; color:#3f3f46; }\
+      \
+      /* Tabs */\
+      .tabs { display:flex; gap:0; padding:0 32px; border-bottom:1px solid #18181b; background:#09090b; position:sticky; top:56px; z-index:10; }\
+      .tab { padding:12px 20px; font-family:inherit; font-size:13px; font-weight:500; color:#52525b; border:none; background:none; cursor:pointer; border-bottom:2px solid transparent; transition:color .15s,border-color .15s; }\
+      .tab:hover { color:#a1a1aa; }\
+      .tab-active { color:#fafafa; border-bottom-color:#8b5cf6; }\
+      \
+      /* Layout */\
+      .content { padding:24px 32px; max-width:1480px; margin:0 auto; }\
+      .split { display:grid; grid-template-columns:1fr 380px; gap:24px; align-items:start; }\
+      \
+      /* Cards */\
+      .card { background:#18181b; border-radius:16px; padding:20px; border:1px solid #27272a; transition:border-color .2s; }\
+      .card:hover { border-color:#3f3f46; }\
+      .card-selected { border-color:#8b5cf6 !important; }\
+      \
+      /* Metrics */\
+      .metrics { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:24px; }\
+      .metric-card { background:#18181b; border-radius:14px; padding:16px 20px; border:1px solid #27272a; }\
+      .metric-val { font-family:"JetBrains Mono",monospace; font-weight:700; font-size:28px; line-height:1.1; }\
+      .metric-lbl { font-size:11px; color:#52525b; font-weight:500; text-transform:uppercase; letter-spacing:.06em; margin-top:6px; }\
+      \
+      /* Filters */\
+      .filters { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }\
+      .filter { padding:6px 14px; border-radius:8px; font-family:inherit; font-size:12px; font-weight:500; cursor:pointer; border:1px solid #27272a; background:transparent; color:#71717a; transition:all .15s; }\
+      .filter:hover { border-color:#3f3f46; color:#a1a1aa; }\
+      .filter-active { background:#8b5cf620; border-color:#8b5cf680; color:#c4b5fd; }\
+      \
+      /* Table */\
+      .tbl { width:100%; border-collapse:separate; border-spacing:0; }\
+      .tbl th { text-align:left; padding:10px 14px; font-size:11px; color:#52525b; font-weight:600; letter-spacing:.06em; text-transform:uppercase; border-bottom:1px solid #27272a; position:sticky; top:112px; background:#09090b; z-index:5; }\
+      .tbl-row { transition:background .1s; cursor:pointer; }\
+      .tbl-row:hover { background:#18181b; }\
+      .tbl-row-sel { background:#1e1b4b; }\
+      .tbl-row-miss { box-shadow:inset 3px 0 0 #ef4444; }\
+      .tbl-row-fp { box-shadow:inset 3px 0 0 #f59e0b; }\
+      .tbl-row td { padding:10px 14px; border-bottom:1px solid #18181b; font-size:13px; }\
+      .mono { font-family:"JetBrains Mono",monospace; font-size:12px; }\
+      \
+      /* Badge */\
+      .badge { display:inline-flex; align-items:center; padding:3px 10px; border-radius:6px; font-size:11px; font-weight:600; letter-spacing:.04em; border:1px solid; }\
+      \
+      /* Detail panel */\
+      .panel { background:#18181b; border:1px solid #27272a; border-radius:16px; padding:20px; }\
+      .panel-title { font-weight:600; font-size:15px; color:#fafafa; margin-bottom:16px; }\
+      .label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#52525b; font-weight:600; margin-bottom:8px; }\
+      \
+      /* Info boxes */\
+      .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px; }\
+      .info-cell { background:#27272a; border-radius:10px; padding:10px 14px; }\
+      .info-cell-lbl { font-size:10px; color:#52525b; letter-spacing:.08em; text-transform:uppercase; margin-bottom:3px; font-weight:600; }\
+      .info-cell-val { font-size:13px; font-weight:500; }\
+      \
+      /* Verdict box */\
+      .verdict-box { border-radius:12px; padding:14px 18px; margin-bottom:16px; border:1px solid; }\
+      .verdict-label { font-size:10px; letter-spacing:.1em; margin-bottom:4px; opacity:.7; font-weight:600; }\
+      .verdict-val { font-weight:700; font-size:18px; }\
+      .verdict-actual { font-size:12px; color:#71717a; margin-top:4px; }\
+      \
+      /* Tool trace */\
+      .tool-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; background:#27272a; margin-bottom:6px; font-size:12px; }\
+      .tool-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }\
+      .tool-name { font-family:"JetBrains Mono",monospace; color:#a1a1aa; font-size:12px; }\
+      .tool-status { margin-left:auto; font-size:11px; font-weight:600; }\
+      \
+      /* Reasoning */\
+      .reasoning { background:#27272a; border-radius:10px; padding:14px 18px; font-size:13px; line-height:1.7; color:#a1a1aa; margin-top:8px; }\
+      \
+      /* Agent grid */\
+      .agent-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-bottom:24px; }\
+      .agent-icon { font-size:28px; margin-bottom:10px; }\
+      .agent-name { font-weight:700; font-size:15px; margin-bottom:4px; }\
+      .agent-model { font-family:"JetBrains Mono",monospace; font-size:11px; color:#52525b; margin-bottom:10px; }\
+      .agent-role { font-size:13px; color:#71717a; line-height:1.6; }\
+      .agent-stats { display:flex; gap:20px; margin-top:14px; padding-top:14px; border-top:1px solid #27272a; }\
+      .agent-stat-val { font-family:"JetBrains Mono",monospace; font-weight:700; font-size:15px; }\
+      .agent-stat-lbl { font-size:10px; color:#52525b; letter-spacing:.06em; text-transform:uppercase; margin-top:2px; }\
+      \
+      /* Prompt */\
+      .prompt-box { background:#27272a; border-radius:10px; padding:16px 20px; font-family:"JetBrains Mono",monospace; font-size:12px; line-height:1.8; color:#71717a; white-space:pre-wrap; max-height:280px; overflow-y:auto; }\
+      .prompt-edit { width:100%; background:#27272a; border:1px solid #3f3f46; border-radius:10px; padding:16px 20px; font-family:"JetBrains Mono",monospace; font-size:12px; color:#e4e4e7; line-height:1.7; resize:vertical; min-height:280px; outline:none; }\
+      .prompt-edit:focus { border-color:#8b5cf680; }\
+      \
+      /* Buttons */\
+      .btn { padding:8px 18px; border-radius:10px; font-family:inherit; font-size:13px; font-weight:600; cursor:pointer; border:1px solid; transition:all .15s; }\
+      .btn-primary { background:#8b5cf620; border-color:#8b5cf6; color:#c4b5fd; }\
+      .btn-primary:hover { background:#8b5cf630; }\
+      .btn-ghost { background:transparent; border-color:#27272a; color:#71717a; }\
+      .btn-ghost:hover { border-color:#3f3f46; color:#a1a1aa; }\
+      \
+      /* Alert boxes */\
+      .alert { border-radius:12px; padding:14px 18px; font-size:13px; line-height:1.6; margin-top:16px; border:1px solid; }\
+      .alert-green { background:#052e1608; border-color:#16a34a40; color:#4ade80; }\
+      .alert-yellow { background:#42200608; border-color:#d9770640; color:#fbbf24; }\
+      .alert-red { background:#450a0a08; border-color:#dc262640; color:#f87171; }\
+      .alert strong { font-weight:700; }\
+      \
+      /* Comparison */\
+      .cmp-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }\
+      .cmp-item { padding:10px 14px; margin-bottom:8px; border-radius:10px; cursor:pointer; transition:background .15s; }\
+      .cmp-item:hover { background:#27272a; }\
+      .cmp-miss { background:#450a0a; border:1px solid #7f1d1d; border-radius:10px; padding:14px; margin-bottom:10px; cursor:pointer; transition:border-color .15s; }\
+      .cmp-miss:hover { border-color:#dc2626; }\
+      \
+      /* Exp cards */\
+      .exp-card { cursor:pointer; margin-bottom:16px; }\
+      .exp-header { display:flex; align-items:center; gap:12px; margin-bottom:8px; }\
+      .exp-name { font-weight:700; font-size:15px; color:#fafafa; }\
+      .exp-notes { font-size:13px; color:#52525b; line-height:1.5; }\
+      .exp-metrics { display:flex; gap:24px; margin-top:14px; flex-wrap:wrap; }\
+      .exp-m-val { font-family:"JetBrains Mono",monospace; font-weight:700; font-size:17px; }\
+      .exp-m-lbl { font-size:10px; color:#52525b; letter-spacing:.06em; text-transform:uppercase; margin-top:2px; }\
+      \
+      /* Var table */\
+      .vtbl { width:100%; border-collapse:collapse; margin-top:8px; }\
+      .vtbl td { padding:8px 12px; font-size:13px; border-bottom:1px solid #27272a; }\
+      .vtbl td:first-child { color:#52525b; font-weight:500; width:180px; }\
+      .vtbl .changed { color:#f59e0b; }\
+      \
+      /* Root cause cards */\
+      .rc-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }\
+      .rc-card { background:#27272a; border-radius:14px; padding:18px; }\
+      .rc-title { font-weight:700; font-size:14px; margin-bottom:12px; }\
+      \
+      /* Fade */\
+      @keyframes fadeIn { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }\
+      .fade { animation:fadeIn .25s ease; }\
+      \
+      /* Responsive */\
+      @media(max-width:1024px) { .split{grid-template-columns:1fr} .metrics{grid-template-columns:repeat(3,1fr)} .rc-grid{grid-template-columns:1fr} .cmp-grid{grid-template-columns:1fr} }\
+      @media(max-width:640px) { .hdr{padding:0 16px;gap:12px;flex-wrap:wrap;height:auto;padding-top:12px;padding-bottom:12px} .hdr-stats{display:none} .content{padding:16px} .tabs{padding:0 16px} .metrics{grid-template-columns:repeat(2,1fr)} .agent-grid{grid-template-columns:1fr} }\
+    ';
+
+    /* ── Component ─────────────────────────────────────────────────────────── */
+    function App() {
+      var _s = useState("flows"), tab = _s[0], setTab = _s[1];
+      var _sf = useState(null), selFlow = _sf[0], setSelFlow = _sf[1];
+      var _sa = useState(null), selAgent = _sa[0], setSelAgent = _sa[1];
+      var _sp = useState(Object.fromEntries(AGENTS.map(function(a){return[a.id,a.systemPrompt]}))), prompts = _sp[0], setPrompts = _sp[1];
+      var _ep = useState(false), editing = _ep[0], setEditing = _ep[1];
+      var _fi = useState("all"), filter = _fi[0], setFilter = _fi[1];
+      var _se = useState(EXPERIMENTS[0]), selExp = _se[0], setSelExp = _se[1];
+      var _ce = useState("exp_002"), compId = _ce[0], setCompId = _ce[1];
+
+      var filtered = FLOWS.filter(function(f) {
+        if (filter==="all") return true;
+        if (filter==="hit") return f.hit && !f.reasoning.startsWith("MISSED") && !f.reasoning.startsWith("FALSE");
+        if (filter==="missed") return f.reasoning.startsWith("MISSED");
+        if (filter==="fp") return f.reasoning.startsWith("FALSE");
+        if (filter==="suspicious") return f.verdict==="SUSPICIOUS";
+        if (filter==="benign") return f.verdict==="BENIGN";
+        return true;
+      });
+
+      var flow = selFlow!==null ? FLOWS.find(function(f){return f.id===selFlow}) : null;
+      var agent = selAgent ? AGENTS.find(function(a){return a.id===selAgent}) : null;
+      var compExp = EXPERIMENTS.find(function(e){return e.id===compId});
+
+      var tools = flow ? [
+        {name:"record_flow",cat:"netflow",ok:true},
+        {name:"geolocate_ip",cat:"external",ok:false},
+        {name:"check_ip_abuseipdb",cat:"external",ok:false},
+        {name:"check_ip_otx",cat:"external",ok:false},
+      ].slice(0,Math.min(flow.tools,4)) : [];
+
+      var toolCol = function(c){return{netflow:"#8b5cf6",external:"#f59e0b",mitre:"#06b6d4"}[c]||"#71717a"};
+
+      return h(React.Fragment, null,
+        h("style", null, css),
+        h("div", {className:"app"},
+
+          /* ── Header ── */
+          h("div", {className:"hdr"},
+            h("div", {className:"hdr-dot"}),
+            h("div", {className:"hdr-title"}, "NIDS ", h("span", null, "//"), " Threat Monitor"),
+            h("div", {className:"hdr-stats"},
+              [{l:"Flows",v:FLOWS.length,c:"#fafafa"},{l:"Detected",v:FLOWS.filter(function(f){return f.hit}).length,c:"#4ade80"},{l:"Missed",v:MISSED.length,c:"#f87171"},{l:"Cost",v:"$3.98",c:"#fafafa"}].map(function(m){
+                return h("div",{key:m.l,className:"hdr-stat"},
+                  h("span",{className:"hdr-stat-val",style:{color:m.c}},m.v),
+                  h("span",{className:"hdr-stat-lbl"},m.l)
+                );
+              })
+            ),
+            h("div", {className:"hdr-sub"}, "CICIDS2018-v3 \u00B7 Phase 1 \u00B7 Feb 2026")
+          ),
+
+          /* ── Tabs ── */
+          h("div", {className:"tabs"},
+            [["flows","Flow Monitor"],["agents","Agent Inspector"],["comparison","Missed Detections"],["experiments","Experiments"]].map(function(t){
+              return h("button",{key:t[0],className:"tab"+(tab===t[0]?" tab-active":""),onClick:function(){setTab(t[0])}},t[1]);
+            })
+          ),
+
+          h("div", {className:"content fade",key:tab},
+
+            /* ════════ FLOWS ════════ */
+            tab==="flows" && h("div", null,
+              h("div", {className:"metrics"},
+                [{v:"83.3%",l:"F1 Score",c:"#8b5cf6"},{v:"75.5%",l:"Precision",c:"#3b82f6"},{v:"93.0%",l:"Recall",c:"#06b6d4"},{v:"72.4%",l:"Accuracy",c:"#f59e0b"},{v:"0%",l:"Ext. Tool Hit",c:"#ef4444"}].map(function(m){
+                  return h("div",{key:m.l,className:"metric-card"},
+                    h("div",{className:"metric-val",style:{color:m.c}},m.v),
+                    h("div",{className:"metric-lbl"},m.l)
+                  );
+                })
+              ),
+
+              h("div",{className:"split"},
+                h("div",null,
+                  h("div",{className:"filters"},
+                    [["all","All ("+FLOWS.length+")"],["hit","Correct"],["missed","Missed"],["fp","False Positive"],["suspicious","Suspicious"],["benign","Benign"]].map(function(f){
+                      return h("button",{key:f[0],className:"filter"+(filter===f[0]?" filter-active":""),onClick:function(){setFilter(f[0])}},f[1]);
+                    })
+                  ),
+
+                  h("div",{style:{overflowX:"auto"}},
+                    h("table",{className:"tbl"},
+                      h("thead",null,h("tr",null,
+                        ["#","Source","Destination","Port","Proto","Tier","Verdict","Actual","Conf","Cost","Time"].map(function(th){return h("th",{key:th},th)})
+                      )),
+                      h("tbody",null,
+                        filtered.map(function(f){
+                          var v=vc(f.verdict), miss=f.reasoning.startsWith("MISSED"), fp=f.reasoning.startsWith("FALSE"), sel=selFlow===f.id;
+                          return h("tr",{key:f.id,className:"tbl-row"+(sel?" tbl-row-sel":"")+(miss?" tbl-row-miss":"")+(fp?" tbl-row-fp":""),onClick:function(){setSelFlow(sel?null:f.id)}},
+                            h("td",{className:"mono",style:{color:"#52525b"}},String(f.id).padStart(3,"0")),
+                            h("td",{className:"mono",style:{color:"#a1a1aa"}},f.src),
+                            h("td",{className:"mono",style:{color:"#71717a"}},f.dst),
+                            h("td",{className:"mono",style:{color:"#52525b"}},f.port),
+                            h("td",{style:{color:"#52525b"}},f.proto),
+                            h("td",null,h("span",{style:{fontSize:11,color:tierColor(f.tier),fontWeight:600}},"T"+f.tier)),
+                            h("td",null,h("span",{className:"badge",style:{background:v.bg,borderColor:v.border,color:v.text}},f.verdict)),
+                            h("td",{style:{color:f.hit&&!miss&&!fp?"#4ade80":miss?"#f87171":"#fbbf24",fontSize:12,fontWeight:500}},f.actual),
+                            h("td",{className:"mono",style:{color:f.conf>=.8?"#4ade80":f.conf>=.6?"#fbbf24":"#71717a"}},(f.conf*100).toFixed(0)+"%"),
+                            h("td",{className:"mono",style:{color:"#3f3f46"}},"$"+f.cost.toFixed(3)),
+                            h("td",{className:"mono",style:{color:"#3f3f46"}},f.time+"s")
+                          );
+                        })
+                      )
+                    )
+                  )
+                ),
+
+                /* Side detail */
+                h("div",null,
+                  flow ? h("div",{className:"panel fade"},
+                    h("div",{className:"label"},"Flow "+String(flow.id).padStart(3,"0")),
+                    h("div",{className:"panel-title"},flow.src+" \u2192 "+flow.dst),
+
+                    h("div",{className:"info-grid"},
+                      [{k:"Port",v:flow.port},{k:"Protocol",v:flow.proto},{k:"Tier",v:"T"+flow.tier+" \u2014 "+tierLabel(flow.tier),c:tierColor(flow.tier)},{k:"Confidence",v:(flow.conf*100).toFixed(0)+"%"},{k:"Tools",v:flow.tools},{k:"Cost",v:"$"+flow.cost.toFixed(4)},{k:"Time",v:flow.time+"s"}].map(function(i){
+                        return h("div",{key:i.k,className:"info-cell"},
+                          h("div",{className:"info-cell-lbl"},i.k),
+                          h("div",{className:"info-cell-val",style:{color:i.c||"#e4e4e7"}},i.v)
+                        );
+                      })
+                    ),
+
+                    (function(){var v=vc(flow.verdict); return h("div",{className:"verdict-box",style:{background:v.bg,borderColor:v.border}},
+                      h("div",{className:"verdict-label",style:{color:v.text}},"VERDICT"),
+                      h("div",{className:"verdict-val",style:{color:v.text}},flow.verdict),
+                      h("div",{className:"verdict-actual"},"Actual: ",h("span",{style:{color:flow.hit?"#4ade80":"#f87171",fontWeight:600}},flow.actual))
+                    )})(),
+
+                    h("div",{className:"label"},"Tool Trace"),
+                    tools.map(function(t,i){
+                      return h("div",{key:i,className:"tool-item"},
+                        h("div",{className:"tool-dot",style:{background:toolCol(t.cat)}}),
+                        h("span",{className:"tool-name"},t.name),
+                        h("span",{className:"tool-status",style:{color:t.ok?"#4ade80":"#ef4444"}},t.ok?"\u2713 data":"\u2717 empty")
+                      );
+                    }),
+
+                    h("div",{className:"label",style:{marginTop:16}},"Agent Reasoning"),
+                    h("div",{className:"reasoning"},
+                      flow.reasoning.startsWith("MISSED") && h("div",{style:{color:"#f87171",fontWeight:700,marginBottom:8}},"MISSED DETECTION"),
+                      flow.reasoning.startsWith("FALSE") && h("div",{style:{color:"#fbbf24",fontWeight:700,marginBottom:8}},"FALSE POSITIVE"),
+                      flow.reasoning.replace(/^(MISSED|FALSE POSITIVE): /,"")
+                    )
+                  ) : h("div",{style:{color:"#3f3f46",textAlign:"center",padding:40,fontSize:13}},"\u2190 Select a flow to inspect")
+                )
+              )
+            ),
+
+            /* ════════ AGENTS ════════ */
+            tab==="agents" && h("div",null,
+              h("div",{className:"agent-grid"},
+                AGENTS.map(function(a){
+                  var sel=selAgent===a.id;
+                  return h("div",{key:a.id,className:"card"+(sel?" card-selected":""),style:{cursor:"pointer",borderColor:sel?a.color:undefined},onClick:function(){setSelAgent(a.id);setEditing(false)}},
+                    h("div",{className:"agent-icon",style:{color:a.color}},a.icon),
+                    h("div",{className:"agent-name",style:{color:a.color}},a.name),
+                    h("div",{className:"agent-model"},a.model),
+                    h("div",{className:"agent-role"},a.role),
+                    h("div",{className:"agent-stats"},
+                      Object.entries(a.stats).map(function(e){
+                        return h("div",{key:e[0]},
+                          h("div",{className:"agent-stat-val",style:{color:a.color}},e[1]),
+                          h("div",{className:"agent-stat-lbl"},e[0])
+                        );
+                      })
+                    )
+                  );
+                })
+              ),
+
+              agent && h("div",{className:"panel fade"},
+                h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:20}},
+                  h("div",{style:{display:"flex",gap:12,alignItems:"center"}},
+                    h("span",{style:{fontSize:24,color:agent.color}},agent.icon),
+                    h("div",null,
+                      h("div",{style:{fontWeight:700,fontSize:16,color:agent.color}},agent.name),
+                      h("div",{className:"agent-model"},agent.model)
+                    )
+                  ),
+                  h("div",{style:{display:"flex",gap:8}},
+                    h("button",{className:"btn"+(editing?" btn-primary":" btn-ghost"),onClick:function(){setEditing(!editing)}},editing?"Editing...":"Edit Prompt"),
+                    editing && h("button",{className:"btn btn-primary",onClick:function(){setEditing(false)}},"Save")
+                  )
+                ),
+                h("div",{className:"label"},"System Prompt"),
+                editing ? h(React.Fragment,null,
+                  h("textarea",{className:"prompt-edit",value:prompts[agent.id],onChange:function(e){var id=agent.id;setPrompts(function(p){var n=Object.assign({},p);n[id]=e.target.value;return n})}}),
+                  h("div",{className:"alert alert-yellow"},"Changes apply to the next experiment run.")
+                ) : h("div",{className:"prompt-box"},prompts[agent.id]),
+                h("div",{className:"label",style:{marginTop:20}},"Role"),
+                h("div",{className:"reasoning"},agent.role),
+                agent.note==="highlight" && h("div",{className:"alert alert-green"},h("strong",null,"Retroactive reclassification: "),agent.noteText),
+                agent.note==="warn" && h("div",{className:"alert alert-yellow"},h("strong",null,"Known issue: "),agent.noteText),
+                agent.note==="error" && h("div",{className:"alert alert-red"},h("strong",null,"Phase 1 gap: "),agent.noteText)
+              )
+            ),
+
+            /* ════════ MISSED DETECTIONS ════════ */
+            tab==="comparison" && h("div",null,
+              h("div",{className:"metrics",style:{gridTemplateColumns:"repeat(4,1fr)"}},
+                [{v:HITS.length,l:"Correct Detections",c:"#4ade80"},{v:MISSED.length,l:"Missed Attacks",c:"#f87171"},{v:13,l:"False Positives",c:"#fbbf24"},{v:"13.3%",l:"Benign Accuracy",c:"#a855f7"}].map(function(m){
+                  return h("div",{key:m.l,className:"metric-card"},
+                    h("div",{className:"metric-val",style:{color:m.c}},m.v),
+                    h("div",{className:"metric-lbl"},m.l)
+                  );
+                })
+              ),
+
+              h("div",{className:"cmp-grid"},
+                h("div",{className:"card"},
+                  h("div",{style:{fontWeight:700,fontSize:14,color:"#4ade80",marginBottom:16}},"Correctly Detected ("+HITS.length+")"),
+                  HITS.map(function(f){
+                    return h("div",{key:f.id,className:"cmp-item",onClick:function(){setSelFlow(f.id);setTab("flows")}},
+                      h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:4}},
+                        h("span",{style:{fontSize:13,color:"#4ade80",fontWeight:600}},f.actual),
+                        h("span",{className:"mono",style:{color:"#3f3f46"}},"T"+f.tier+" \u00B7 $"+f.cost.toFixed(3))
+                      ),
+                      h("div",{className:"mono",style:{color:"#52525b"}},f.src+" \u2192 :"+f.port)
+                    );
+                  })
+                ),
+
+                h("div",{className:"card"},
+                  h("div",{style:{fontWeight:700,fontSize:14,color:"#f87171",marginBottom:16}},"Missed / False Positives ("+MISSED.length+")"),
+                  MISSED.map(function(f){
+                    var v=vc(f.verdict);
+                    return h("div",{key:f.id,className:"cmp-miss",onClick:function(){setSelFlow(f.id);setTab("flows")}},
+                      h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:6}},
+                        h("span",{style:{fontSize:13,color:"#f87171",fontWeight:700}},f.actual),
+                        h("span",{className:"badge",style:{background:v.bg,borderColor:v.border,color:v.text}},f.verdict)
+                      ),
+                      h("div",{className:"mono",style:{color:"#ef4444",marginBottom:6}},f.src+" \u2192 :"+f.port),
+                      h("div",{style:{fontSize:12,color:"#7f1d1d",lineHeight:1.6}},f.reasoning.replace(/^(MISSED|FALSE POSITIVE): /,""))
+                    );
+                  }),
+                  h("div",{style:{background:"#422006",borderRadius:12,padding:14,border:"1px solid #92400e",marginTop:8}},
+                    h("div",{style:{fontSize:13,color:"#fbbf24",fontWeight:700,marginBottom:6}},"13\u00D7 Benign \u2192 SUSPICIOUS"),
+                    h("div",{style:{fontSize:12,color:"#a16207",lineHeight:1.6}},"All 13 false positives share the same root cause: the agent lacks a benign baseline. Normal DNS, DHCP, and HTTPS flows were flagged because the system has no learned definition of \"normal\" to compare against.")
+                  )
+                )
+              ),
+
+              /* Root cause analysis */
+              h("div",{className:"panel",style:{marginTop:24}},
+                h("div",{style:{display:"flex",alignItems:"center",gap:12,marginBottom:20}},
+                  h("span",{style:{color:"#ec4899",fontSize:22}},"\u25C9"),
+                  h("div",null,
+                    h("div",{style:{fontWeight:700,fontSize:15,color:"#ec4899"}},"Root Cause Analysis"),
+                    h("div",{style:{fontSize:12,color:"#52525b"}},"Systematic failure analysis across missed detections")
+                  )
+                ),
+                h("div",{className:"rc-grid"},
+                  [
+                    {title:"Infiltration (33.3%)",col:"#f87171",cause:"Single-flow isolation. Each DNS flow looks perfectly normal in isolation \u2014 60-byte query, port 53, internal IP. The attack signature (30 flows in 3.2s from 2 IPs) is only visible across time.",fix:"Temporal Correlation Agent with 60s rolling window. When >5 DNS queries/sec from same source, retroactively flag all flows."},
+                    {title:"Brute Force XSS (66.7%)",col:"#fbbf24",cause:"Protocol camouflage. XSS flows mimic DHCP packet sizes (328/357 bytes, UDP). Agent gave high-confidence BENIGN \u2014 saw DHCP, didn't suspect attack.",fix:"Flow Analyst should flag DHCP-sized UDP flows targeting non-router IPs. Context-aware port/role validation needed."},
+                    {title:"DoS Hulk (0%)",col:"#a855f7",cause:"Volume attack, single-flow detection. Each Hulk flow looks like legitimate HTTP (port 80, 16-26 packets). The DoS is the aggregate \u2014 hundreds of concurrent connections.",fix:"Pattern Correlator clusters flows by dest IP \u00D7 time window. >50 concurrent HTTP flows to same target triggers DoS alert."},
+                  ].map(function(item){
+                    return h("div",{key:item.title,className:"rc-card"},
+                      h("div",{className:"rc-title",style:{color:item.col}},item.title),
+                      h("div",{className:"label"},"Root Cause"),
+                      h("div",{style:{fontSize:13,color:"#a1a1aa",lineHeight:1.6,marginBottom:12}},item.cause),
+                      h("div",{className:"label"},"Fix"),
+                      h("div",{style:{fontSize:13,color:"#4ade80",lineHeight:1.6}},item.fix)
+                    );
+                  })
+                )
+              )
+            ),
+
+            /* ════════ EXPERIMENTS ════════ */
+            tab==="experiments" && h("div",{className:"split"},
+              h("div",null,
+                EXPERIMENTS.map(function(exp){
+                  var sel=selExp&&selExp.id===exp.id;
+                  return h("div",{key:exp.id,className:"card exp-card"+(sel?" card-selected":""),onClick:function(){setSelExp(exp)}},
+                    h("div",{className:"exp-header"},
+                      h("div",{className:"exp-name"},exp.name),
+                      h("span",{className:"badge",style:{
+                        background:exp.status==="complete"?"#052e16":exp.status==="abandoned"?"#450a0a":"#422006",
+                        borderColor:exp.status==="complete"?"#16a34a":exp.status==="abandoned"?"#dc2626":"#d97706",
+                        color:exp.status==="complete"?"#4ade80":exp.status==="abandoned"?"#f87171":"#fbbf24",
+                      }},exp.status.toUpperCase()),
+                      h("span",{className:"mono",style:{marginLeft:"auto",color:"#3f3f46"}},exp.date)
+                    ),
+                    h("div",{className:"exp-notes"},exp.notes),
+                    h("div",{className:"exp-metrics"},
+                      [{l:"Flows",v:exp.flows},{l:"Cost",v:exp.cost},{l:"Accuracy",v:exp.accuracy,c:exp.status==="complete"?"#4ade80":"#71717a"},{l:"F1",v:exp.f1},{l:"Precision",v:exp.precision},{l:"Recall",v:exp.recall}].map(function(m){
+                        return h("div",{key:m.l},
+                          h("div",{className:"exp-m-val",style:{color:m.c||"#e4e4e7"}},m.v),
+                          h("div",{className:"exp-m-lbl"},m.l)
+                        );
+                      })
+                    )
+                  );
+                })
+              ),
+
+              selExp && h("div",null,
+                h("div",{className:"panel"},
+                  h("div",{className:"label"},"Variables \u2014 "+selExp.name),
+                  h("table",{className:"vtbl"},
+                    h("tbody",null,
+                      Object.entries(selExp.variables).map(function(e){
+                        var otherVal=compExp&&compExp.variables[e[0]];
+                        var changed=compExp&&otherVal!==e[1];
+                        return h("tr",{key:e[0]},
+                          h("td",null,e[0]),
+                          h("td",{className:changed?"changed":""},String(e[1])),
+                          compExp&&h("td",{style:{color:"#3f3f46",fontSize:12}},String(otherVal))
+                        );
+                      })
+                    )
+                  ),
+
+                  h("div",{className:"label",style:{marginTop:20}},"What Changed"),
+                  h("div",{className:"reasoning"},selExp.changes),
+
+                  h("div",{className:"label",style:{marginTop:20}},"Compare With"),
+                  h("div",{style:{display:"flex",gap:8,flexWrap:"wrap"}},
+                    EXPERIMENTS.filter(function(e){return e.id!==selExp.id}).map(function(e){
+                      return h("button",{key:e.id,className:"filter"+(compId===e.id?" filter-active":""),onClick:function(){setCompId(e.id)}},e.name);
+                    })
+                  ),
+
+                  compExp&&compExp.id!==selExp.id&&h(React.Fragment,null,
+                    h("div",{className:"label",style:{marginTop:20}},"Comparison"),
+                    h("table",{className:"vtbl"},
+                      h("thead",null,h("tr",null,
+                        h("td",{style:{color:"#52525b",fontSize:11}},"METRIC"),
+                        h("td",{style:{color:"#8b5cf6",fontSize:11}},selExp.name.split(" ").slice(0,2).join(" ")),
+                        h("td",{style:{color:"#f59e0b",fontSize:11}},compExp.name.split(" ").slice(0,2).join(" "))
+                      )),
+                      h("tbody",null,
+                        [["Flows",selExp.flows,compExp.flows],["Cost",selExp.cost,compExp.cost],["Accuracy",selExp.accuracy,compExp.accuracy],["F1",selExp.f1,compExp.f1]].map(function(r){
+                          return h("tr",{key:r[0]},
+                            h("td",null,r[0]),
+                            h("td",{style:{color:"#8b5cf6"}},r[1]),
+                            h("td",{style:{color:"#f59e0b"}},r[2])
+                          );
+                        })
+                      )
+                    )
+                  ),
+
+                  h("div",{style:{display:"flex",gap:10,marginTop:20}},
+                    h("button",{className:"btn btn-primary"},"Re-run Experiment"),
+                    h("button",{className:"btn btn-ghost"},"Export CSV")
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+  </script>
+</body>
+</html>
