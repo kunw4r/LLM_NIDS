@@ -6,6 +6,6 @@ export default defineConfig({
   base: '/LLM_NIDS/',
   build: {
     outDir: '../../docs',
-    emptyOutDir: true,
+    emptyOutDir: false,
   },
 })

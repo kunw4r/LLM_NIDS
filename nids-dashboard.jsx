@@ -6,149 +6,112 @@ fontLink.rel = "stylesheet";
 fontLink.href = "https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap";
 document.head.appendChild(fontLink);
 
-// ── Real data from evaluation ─────────────────────────────────────────────────
+// ── Phase 1 flow-level data (20 sampled flows from MCP baseline) ────────────
 const FLOWS = [
-  { id:0,  src:"172.31.0.2",      dst:"172.31.66.58",    port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0745, time:23, hit:true,  reasoning:"Single DNS response from internal DNS server. Normal UDP port 53 pattern with reasonable 156-byte response. No malicious indicators — private IPs, standard TTL, single packet exchange." },
+  { id:0,  src:"172.31.0.2",      dst:"172.31.66.58",    port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0745, time:23, hit:true,  reasoning:"Single DNS response from internal DNS server. Normal UDP port 53 pattern with reasonable 156-byte response. No malicious indicators." },
   { id:1,  src:"18.221.219.4",    dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"FTP-BruteForce",  conf:0.50, tier:1, tools:4, cost:0.0727, time:27, hit:true,  reasoning:"AbuseIPDB: 0 reports. OTX: no threats. Geolocation: AWS Ohio. Despite 0% external intel return, flagged as suspicious due to FTP port 21 pattern from datacenter IP." },
   { id:2,  src:"18.221.219.4",    dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"FTP-BruteForce",  conf:0.50, tier:1, tools:4, cost:0.0707, time:26, hit:true,  reasoning:"Repeated FTP connection from same AWS IP. Continuing pattern of port 21 connections with SYN-ACK flags — incremented source port suggests automated tooling." },
-  { id:3,  src:"18.221.219.4",    dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"FTP-BruteForce",  conf:0.50, tier:1, tools:8, cost:0.0884, time:41, hit:true,  reasoning:"Three consecutive FTP flows, same target, incrementing source ports (39924→39934→40030). IP history confirms repeated brute-force pattern. Observation recorded: service enumeration behaviour." },
-  { id:4,  src:"172.31.66.58",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0799, time:42, hit:true,  reasoning:"DNS A record query from internal host. 65-byte query, 185-byte response — within normal DNS range. TTL 60s reasonable. All indicators point to routine internal DNS resolution." },
-  { id:5,  src:"13.58.98.64",     dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"SSH-Bruteforce",  conf:0.50, tier:1, tools:4, cost:0.0720, time:38, hit:true,  reasoning:"New AWS Ohio IP targeting FTP port. AbuseIPDB: 0 reports. OTX: clean. Geolocation returns identical AWS EC2 profile — all 2018 lab IPs resolve to same datacenter with zero history." },
-  { id:6,  src:"13.58.98.64",     dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"SSH-Bruteforce",  conf:0.50, tier:1, tools:4, cost:0.0702, time:41, hit:true,  reasoning:"Second flow from same IP. Pattern building: same target, FTP port, minimal packets (1 fwd / 1 bwd). External tools remain silent — zero threat intelligence for recycled 2018 AWS IPs." },
-  { id:7,  src:"172.31.66.29",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"SUSPICIOUS", actual:"Benign",         conf:0.50, tier:4, tools:4, cost:0.0724, time:34, hit:false, reasoning:"Single DNS A record query. Private RFC1918 addressing. Normal packet sizes (69/85 bytes). Agent flagged suspicious despite no anomalies — false positive from over-cautious base behaviour." },
-  { id:8,  src:"13.58.98.64",     dst:"172.31.69.25",    port:22,   proto:"TCP", verdict:"SUSPICIOUS", actual:"SSH-Bruteforce",  conf:0.50, tier:1, tools:4, cost:0.0690, time:47, hit:true,  reasoning:"SSH connection (port 22) from same IP that was doing FTP probes. Duration 373ms, 23 packets each direction — consistent with SSH brute force handshake sequence." },
-  { id:9,  src:"18.219.211.138",  dst:"172.31.69.25",    port:80,   proto:"TCP", verdict:"SUSPICIOUS", actual:"DoS_GoldenEye",   conf:0.50, tier:2, tools:4, cost:0.0697, time:27, hit:true,  reasoning:"HTTP connections (port 80) from AWS Ohio. Duration ~4.3s, 5 fwd / 3 bwd packets per flow. AbuseIPDB: 0 reports. Flow characteristics consistent with slow-rate DoS preamble." },
-  { id:12, src:"172.31.66.58",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0787, time:27, hit:true,  reasoning:"DNS AAAA query (IPv6 lookup). Query type 28, normal for modern networks. Packet sizes 69/97 bytes typical. Confirmed benign — legitimate IPv6 address resolution." },
-  { id:20, src:"172.31.66.29",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.98, tier:4, tools:4, cost:0.0829, time:30, hit:true,  reasoning:"DNS A record from host with prior HTTPS to Google infrastructure. Protocol switching (TCP→UDP) flagged low-severity but fully explained by DNS+web usage pattern. Benign confirmed." },
-  { id:23, src:"18.219.193.20",   dst:"172.31.69.25",    port:80,   proto:"TCP", verdict:"BENIGN",     actual:"DoS_Hulk",       conf:0.95, tier:2, tools:6, cost:0.0860, time:28, hit:false, reasoning:"MISSED: Agent saw 3 HTTP flows targeting same server, classified as benign web browsing. Hulk DoS requires volume detection across many concurrent connections — single-flow analysis insufficient." },
-  { id:25, src:"52.14.136.135",   dst:"172.31.69.25",    port:80,   proto:"TCP", verdict:"SUSPICIOUS", actual:"DDoS_LOIC-HTTP",  conf:0.50, tier:2, tools:4, cost:0.0635, time:135, hit:true, reasoning:"Tool errors on all calls (MCP timeout). Agent defaulted to SUSPICIOUS — correct verdict from baseline caution rather than evidence. Cost reflects 135s timeout waiting for tools." },
-  { id:43, src:"172.31.69.28",    dst:"172.31.69.1",     port:67,   proto:"UDP", verdict:"BENIGN",     actual:"Brute_Force_XSS", conf:0.98, tier:3, tools:4, cost:0.0704, time:146, hit:false, reasoning:"MISSED: Agent identified DHCP pattern (port 67/68, UDP, 328/357 bytes) and confidently classified as benign infrastructure. XSS brute force camouflaged with DHCP-like flow characteristics." },
-  { id:44, src:"172.31.69.28",    dst:"172.31.69.1",     port:67,   proto:"UDP", verdict:"BENIGN",     actual:"Brute_Force_XSS", conf:0.98, tier:3, tools:4, cost:0.0715, time:147, hit:false, reasoning:"MISSED: Repeated DHCP flow pattern. Agent gave detailed DHCP analysis with 98% confidence. Without cross-flow context showing repeated UDP 67/68 at machine speed, XSS disguise is convincing." },
-  { id:50, src:"172.31.69.12",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Infilteration",  conf:0.95, tier:3, tools:4, cost:0.0707, time:145, hit:false, reasoning:"MISSED: Single DNS AAAA query from internal IP. Agent correctly identified as legitimate DNS. But this is part of a 30-flow burst from 2 IPs in 3.2 seconds — temporal context required." },
-  { id:51, src:"172.31.69.12",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Infilteration",  conf:0.95, tier:3, tools:4, cost:0.0738, time:152, hit:false, reasoning:"MISSED: Identical DNS pattern. Without memory of flow 50, no anomaly visible. The infiltration signature is 30 consecutive DNS queries in 3.2 seconds — invisible to single-flow analysis." },
-  { id:52, src:"172.31.69.12",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"SUSPICIOUS", actual:"Infilteration",  conf:0.50, tier:3, tools:4, cost:0.0642, time:135, hit:true,  reasoning:"Tool errors led to default SUSPICIOUS. Ironically correct verdict — but from tool failure, not actual detection. Highlights need for temporal correlation agent." },
-  { id:53, src:"172.31.67.91",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"SUSPICIOUS", actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0695, time:145, hit:false, reasoning:"FALSE POSITIVE: Agent output says BENIGN in reasoning but verdict field shows SUSPICIOUS. Parsing inconsistency — agent gave detailed benign analysis but default SUSPICIOUS was recorded." },
+  { id:3,  src:"18.221.219.4",    dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"FTP-BruteForce",  conf:0.50, tier:1, tools:8, cost:0.0884, time:41, hit:true,  reasoning:"Three consecutive FTP flows, same target, incrementing source ports. IP history confirms repeated brute-force pattern." },
+  { id:4,  src:"172.31.66.58",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0799, time:42, hit:true,  reasoning:"DNS A record query from internal host. 65-byte query, 185-byte response — within normal DNS range." },
+  { id:5,  src:"13.58.98.64",     dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"SSH-Bruteforce",  conf:0.50, tier:1, tools:4, cost:0.0720, time:38, hit:true,  reasoning:"New AWS Ohio IP targeting FTP port. AbuseIPDB: 0 reports. OTX: clean." },
+  { id:6,  src:"13.58.98.64",     dst:"172.31.69.25",    port:21,   proto:"TCP", verdict:"SUSPICIOUS", actual:"SSH-Bruteforce",  conf:0.50, tier:1, tools:4, cost:0.0702, time:41, hit:true,  reasoning:"Second flow from same IP. External tools remain silent — zero threat intelligence for recycled 2018 AWS IPs." },
+  { id:7,  src:"172.31.66.29",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"SUSPICIOUS", actual:"Benign",         conf:0.50, tier:4, tools:4, cost:0.0724, time:34, hit:false, reasoning:"FALSE POSITIVE: Single DNS A record query. Private RFC1918 addressing. Normal packet sizes. Agent flagged suspicious despite no anomalies." },
+  { id:8,  src:"13.58.98.64",     dst:"172.31.69.25",    port:22,   proto:"TCP", verdict:"SUSPICIOUS", actual:"SSH-Bruteforce",  conf:0.50, tier:1, tools:4, cost:0.0690, time:47, hit:true,  reasoning:"SSH connection (port 22) from same IP that was doing FTP probes. Duration 373ms, 23 packets — consistent with SSH brute force." },
+  { id:9,  src:"18.219.211.138",  dst:"172.31.69.25",    port:80,   proto:"TCP", verdict:"SUSPICIOUS", actual:"DoS_GoldenEye",   conf:0.50, tier:2, tools:4, cost:0.0697, time:27, hit:true,  reasoning:"HTTP connections (port 80) from AWS Ohio. Flow characteristics consistent with slow-rate DoS preamble." },
+  { id:12, src:"172.31.66.58",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0787, time:27, hit:true,  reasoning:"DNS AAAA query (IPv6 lookup). Query type 28, normal for modern networks." },
+  { id:20, src:"172.31.66.29",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Benign",         conf:0.98, tier:4, tools:4, cost:0.0829, time:30, hit:true,  reasoning:"DNS A record from host with prior HTTPS to Google infrastructure. Benign confirmed." },
+  { id:23, src:"18.219.193.20",   dst:"172.31.69.25",    port:80,   proto:"TCP", verdict:"BENIGN",     actual:"DoS_Hulk",       conf:0.95, tier:2, tools:6, cost:0.0860, time:28, hit:false, reasoning:"MISSED: Agent saw 3 HTTP flows, classified as benign web browsing. Hulk DoS requires volume detection — single-flow analysis insufficient." },
+  { id:25, src:"52.14.136.135",   dst:"172.31.69.25",    port:80,   proto:"TCP", verdict:"SUSPICIOUS", actual:"DDoS_LOIC-HTTP",  conf:0.50, tier:2, tools:4, cost:0.0635, time:135, hit:true, reasoning:"Tool errors on all calls (MCP timeout). Agent defaulted to SUSPICIOUS — correct verdict from baseline caution." },
+  { id:43, src:"172.31.69.28",    dst:"172.31.69.1",     port:67,   proto:"UDP", verdict:"BENIGN",     actual:"Brute_Force_XSS", conf:0.98, tier:3, tools:4, cost:0.0704, time:146, hit:false, reasoning:"MISSED: Agent identified DHCP pattern (port 67/68, UDP). XSS brute force camouflaged with DHCP-like characteristics." },
+  { id:44, src:"172.31.69.28",    dst:"172.31.69.1",     port:67,   proto:"UDP", verdict:"BENIGN",     actual:"Brute_Force_XSS", conf:0.98, tier:3, tools:4, cost:0.0715, time:147, hit:false, reasoning:"MISSED: Repeated DHCP flow pattern. Without cross-flow context, XSS disguise is convincing." },
+  { id:50, src:"172.31.69.12",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Infilteration",  conf:0.95, tier:3, tools:4, cost:0.0707, time:145, hit:false, reasoning:"MISSED: Single DNS AAAA query. Part of a 30-flow burst from 2 IPs in 3.2 seconds — temporal context required." },
+  { id:51, src:"172.31.69.12",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"BENIGN",     actual:"Infilteration",  conf:0.95, tier:3, tools:4, cost:0.0738, time:152, hit:false, reasoning:"MISSED: Identical DNS pattern. The infiltration signature is 30 consecutive DNS queries in 3.2 seconds — invisible to single-flow analysis." },
+  { id:52, src:"172.31.69.12",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"SUSPICIOUS", actual:"Infilteration",  conf:0.50, tier:3, tools:4, cost:0.0642, time:135, hit:true,  reasoning:"Tool errors led to default SUSPICIOUS. Ironically correct verdict — from tool failure, not actual detection." },
+  { id:53, src:"172.31.67.91",    dst:"172.31.0.2",      port:53,   proto:"UDP", verdict:"SUSPICIOUS", actual:"Benign",         conf:0.95, tier:4, tools:4, cost:0.0695, time:145, hit:false, reasoning:"FALSE POSITIVE: Agent output says BENIGN in reasoning but verdict field shows SUSPICIOUS. Parsing inconsistency." },
 ];
 
-const AGENTS = [
-  {
-    id: "orchestrator",
-    name: "Orchestrator",
-    model: "claude-opus-4-6",
-    role: "Coordinates specialist agents, makes final verdicts, triggers retroactive reclassification",
-    color: "#00d4aa",
-    icon: "⬡",
-    systemPrompt: `You are the NIDS Orchestrator. Your role is to:
-1. Receive NetFlow records and distribute to specialist agents
-2. Aggregate findings from Flow Analyst, Pattern Correlator, and Temporal Correlation agents
-3. Make final VERDICT decisions (BENIGN / SUSPICIOUS / MALICIOUS)
-4. Trigger retroactive reclassification when new evidence changes prior assessments
-5. Maintain awareness of the investigation context across all flows
-
-Output format:
-VERDICT: [BENIGN|SUSPICIOUS|MALICIOUS]
-CONFIDENCE: [0.0-1.0]
-ATTACK_TYPE: [type or N/A]
-REASONING: [detailed explanation]
-RETROACTIVE: [any prior flows that should be reclassified]`,
-    stats: { processed: 58, accuracy: "72.4%", avgTime: "91s" }
-  },
-  {
-    id: "flow_analyst",
-    name: "Flow Analyst",
-    model: "claude-sonnet-4-6",
-    role: "Analyses individual NetFlow records for statistical anomalies and protocol violations",
-    color: "#3b82f6",
-    icon: "◈",
-    systemPrompt: `You are the Flow Analyst agent. Your role is to:
-1. Examine individual NetFlow records for statistical anomalies
-2. Check packet ratios, byte distributions, duration patterns
-3. Identify protocol violations and unusual flag combinations
-4. Compare against known attack signatures in flow features
-
-Key indicators to check:
-- IN_BYTES / OUT_BYTES ratio (attack flows often heavily skewed)
-- IN_PKTS (DDoS typically shows extreme packet counts)
-- DURATION vs packet count (brute force: many short flows)
-- TCP flags (unusual combinations suggest scanning/exploits)
-- Port numbers (privileged ports from external IPs are suspicious)
-
-Respond with: ANOMALY_SCORE, FLAGS, and REASONING.`,
-    stats: { processed: 58, accuracy: "78%", avgTime: "45s" }
-  },
-  {
-    id: "pattern_correlator",
-    name: "Pattern Correlator",
-    model: "claude-sonnet-4-6",
-    role: "Clusters related flows, identifies multi-stage attacks and C2 patterns",
-    color: "#a855f7",
-    icon: "◎",
-    systemPrompt: `You are the Pattern Correlator agent. Your role is to:
-1. Group flows by source IP, destination, and time window
-2. Identify coordinated multi-source attacks (DDoS)
-3. Detect C2 beaconing patterns (regular interval connections)
-4. Correlate port scanning sequences across multiple flows
-5. Flag when multiple attack types target the same destination
-
-Clustering parameters:
-- Time window: 60 seconds for burst detection
-- IP grouping: same /24 subnet treated as coordinated
-- Port sequence: ordered port probes suggest scanning
-
-Output: CLUSTER_ID, PATTERN_TYPE, RELATED_FLOWS, CONFIDENCE`,
-    stats: { processed: 58, accuracy: "85%", avgTime: "38s" }
-  },
-  {
-    id: "temporal_agent",
-    name: "Temporal Correlation",
-    model: "claude-sonnet-4-6",
-    role: "Detects slow-burn attacks, APTs, and patterns only visible across time",
-    color: "#f59e0b",
-    icon: "◷",
-    systemPrompt: `You are the Temporal Correlation agent. Your role is to:
-1. Maintain a rolling window of flow history (last 500 flows)
-2. Detect low-and-slow attacks that are invisible in single-flow analysis
-3. Identify infiltration via anomalous internal DNS burst patterns
-4. Flag when an IP's behaviour changes significantly over time
-5. Trigger RETROACTIVE alerts when current evidence re-contextualises prior benign flows
-
-Critical patterns to detect:
-- Internal DNS bursts: >5 queries/second from same source = infiltration indicator
-- FTP/SSH repeated short connections: brute force signature
-- Consistent payload sizes at regular intervals: C2 beaconing
-- Gradual port escalation: reconnaissance pattern
-
-Output: TEMPORAL_SCORE, PATTERN, TIME_WINDOW, RETROACTIVE_FLAGS`,
-    stats: { processed: 58, accuracy: "67%", avgTime: "120s" }
-  },
-  {
-    id: "explainability",
-    name: "Explainability",
-    model: "claude-sonnet-4-6",
-    role: "Generates human-readable reports, explains missed detections, suggests prompt improvements",
-    color: "#ec4899",
-    icon: "◉",
-    systemPrompt: `You are the Explainability agent. Your role is to:
-1. Generate human-readable summaries of detections and missed cases
-2. Analyse false positives and false negatives to identify systematic weaknesses
-3. Suggest improvements to other agents' system prompts
-4. Produce comparison reports between experiment runs
-5. Explain why benign flows were misclassified and vice versa
-
-For each missed detection:
-- Identify what feature or pattern should have triggered
-- Determine if it was a single-flow vs multi-flow failure
-- Suggest the minimum context needed to detect correctly
-
-Output: EXPLANATION, ROOT_CAUSE, SUGGESTED_FIX, CONFIDENCE`,
-    stats: { processed: 15, accuracy: "N/A", avgTime: "60s" }
-  },
-];
-
+// ── All experiments across all phases ────────────────────────────────────────
 const EXPERIMENTS = [
   {
+    id: "phase3e",
+    name: "Phase 3e — DA Weight 50%",
+    phase: 3,
+    date: "2026-02-20",
+    status: "complete",
+    flows: 100,
+    cost: "$6.54",
+    time: "60 min",
+    accuracy: "60.0%",
+    f1: "25.9%",
+    precision: "16.7%",
+    recall: "58.3%",
+    changes: "Increased Devil's Advocate weight from 30% to 50% in orchestrator consensus. Modified consensus thresholds: 4/4 specialists + strong DA now yields SUSPICIOUS instead of MALICIOUS. 3/4 specialists + strong DA now yields BENIGN. Tested whether DA can override specialist FP consensus.",
+    notes: "Fixed 6 FPs without introducing any new errors (0 worsened flows). But 35 FPs remain — 34 of which have 4/4 specialists unanimously wrong. DA argues benign with 0.80 mean confidence on these, but orchestrator won't override unanimous specialist consensus even at 50% weight. Proves FP problem is in specialist prompts, not orchestrator weighting.",
+    variables: { architecture: "6-agent multi-agent", model: "claude-sonnet-4-20250514", batch_size: 100, benign_ratio: "88%", da_weight: "50%", specialist_parallel: true, temporal_context: "batch-level" },
+    confusion: { tp: 7, fp: 35, tn: 53, fn: 5 },
+    verdicts: { benign: 58, suspicious: 40, malicious: 2 },
+  },
+  {
+    id: "phase3c",
+    name: "Phase 3c — Realistic Distribution",
+    phase: 3,
+    date: "2026-02-20",
+    status: "complete",
+    flows: 100,
+    cost: "$6.51",
+    time: "58 min",
+    accuracy: "54.0%",
+    f1: "23.3%",
+    precision: "14.6%",
+    recall: "58.3%",
+    changes: "First test on realistic class distribution (88% benign, 12% attack). Same 6-agent architecture as 3a/3b with 30% DA weight. Uses medium batch_100 which contains DDOS-HOIC, DoS-Hulk, FTP-BruteForce, and Infiltration attack types.",
+    notes: "Catastrophic false positive explosion: 41 of 88 benign flows flagged as attacks. Precision collapsed to 14.6%. Root cause: specialists hallucinate attack patterns in normal traffic (HTTPS, DNS, NTP). 35/41 FPs had unanimous 4/4 specialist agreement on MALICIOUS — the DA cannot override this. Exposed a fundamental prompt engineering problem.",
+    variables: { architecture: "6-agent multi-agent", model: "claude-sonnet-4-20250514", batch_size: 100, benign_ratio: "88%", da_weight: "30%", specialist_parallel: true, temporal_context: "batch-level" },
+    confusion: { tp: 7, fp: 41, tn: 47, fn: 5 },
+    verdicts: { benign: 52, suspicious: 38, malicious: 10 },
+  },
+  {
+    id: "phase3b",
+    name: "Phase 3b — Scale Test",
+    phase: 3,
+    date: "2026-02-20",
+    status: "complete",
+    flows: 150,
+    cost: "$11.11",
+    time: "83 min",
+    accuracy: "94.0%",
+    f1: "95.9%",
+    precision: "92.1%",
+    recall: "100%",
+    changes: "Scaled to 150 flows (capped from 500 for cost). Contains 6 attack types: FTP-BruteForce, SSH-Bruteforce, DoS-GoldenEye, DoS-Slowloris, DoS-SlowHTTPTest. 30 flows per attack type + 45 benign. Rich temporal context: ~30 same-IP flows available per source.",
+    notes: "Best results across all experiments. 100% recall — zero missed attacks. Temporal agent excelled with rich same-IP flow context (30+ flows per source IP). Only 9 FPs from 45 benign flows (80% benign accuracy). The multi-agent architecture with temporal context dramatically outperforms single-agent approaches.",
+    variables: { architecture: "6-agent multi-agent", model: "claude-sonnet-4-20250514", batch_size: 150, benign_ratio: "30%", da_weight: "30%", specialist_parallel: true, temporal_context: "batch-level" },
+    confusion: { tp: 105, fp: 9, tn: 36, fn: 0 },
+    verdicts: { benign: 36, suspicious: 33, malicious: 81 },
+  },
+  {
+    id: "phase3a",
+    name: "Phase 3a — Multi-Agent Baseline",
+    phase: 3,
+    date: "2026-02-20",
+    status: "complete",
+    flows: 58,
+    cost: "$3.85",
+    time: "30 min",
+    accuracy: "67.2%",
+    f1: "71.6%",
+    precision: "100%",
+    recall: "55.8%",
+    changes: "New 6-agent multi-agent architecture: 4 specialist agents (protocol, statistical, behavioural, temporal) analyse each flow in parallel, followed by a Devil's Advocate agent that argues for benign interpretation, then an Orchestrator that makes weighted consensus verdict. No MCP tools — pure LLM reasoning on NetFlow features. DA weight: 30%.",
+    notes: "Perfect precision (0 FPs) but low recall (55.8%, 19 FN). The DA agent was too aggressive — successfully argued benign on many true attacks. Tested on same 58-flow mini batch as Phase 1 iterations for direct comparison. Multi-agent is 2x faster than MCP approach (30 min vs 88 min).",
+    variables: { architecture: "6-agent multi-agent", model: "claude-sonnet-4-20250514", batch_size: 58, benign_ratio: "26%", da_weight: "30%", specialist_parallel: true, temporal_context: "batch-level" },
+    confusion: { tp: 24, fp: 0, tn: 15, fn: 19 },
+    verdicts: { benign: 34, suspicious: 16, malicious: 8 },
+  },
+  {
     id: "iter_2",
-    name: "Iter 2 — Benign Baseline Calibration",
+    name: "Phase 2 Iter 2 — Benign Calibration",
+    phase: 2,
     date: "2026-02-19",
     status: "complete",
     flows: 58,
@@ -158,15 +121,16 @@ const EXPERIMENTS = [
     f1: "77.6%",
     precision: "78.6%",
     recall: "76.7%",
-    changes: "Adds calibration guidance teaching the agent that empty threat intel for RFC1918/private IPs is expected — not suspicious. Defines known-benign traffic patterns (DNS, DHCP, HTTPS). Requires POSITIVE evidence of anomaly before flagging suspicious. No temporal memory.",
-    notes: "Balanced trade-off: FP reduced 13→9 vs baseline, benign accuracy up from 13.3%→40%. Recall drops from 93%→77% — agent now misses some attacks it previously caught by over-flagging. 16 flows classified BENIGN (vs 5 in baseline).",
-    variables: { max_iterations: 10, model: "claude-sonnet-4-20250514", batch_size: 58, tools_enabled: "all", temporal_memory: false, benign_calibration: true, confidence_threshold: false },
+    changes: "Adds calibration guidance teaching the agent that empty threat intel for RFC1918/private IPs is expected — not suspicious. Defines known-benign traffic patterns (DNS, DHCP, HTTPS). Requires POSITIVE evidence of anomaly before flagging suspicious.",
+    notes: "Balanced trade-off: FP reduced 13 to 9 vs baseline, benign accuracy up from 13.3% to 40%. Recall drops from 93% to 77% — agent now misses some attacks it previously caught by over-flagging.",
+    variables: { architecture: "single-agent + MCP", model: "claude-sonnet-4-20250514", batch_size: 58, benign_ratio: "26%", da_weight: "N/A", specialist_parallel: false, temporal_context: "none" },
     confusion: { tp: 33, fp: 9, tn: 6, fn: 10 },
     verdicts: { benign: 16, suspicious: 37, malicious: 5 },
   },
   {
     id: "iter_1",
-    name: "Iter 1 — Temporal Memory",
+    name: "Phase 2 Iter 1 — Temporal Memory",
+    phase: 2,
     date: "2026-02-19",
     status: "complete",
     flows: 58,
@@ -176,15 +140,16 @@ const EXPERIMENTS = [
     f1: "75.3%",
     precision: "85.3%",
     recall: "67.4%",
-    changes: "Adds SQLite-based temporal store tracking all analysed flows. Before each flow analysis, queries recent activity from same source IP within a 60-second window. When a source IP has sent >3 flows in the window, temporal context is prepended to the prompt describing volume and target patterns.",
-    notes: "Best precision (85.3%) but worst recall (67.4%). Temporal context only injected for 2/58 flows (3.4% injection rate) — batch lacked temporal density. 5 flows classified MALICIOUS (first time). Nearly 2× cost of baseline due to max_iterations=10.",
-    variables: { max_iterations: 10, model: "claude-sonnet-4-20250514", batch_size: 58, tools_enabled: "all", temporal_memory: true, benign_calibration: false, confidence_threshold: false },
+    changes: "Adds SQLite-based temporal store tracking all analysed flows. Before each flow analysis, queries recent activity from same source IP within a 60-second window.",
+    notes: "Best precision of Phase 2 (85.3%) but worst recall (67.4%). Temporal context only injected for 2/58 flows (3.4% injection rate) — batch lacked temporal density.",
+    variables: { architecture: "single-agent + MCP", model: "claude-sonnet-4-20250514", batch_size: 58, benign_ratio: "26%", da_weight: "N/A", specialist_parallel: false, temporal_context: "SQLite 60s window" },
     confusion: { tp: 29, fp: 5, tn: 10, fn: 14 },
     verdicts: { benign: 24, suspicious: 29, malicious: 5 },
   },
   {
     id: "baseline",
     name: "Phase 1 — MCP Baseline",
+    phase: 1,
     date: "2026-02-19",
     status: "complete",
     flows: 58,
@@ -195,15 +160,113 @@ const EXPERIMENTS = [
     precision: "75.5%",
     recall: "93.0%",
     changes: "Baseline MCP single-agent evaluation. max_iterations=5, model=sonnet-4. Agent uses all 13 MCP tools: threat intel (AbuseIPDB, OTX, geolocation), MITRE ATT&CK mapping, and NetFlow behavioral analyzer.",
-    notes: "0/142 external tool calls returned meaningful data (private/anonymized IPs). Best recall (93%) but worst precision (75.5%). Agent defaults to SUSPICIOUS when uncertain — 53/58 flows flagged suspicious. Benign accuracy only 13.3%.",
-    variables: { max_iterations: 5, model: "claude-sonnet-4-20250514", batch_size: 58, tools_enabled: "all", temporal_memory: false, benign_calibration: false, confidence_threshold: false },
+    notes: "0/142 external tool calls returned meaningful data (private/anonymized IPs). Best recall (93%) but worst precision (75.5%). Agent defaults to SUSPICIOUS when uncertain — 53/58 flows flagged suspicious.",
+    variables: { architecture: "single-agent + MCP", model: "claude-sonnet-4-20250514", batch_size: 58, benign_ratio: "26%", da_weight: "N/A", specialist_parallel: false, temporal_context: "none" },
     confusion: { tp: 40, fp: 13, tn: 2, fn: 3 },
     verdicts: { benign: 5, suspicious: 53, malicious: 0 },
   },
 ];
 
-const MISSED = FLOWS.filter(f => f.reasoning.startsWith("MISSED") || f.reasoning.startsWith("FALSE POSITIVE"));
-const HITS   = FLOWS.filter(f => !f.reasoning.startsWith("MISSED") && !f.reasoning.startsWith("FALSE POSITIVE") && f.hit);
+// ── Phase 3 agents (actual architecture) ────────────────────────────────────
+const AGENTS = [
+  {
+    id: "orchestrator",
+    name: "Orchestrator",
+    model: "claude-sonnet-4-20250514",
+    role: "Synthesizes all specialist and DA analyses into final weighted consensus verdict. Applies configurable consensus thresholds based on specialist agreement count and DA argument strength.",
+    color: "#00d4aa",
+    icon: "O",
+    stats: { calls: 308, cost: "$4.61", avgCost: "$0.015" }
+  },
+  {
+    id: "protocol",
+    name: "Protocol",
+    model: "claude-sonnet-4-20250514",
+    role: "Validates protocol/port/flag consistency. Checks port-service alignment, TCP flag sequences, packet size norms, and FTP/DNS field correctness.",
+    color: "#3b82f6",
+    icon: "P",
+    stats: { calls: 308, cost: "$2.51", avgCost: "$0.008" }
+  },
+  {
+    id: "statistical",
+    name: "Statistical",
+    model: "claude-sonnet-4-20250514",
+    role: "Detects statistical anomalies in traffic features: volume asymmetry, throughput spikes, IAT patterns, retransmissions, TCP window sizes, and flow duration outliers.",
+    color: "#a855f7",
+    icon: "S",
+    stats: { calls: 308, cost: "$2.63", avgCost: "$0.009" }
+  },
+  {
+    id: "behavioural",
+    name: "Behavioural",
+    model: "claude-sonnet-4-20250514",
+    role: "Matches flow patterns against known attack signatures (brute force, DoS variants, DDoS, web attacks, scanning, botnet, exfiltration). Maps findings to MITRE ATT&CK technique IDs.",
+    color: "#f59e0b",
+    icon: "B",
+    stats: { calls: 308, cost: "$2.90", avgCost: "$0.009" }
+  },
+  {
+    id: "temporal",
+    name: "Temporal",
+    model: "claude-sonnet-4-20250514",
+    role: "Analyses cross-flow patterns from the same source IP within the batch. Detects burst activity, sequential escalation, repetitive connection patterns, and coordinated targeting.",
+    color: "#ec4899",
+    icon: "T",
+    stats: { calls: 308, cost: "$4.11", avgCost: "$0.013" }
+  },
+  {
+    id: "devils_advocate",
+    name: "Devil's Advocate",
+    model: "claude-sonnet-4-20250514",
+    role: "Argues for the BENIGN interpretation of every flow, regardless of specialist findings. Provides alternative explanations, identifies weaknesses in the malicious case. Acts as false-positive counterbalance.",
+    color: "#ef4444",
+    icon: "D",
+    stats: { calls: 308, cost: "$4.71", avgCost: "$0.015" }
+  },
+];
+
+// ── Per-attack detection rates across Phase 3 (aggregate) ───────────────────
+const ATTACK_RATES = [
+  { type: "FTP-BruteForce",        total: 38, detected: 38, rate: 1.00,  f1: 1.00  },
+  { type: "SSH-Bruteforce",        total: 33, detected: 33, rate: 1.00,  f1: 1.00  },
+  { type: "DoS-SlowHTTPTest",      total: 8,  detected: 8,  rate: 1.00,  f1: 1.00  },
+  { type: "DDOS-LOIC-UDP",         total: 3,  detected: 3,  rate: 1.00,  f1: 1.00  },
+  { type: "Bot",                   total: 3,  detected: 3,  rate: 1.00,  f1: 1.00  },
+  { type: "Brute_Force-Web",       total: 3,  detected: 3,  rate: 1.00,  f1: 1.00  },
+  { type: "DoS-Slowloris",         total: 23, detected: 21, rate: 0.91,  f1: 0.95  },
+  { type: "DoS-GoldenEye",         total: 23, detected: 20, rate: 0.87,  f1: 0.93  },
+  { type: "SQL_Injection",         total: 3,  detected: 2,  rate: 0.67,  f1: 0.80  },
+  { type: "DDOS-HOIC",             total: 9,  detected: 4,  rate: 0.44,  f1: 0.62  },
+  { type: "DDoS-LOIC-HTTP",        total: 3,  detected: 1,  rate: 0.33,  f1: 0.50  },
+  { type: "DoS-Hulk",              total: 4,  detected: 0,  rate: 0.00,  f1: 0.00  },
+  { type: "Infilteration",         total: 4,  detected: 0,  rate: 0.00,  f1: 0.00  },
+  { type: "Brute_Force-XSS",       total: 3,  detected: 0,  rate: 0.00,  f1: 0.00  },
+];
+
+// ── DA impact data ──────────────────────────────────────────────────────────
+const DA_IMPACT = {
+  totalFlips: 15,
+  correctFlips: 10,
+  incorrectFlips: 5,
+  flipAccuracy: 66.7,
+  noEffect: 144,
+  unanimousBenign: 85,
+};
+
+// ── Specialist agreement data ───────────────────────────────────────────────
+const AGREEMENT = {
+  distribution: { "4/4": 53, "3/4": 77, "2/4": 29, "1/4": 64, "0/4": 85 },
+  unanimousRate: 44.8,
+  perAgent: {
+    protocol:    { malicious: 9,  suspicious: 83,  benign: 216 },
+    statistical: { malicious: 23, suspicious: 126, benign: 159 },
+    behavioural: { malicious: 13, suspicious: 128, benign: 167 },
+    temporal:    { malicious: 129, suspicious: 54, benign: 125 },
+  }
+};
+
+const MISSED = FLOWS.filter(f => f.reasoning.startsWith("MISSED") || f.reasoning.startsWith("FALSE"));
+const HITS   = FLOWS.filter(f => !f.reasoning.startsWith("MISSED") && !f.reasoning.startsWith("FALSE") && f.hit);
 
 // ── Colour helpers ─────────────────────────────────────────────────────────────
 const verdictColour = (v) => ({
@@ -215,15 +278,24 @@ const verdictColour = (v) => ({
 const tierLabel = (t) => ["","External Tool","Feature-Rich","Temporal","Benign Baseline"][t] || "";
 const tierColour = (t) => ["","#3b82f6","#a855f7","#f59e0b","#64748b"][t] || "#64748b";
 
+const phaseColour = (p) => ({ 1: "#64748b", 2: "#f59e0b", 3: "#00d4aa" }[p] || "#475569");
+
+const rateColour = (r) => {
+  if (r >= 0.9) return "#4ade80";
+  if (r >= 0.6) return "#fbbf24";
+  if (r >= 0.3) return "#f97316";
+  return "#f87171";
+};
+
 // ── CSS ────────────────────────────────────────────────────────────────────────
 const css = `
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body, #root { background: #060a10; }
 
-  .nids { 
-    font-family: 'Space Mono', monospace; 
-    background: #060a10; 
-    color: #c8d8e8; 
+  .nids {
+    font-family: 'Space Mono', monospace;
+    background: #060a10;
+    color: #c8d8e8;
     min-height: 100vh;
     font-size: 12px;
   }
@@ -246,7 +318,7 @@ const css = `
     text-transform: uppercase;
   }
   .header-sub { color: #475569; font-size: 10px; margin-left: auto; }
-  .status-dot { 
+  .status-dot {
     width: 7px; height: 7px; border-radius: 50%;
     background: #00d4aa;
     box-shadow: 0 0 6px #00d4aa;
@@ -260,9 +332,10 @@ const css = `
     background: #080d15;
     border-bottom: 1px solid #1a2840;
     padding: 0 24px;
+    overflow-x: auto;
   }
   .tab {
-    padding: 10px 20px;
+    padding: 10px 16px;
     font-family: 'Space Mono', monospace;
     font-size: 11px;
     color: #475569;
@@ -273,6 +346,7 @@ const css = `
     transition: all 0.15s;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+    white-space: nowrap;
   }
   .tab:hover { color: #94a3b8; }
   .tab.active { color: #00d4aa; border-bottom-color: #00d4aa; }
@@ -290,7 +364,6 @@ const css = `
 
   .content { padding: 20px 24px; }
 
-  /* Flow table */
   .flow-table { width: 100%; border-collapse: collapse; }
   .flow-table th {
     text-align: left;
@@ -314,7 +387,6 @@ const css = `
   .flow-row td { padding: 7px 12px; }
   .mono { font-family: 'Space Mono', monospace; font-size: 11px; }
 
-  /* Detail panel */
   .detail-panel {
     background: #080d15;
     border: 1px solid #1a2840;
@@ -330,8 +402,7 @@ const css = `
     margin-bottom: 12px;
   }
 
-  /* Agent cards */
-  .agent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .agent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
   .agent-card {
     background: #080d15;
     border: 1px solid #1a2840;
@@ -342,7 +413,7 @@ const css = `
   }
   .agent-card:hover { border-color: #2a3f5f; }
   .agent-card.selected { border-color: #00d4aa; }
-  .agent-icon { font-size: 24px; margin-bottom: 8px; }
+  .agent-icon { font-size: 20px; margin-bottom: 8px; font-family: 'Syne', sans-serif; font-weight: 800; }
   .agent-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 4px; }
   .agent-model { font-size: 10px; color: #475569; margin-bottom: 8px; }
   .agent-role { font-size: 11px; color: #64748b; line-height: 1.5; }
@@ -351,24 +422,6 @@ const css = `
   .stat-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; }
   .stat-label { font-size: 9px; color: #475569; letter-spacing: 0.08em; text-transform: uppercase; }
 
-  /* Prompt editor */
-  .prompt-editor {
-    width: 100%;
-    background: #0a1222;
-    border: 1px solid #1a2840;
-    border-radius: 4px;
-    padding: 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: #c8d8e8;
-    line-height: 1.6;
-    resize: vertical;
-    min-height: 300px;
-    outline: none;
-  }
-  .prompt-editor:focus { border-color: #00d4aa44; }
-
-  /* Button */
   .btn {
     padding: 7px 16px;
     border-radius: 4px;
@@ -384,9 +437,7 @@ const css = `
   .btn-primary:hover { background: #00d4aa33; }
   .btn-ghost { background: transparent; border-color: #1a2840; color: #475569; }
   .btn-ghost:hover { border-color: #2a3f5f; color: #94a3b8; }
-  .btn-danger { background: #ef444420; border-color: #ef4444; color: #ef4444; }
 
-  /* Comparison */
   .comparison-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .compare-card {
     background: #080d15;
@@ -394,17 +445,16 @@ const css = `
     border-radius: 6px;
     padding: 16px;
   }
-  .compare-header { 
-    font-family: 'Syne', sans-serif; 
-    font-weight: 700; 
-    font-size: 13px; 
+  .compare-header {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
-  /* Experiments */
   .exp-card {
     background: #080d15;
     border: 1px solid #1a2840;
@@ -423,13 +473,11 @@ const css = `
   .metric-val { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; }
   .metric-label { font-size: 9px; color: #475569; letter-spacing: 0.08em; text-transform: uppercase; }
 
-  /* Variables diff */
   .var-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-  .var-table td { padding: 5px 8px; font-size: 11px; border-bottom: 1px solid #0f1a28; }
+  .var-table td, .var-table th { padding: 5px 8px; font-size: 11px; border-bottom: 1px solid #0f1a28; }
   .var-table td:first-child { color: #475569; width: 200px; }
   .changed { color: #f59e0b !important; }
 
-  /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: #060a10; }
   ::-webkit-scrollbar-thumb { background: #1a2840; border-radius: 3px; }
@@ -445,30 +493,12 @@ const css = `
     margin-top: 8px;
   }
 
-  .tool-row { 
-    display: flex; 
-    align-items: center; 
-    gap: 8px; 
-    padding: 5px 8px; 
-    border-radius: 3px;
-    background: #0a1222;
-    margin-bottom: 4px;
-    font-size: 10px;
+  .tool-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 8px; border-radius: 3px;
+    background: #0a1222; margin-bottom: 4px; font-size: 10px;
   }
   .tool-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-
-  .thinking-stream {
-    background: #0a1222;
-    border: 1px solid #1a2840;
-    border-radius: 4px;
-    padding: 12px;
-    font-size: 10px;
-    line-height: 1.8;
-    color: #475569;
-    font-family: 'Space Mono', monospace;
-    overflow-y: auto;
-    max-height: 200px;
-  }
 
   .section-label {
     font-size: 9px;
@@ -481,7 +511,7 @@ const css = `
 
   .split { display: grid; grid-template-columns: 1fr 360px; gap: 16px; align-items: start; }
   .overflow { overflow-x: auto; }
-  
+
   .big-metric {
     background: #080d15;
     border: 1px solid #1a2840;
@@ -511,10 +541,6 @@ const css = `
   .filter-btn.active { background: #00d4aa22; border-color: #00d4aa88; color: #00d4aa; }
   .filter-btn:hover:not(.active) { border-color: #2a3f5f; color: #94a3b8; }
 
-  .gap { gap: 16px; }
-  .flex { display: flex; }
-  .items-center { align-items: center; }
-  .justify-between { justify-content: space-between; }
   .mt-2 { margin-top: 8px; }
   .mt-3 { margin-top: 12px; }
   .mt-4 { margin-top: 16px; }
@@ -552,22 +578,72 @@ const css = `
     margin-top: 8px;
   }
 
+  .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .analysis-card {
+    background: #080d15;
+    border: 1px solid #1a2840;
+    border-radius: 6px;
+    padding: 16px;
+  }
+  .analysis-card.full { grid-column: 1 / -1; }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 12px;
+    color: #e2e8f0;
+  }
+
+  .bar-container { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .bar-label { font-size: 10px; color: #94a3b8; width: 140px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar-track { flex: 1; height: 16px; background: #0a1222; border-radius: 3px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; }
+  .bar-val { font-size: 9px; font-weight: 700; }
+
+  .evo-table { width: 100%; border-collapse: collapse; }
+  .evo-table th, .evo-table td { padding: 6px 10px; font-size: 11px; border-bottom: 1px solid #0f1a28; text-align: center; }
+  .evo-table th { color: #475569; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+  .evo-table td:first-child { text-align: left; color: #94a3b8; font-weight: 700; }
+  .evo-best { color: #4ade80; font-weight: 700; }
+  .evo-worst { color: #f87171; }
+  .evo-mid { color: #fbbf24; }
+
+  .insight-card {
+    background: #0a1222;
+    border: 1px solid #1a2840;
+    border-radius: 4px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .insight-num {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    margin-right: 8px;
+  }
+  .insight-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    color: #e2e8f0;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+  }
+  .insight-body { font-size: 11px; color: #64748b; line-height: 1.6; }
+
   @keyframes fadeIn { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform: translateY(0); } }
   .fade-in { animation: fadeIn 0.2s ease; }
 `;
 
 // ── Component ──────────────────────────────────────────────────────────────────
 export default function NIDSDashboard() {
-  const [tab, setTab] = useState("flows");
+  const [tab, setTab] = useState("analysis");
   const [selectedFlow, setSelectedFlow] = useState(null);
   const [selectedAgent, setSelectedAgent] = useState(null);
-  const [agentPrompts, setAgentPrompts] = useState(
-    Object.fromEntries(AGENTS.map(a => [a.id, a.systemPrompt]))
-  );
-  const [editingPrompt, setEditingPrompt] = useState(false);
   const [filter, setFilter] = useState("all");
   const [selectedExp, setSelectedExp] = useState(EXPERIMENTS[0]);
-  const [compExpId, setCompExpId] = useState("iter_1");
+  const [compExpId, setCompExpId] = useState("phase3c");
 
   const filteredFlows = FLOWS.filter(f => {
     if (filter === "all") return true;
@@ -583,14 +659,35 @@ export default function NIDSDashboard() {
   const agent = selectedAgent ? AGENTS.find(a => a.id === selectedAgent) : null;
   const compExp = EXPERIMENTS.find(e => e.id === compExpId);
 
+  const totalFlows = EXPERIMENTS.reduce((s, e) => s + e.flows, 0);
+  const totalCost = EXPERIMENTS.reduce((s, e) => s + parseFloat(e.cost.slice(1)), 0);
+
   const toolCalls = flow ? [
-    { name: "record_flow",       cat: "netflow",   meaningful: true,  result: "Recorded flow, queue_size updated" },
-    { name: "geolocate_ip",      cat: "external",  meaningful: false, result: "AWS Ohio / Private IP — no useful data" },
-    { name: "check_ip_abuseipdb",cat: "external",  meaningful: false, result: "0 reports, confidence 0%" },
-    { name: "check_ip_otx",      cat: "external",  meaningful: false, result: "No threats found in OTX database" },
+    { name: "record_flow",       cat: "netflow",   meaningful: true,  result: "Recorded flow" },
+    { name: "geolocate_ip",      cat: "external",  meaningful: false, result: "Private IP — no data" },
+    { name: "check_ip_abuseipdb",cat: "external",  meaningful: false, result: "0 reports" },
+    { name: "check_ip_otx",      cat: "external",  meaningful: false, result: "No threats" },
   ].slice(0, Math.min(flow.tools, 4)) : [];
 
   const toolColour = (cat) => ({ netflow:"#00d4aa", external:"#f59e0b", mitre:"#a855f7" }[cat] || "#64748b");
+
+  // Helper: classify metric value for evolution table colouring
+  const evoClass = (val, metric, allVals) => {
+    const num = parseFloat(val);
+    if (isNaN(num)) return "";
+    const nums = allVals.map(v => parseFloat(v)).filter(v => !isNaN(v));
+    const max = Math.max(...nums);
+    const min = Math.min(...nums);
+    if (max === min) return "";
+    if (metric === "fp" || metric === "fn") {
+      if (num === min) return "evo-best";
+      if (num === max) return "evo-worst";
+      return "evo-mid";
+    }
+    if (num === max) return "evo-best";
+    if (num === min) return "evo-worst";
+    return "evo-mid";
+  };
 
   return (
     <>
@@ -599,13 +696,14 @@ export default function NIDSDashboard() {
         {/* Header */}
         <div className="header">
           <div className="status-dot" />
-          <div className="header-title">NIDS // Threat Monitor</div>
+          <div className="header-title">NIDS // Thesis Dashboard</div>
           <div style={{ display:"flex", gap:20, marginLeft:20 }}>
             {[
               { label:"EXPERIMENTS", val: EXPERIMENTS.length },
-              { label:"TOTAL FLOWS", val: EXPERIMENTS.reduce((s,e)=>s+e.flows,0) },
-              { label:"BEST F1", val: "83.3%", col:"#4ade80" },
-              { label:"TOTAL COST", val: "$"+EXPERIMENTS.reduce((s,e)=>s+parseFloat(e.cost.slice(1)),0).toFixed(2) },
+              { label:"TOTAL FLOWS", val: totalFlows },
+              { label:"BEST F1", val: "95.9%", col:"#4ade80" },
+              { label:"TOTAL COST", val: "$"+totalCost.toFixed(2) },
+              { label:"PHASES", val: "1 / 2 / 3", col:"#00d4aa" },
             ].map(m => (
               <div key={m.label} style={{ display:"flex", gap:6, alignItems:"baseline" }}>
                 <span style={{ fontSize:13, fontFamily:"Syne", fontWeight:700, color: m.col||"#e2e8f0" }}>{m.val}</span>
@@ -613,16 +711,17 @@ export default function NIDSDashboard() {
               </div>
             ))}
           </div>
-          <div className="header-sub">NF-CICIDS2018-v3 · 3 Iterations · 58 Flows Each · 2026-02-19</div>
+          <div className="header-sub">NF-CICIDS2018-v3 | 7 Experiments | Feb 2026</div>
         </div>
 
         {/* Tabs */}
         <div className="tabs">
           {[
-            ["flows",      "01 Flow Monitor"],
-            ["agents",     "02 Agent Inspector"],
-            ["comparison", "03 Missed Detections"],
-            ["experiments","04 Experiment Log"],
+            ["analysis",    "01 Analysis"],
+            ["experiments", "02 Experiments"],
+            ["agents",      "03 Agents"],
+            ["flows",       "04 Flow Monitor"],
+            ["comparison",  "05 Missed Detections"],
           ].map(([id, label]) => (
             <button key={id} className={`tab ${tab===id?"active":""}`} onClick={()=>setTab(id)}>
               {label}
@@ -632,371 +731,219 @@ export default function NIDSDashboard() {
 
         <div className="content fade-in" key={tab}>
 
-          {/* ── FLOW MONITOR ── */}
-          {tab === "flows" && (
-            <div className="split">
-              <div>
-                {/* Summary metrics */}
-                <div className="metrics-bar">
-                  {[
-                    { val:"83.3%", label:"F1 Score",  col:"#00d4aa" },
-                    { val:"75.5%", label:"Precision",  col:"#3b82f6" },
-                    { val:"93.0%", label:"Recall",     col:"#a855f7" },
-                    { val:"72.4%", label:"Accuracy",   col:"#f59e0b" },
-                    { val:"0%",    label:"Ext. Tool Hit", col:"#ef4444" },
-                  ].map(m => (
-                    <div key={m.label} className="big-metric" style={{ flex:1 }}>
-                      <div className="big-metric-val" style={{ color: m.col }}>{m.val}</div>
-                      <div className="big-metric-label">{m.label}</div>
-                    </div>
-                  ))}
-                </div>
+          {/* ── ANALYSIS ── */}
+          {tab === "analysis" && (
+            <div>
+              {/* Top-level summary metrics */}
+              <div className="metrics-bar">
+                {[
+                  { val:"95.9%", label:"Best F1 (3b)", col:"#00d4aa" },
+                  { val:"100%",  label:"Best Recall (3b)", col:"#a855f7" },
+                  { val:"100%",  label:"Best Precision (3a)", col:"#3b82f6" },
+                  { val:"94.0%", label:"Best Accuracy (3b)", col:"#f59e0b" },
+                  { val:"$0.07", label:"Avg Cost/Flow", col:"#64748b" },
+                  { val: totalFlows.toString(), label:"Total Flows Analysed", col:"#e2e8f0" },
+                ].map(m => (
+                  <div key={m.label} className="big-metric" style={{ flex:1 }}>
+                    <div className="big-metric-val" style={{ color: m.col }}>{m.val}</div>
+                    <div className="big-metric-label">{m.label}</div>
+                  </div>
+                ))}
+              </div>
 
-                {/* Filters */}
-                <div className="filter-row">
-                  <span style={{ fontSize:9, color:"#334155", letterSpacing:"0.1em" }}>FILTER:</span>
-                  {[
-                    ["all","All ("+FLOWS.length+")"],
-                    ["hit","Correct Detections"],
-                    ["missed","Missed Attacks"],
-                    ["fp","False Positives"],
-                    ["suspicious","Verdict: Suspicious"],
-                    ["benign","Verdict: Benign"],
-                  ].map(([id, label]) => (
-                    <button key={id} className={`filter-btn ${filter===id?"active":""}`} onClick={()=>setFilter(id)}>{label}</button>
-                  ))}
-                </div>
-
-                {/* Table */}
+              {/* Evolution table */}
+              <div className="analysis-card full mb-3">
+                <div className="card-title">Experiment Evolution</div>
+                <div className="section-label">How metrics changed across all 7 experiments (chronological order, left to right)</div>
                 <div className="overflow">
-                  <table className="flow-table">
+                  <table className="evo-table">
                     <thead>
                       <tr>
-                        <th>#</th>
-                        <th>Source</th>
-                        <th>Dest</th>
-                        <th>Port</th>
-                        <th>Proto</th>
-                        <th>Tier</th>
-                        <th>Verdict</th>
-                        <th>Actual</th>
-                        <th>Conf</th>
-                        <th>Tools</th>
-                        <th>Cost</th>
-                        <th>Time</th>
+                        <th style={{ textAlign:"left" }}>Metric</th>
+                        {[...EXPERIMENTS].reverse().map(e => (
+                          <th key={e.id} style={{ borderBottom: `2px solid ${phaseColour(e.phase)}` }}>
+                            {e.name.split("\u2014")[0].trim()}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredFlows.map(f => {
-                        const vc = verdictColour(f.verdict);
-                        const isMissed = f.reasoning.startsWith("MISSED");
-                        const isFP = f.reasoning.startsWith("FALSE");
-                        const isSelected = selectedFlow === f.id;
-                        return (
-                          <tr
-                            key={f.id}
-                            className={`flow-row mono ${isSelected?"selected":""} ${isMissed?"missed":""} ${isFP?"fp":""}`}
-                            onClick={() => setSelectedFlow(isSelected ? null : f.id)}
-                          >
-                            <td style={{ color:"#334155" }}>{String(f.id).padStart(3,"0")}</td>
-                            <td style={{ color:"#94a3b8" }}>{f.src}</td>
-                            <td style={{ color:"#64748b" }}>{f.dst}</td>
-                            <td style={{ color:"#475569" }}>{f.port}</td>
-                            <td style={{ color:"#475569" }}>{f.proto}</td>
-                            <td>
-                              <span style={{ fontSize:9, color: tierColour(f.tier), letterSpacing:"0.05em" }}>
-                                T{f.tier}
-                              </span>
+                      {[
+                        { key: "Architecture", vals: [...EXPERIMENTS].reverse().map(e => e.variables.architecture) },
+                        { key: "Flows", vals: [...EXPERIMENTS].reverse().map(e => String(e.flows)) },
+                        { key: "Benign %", vals: [...EXPERIMENTS].reverse().map(e => e.variables.benign_ratio || "26%") },
+                        { key: "F1", vals: [...EXPERIMENTS].reverse().map(e => e.f1), metric: "f1" },
+                        { key: "Precision", vals: [...EXPERIMENTS].reverse().map(e => e.precision), metric: "precision" },
+                        { key: "Recall", vals: [...EXPERIMENTS].reverse().map(e => e.recall), metric: "recall" },
+                        { key: "Accuracy", vals: [...EXPERIMENTS].reverse().map(e => e.accuracy), metric: "accuracy" },
+                        { key: "True Pos", vals: [...EXPERIMENTS].reverse().map(e => String(e.confusion.tp)), metric: "tp" },
+                        { key: "False Pos", vals: [...EXPERIMENTS].reverse().map(e => String(e.confusion.fp)), metric: "fp" },
+                        { key: "True Neg", vals: [...EXPERIMENTS].reverse().map(e => String(e.confusion.tn)) },
+                        { key: "False Neg", vals: [...EXPERIMENTS].reverse().map(e => String(e.confusion.fn)), metric: "fn" },
+                        { key: "Cost", vals: [...EXPERIMENTS].reverse().map(e => e.cost) },
+                        { key: "Time", vals: [...EXPERIMENTS].reverse().map(e => e.time) },
+                      ].map(row => (
+                        <tr key={row.key}>
+                          <td>{row.key}</td>
+                          {row.vals.map((v, i) => (
+                            <td key={i} className={row.metric ? evoClass(v, row.metric, row.vals) : ""}>
+                              {v}
                             </td>
-                            <td>
-                              <span className="badge" style={{ background:vc.bg, borderColor:vc.border, color:vc.text }}>
-                                {f.verdict}
-                              </span>
-                            </td>
-                            <td style={{ color: f.hit && !isMissed && !isFP ? "#4ade80" : isMissed ? "#f87171" : "#fbbf24", fontSize:10 }}>
-                              {f.actual}
-                            </td>
-                            <td style={{ color: f.conf >= 0.8 ? "#4ade80" : f.conf >= 0.6 ? "#fbbf24" : "#64748b" }}>
-                              {(f.conf*100).toFixed(0)}%
-                            </td>
-                            <td style={{ color:"#475569" }}>{f.tools}</td>
-                            <td style={{ color:"#334155" }}>${f.cost.toFixed(4)}</td>
-                            <td style={{ color:"#334155" }}>{f.time}s</td>
-                          </tr>
-                        );
-                      })}
+                          ))}
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              {/* Side panel */}
-              <div>
-                {flow ? (
-                  <div className="detail-panel fade-in">
-                    <div className="section-label">Flow Detail — ID {String(flow.id).padStart(3,"0")}</div>
-                    <div className="detail-title">{flow.src} → {flow.dst}</div>
+              <div className="analysis-grid">
+                {/* Key Findings */}
+                <div className="analysis-card">
+                  <div className="card-title">Key Findings</div>
+                  {[
+                    { num: "1", col: "#4ade80", title: "Multi-agent architecture dramatically outperforms single-agent", body: "Phase 3b (6-agent) achieved 95.9% F1 vs Phase 1's 83.3% F1 on a larger and more diverse dataset. The multi-agent approach is also 2x faster (no MCP tool overhead) and cheaper per flow." },
+                    { num: "2", col: "#f87171", title: "False positives explode on realistic class distributions", body: "When benign traffic is 88% of the batch (as in production), specialists hallucinate attack patterns in normal HTTPS, DNS, and NTP traffic. Phase 3c: 41 FPs on 88 benign flows (46.6% FP rate). The system was effectively trained on attack-heavy batches." },
+                    { num: "3", col: "#fbbf24", title: "Devil's Advocate helps but cannot fix root cause", body: "The DA agent correctly flipped 10 verdicts (preventing FPs) with 66.7% accuracy. But increasing DA weight from 30% to 50% only fixed 6 more FPs. 34/35 remaining FPs had unanimous 4/4 specialist agreement — no DA weight can override that." },
+                    { num: "4", col: "#a855f7", title: "Temporal context is the strongest signal", body: "Phase 3b (rich temporal context with ~30 same-IP flows) achieved 100% recall. The temporal agent had the most decisive impact — it shifts from 0.87 recall to 1.0 when given sufficient same-IP flow history." },
+                    { num: "5", col: "#3b82f6", title: "Some attack types are fundamentally invisible to per-flow analysis", body: "DoS-Hulk (0% recall), Infiltration (0% recall), and Brute_Force-XSS (0% recall) require aggregate/temporal detection. Individual flows look legitimate — the attack is the volume, timing, or sequence." },
+                  ].map(f => (
+                    <div key={f.num} className="insight-card">
+                      <div className="insight-title">
+                        <span className="insight-num" style={{ color: f.col }}>{f.num}</span>
+                        {f.title}
+                      </div>
+                      <div className="insight-body">{f.body}</div>
+                    </div>
+                  ))}
+                </div>
 
-                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
+                {/* Per-Attack Detection Rates */}
+                <div className="analysis-card">
+                  <div className="card-title">Per-Attack Detection Rate (Phase 3 Aggregate, 308 flows)</div>
+                  <div className="section-label mb-2">Recall by attack type across all Phase 3 experiments</div>
+                  {ATTACK_RATES.map(a => (
+                    <div key={a.type} className="bar-container">
+                      <div className="bar-label">{a.type}</div>
+                      <div className="bar-track">
+                        <div className="bar-fill" style={{ width: `${Math.max(a.rate * 100, 2)}%`, background: rateColour(a.rate) }}>
+                          {a.rate > 0.15 && <span className="bar-val" style={{ color: "#060a10" }}>{(a.rate * 100).toFixed(0)}%</span>}
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 9, color: "#475569", width: 40, textAlign: "right" }}>{a.detected}/{a.total}</div>
+                    </div>
+                  ))}
+
+                  {/* DA Impact */}
+                  <div style={{ marginTop: 20 }}>
+                    <div className="card-title">Devil's Advocate Impact</div>
+                    <div className="section-label mb-2">How the DA agent influenced final verdicts (Phase 3 aggregate)</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
                       {[
-                        { k:"Port", v: flow.port },
-                        { k:"Protocol", v: flow.proto },
-                        { k:"Tier", v: `T${flow.tier} — ${tierLabel(flow.tier)}`, col: tierColour(flow.tier) },
-                        { k:"Confidence", v: `${(flow.conf*100).toFixed(0)}%` },
-                        { k:"Tools Used", v: flow.tools },
-                        { k:"Cost", v: `$${flow.cost.toFixed(4)}` },
-                        { k:"Time", v: `${flow.time}s` },
-                      ].map(({k,v,col}) => (
-                        <div key={k} style={{ background:"#0a1222", borderRadius:3, padding:"6px 10px" }}>
-                          <div style={{ fontSize:9, color:"#334155", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:2 }}>{k}</div>
-                          <div style={{ fontSize:12, color: col || "#c8d8e8" }}>{v}</div>
+                        { val: DA_IMPACT.totalFlips, label: "Verdict Flips", col: "#e2e8f0" },
+                        { val: DA_IMPACT.correctFlips, label: "Correct (FP prevented)", col: "#4ade80" },
+                        { val: DA_IMPACT.incorrectFlips, label: "Incorrect (FN caused)", col: "#f87171" },
+                      ].map(d => (
+                        <div key={d.label} style={{ background: "#0a1222", borderRadius: 4, padding: "8px 10px", textAlign: "center" }}>
+                          <div style={{ fontFamily: "Syne", fontWeight: 700, fontSize: 20, color: d.col }}>{d.val}</div>
+                          <div style={{ fontSize: 8, color: "#475569", letterSpacing: "0.08em" }}>{d.label}</div>
                         </div>
                       ))}
                     </div>
-
-                    {/* Verdict */}
-                    {(() => { const vc = verdictColour(flow.verdict); return (
-                      <div style={{ background:vc.bg, border:`1px solid ${vc.border}`, borderRadius:4, padding:"8px 12px", marginBottom:12 }}>
-                        <div style={{ fontSize:9, color: vc.text, letterSpacing:"0.1em", marginBottom:2, opacity:0.7 }}>VERDICT</div>
-                        <div style={{ fontFamily:"Syne", fontWeight:700, fontSize:16, color: vc.text }}>{flow.verdict}</div>
-                        <div style={{ fontSize:10, color: "#64748b", marginTop:2 }}>Actual: <span style={{ color: flow.hit ? "#4ade80":"#f87171" }}>{flow.actual}</span></div>
+                    <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                      <div style={{ flex: 1, background: "#0a1222", borderRadius: 4, padding: "8px 10px", textAlign: "center" }}>
+                        <div style={{ fontFamily: "Syne", fontWeight: 700, fontSize: 16, color: "#fbbf24" }}>{DA_IMPACT.flipAccuracy}%</div>
+                        <div style={{ fontSize: 8, color: "#475569" }}>FLIP ACCURACY</div>
                       </div>
-                    ); })()}
+                      <div style={{ flex: 1, background: "#0a1222", borderRadius: 4, padding: "8px 10px", textAlign: "center" }}>
+                        <div style={{ fontFamily: "Syne", fontWeight: 700, fontSize: 16, color: "#64748b" }}>{DA_IMPACT.noEffect}</div>
+                        <div style={{ fontSize: 8, color: "#475569" }}>NO EFFECT</div>
+                      </div>
+                    </div>
+                  </div>
 
-                    {/* Tool calls */}
-                    <div className="section-label">Tool Call Trace</div>
-                    {toolCalls.map((t, i) => (
-                      <div key={i} className="tool-row">
-                        <div className="tool-dot" style={{ background: toolColour(t.cat) }} />
-                        <span style={{ color:"#94a3b8", fontFamily:"Space Mono", fontSize:10 }}>{t.name}</span>
-                        <span style={{ marginLeft:"auto", color: t.meaningful ? "#4ade80":"#ef4444", fontSize:9 }}>
-                          {t.meaningful ? "✓ data":"✗ empty"}
-                        </span>
+                  {/* Specialist agreement */}
+                  <div style={{ marginTop: 20 }}>
+                    <div className="card-title">Specialist Agreement</div>
+                    <div className="section-label mb-2">How many of 4 specialists agreed on malicious/suspicious</div>
+                    {Object.entries(AGREEMENT.distribution).map(([k, v]) => (
+                      <div key={k} className="bar-container">
+                        <div className="bar-label" style={{ width: 60 }}>{k} agree</div>
+                        <div className="bar-track">
+                          <div className="bar-fill" style={{ width: `${(v / 308) * 100}%`, background: k === "4/4" ? "#f87171" : k === "0/4" ? "#4ade80" : "#fbbf24" }}>
+                            <span className="bar-val" style={{ color: "#060a10" }}>{v}</span>
+                          </div>
+                        </div>
                       </div>
                     ))}
-
-                    {/* Reasoning */}
-                    <div className="section-label" style={{ marginTop:12 }}>Agent Reasoning</div>
-                    <div className="reasoning-box">
-                      {flow.reasoning.startsWith("MISSED") && (
-                        <div style={{ color:"#f87171", fontWeight:700, marginBottom:6 }}>⚠ MISSED DETECTION</div>
-                      )}
-                      {flow.reasoning.startsWith("FALSE") && (
-                        <div style={{ color:"#fbbf24", fontWeight:700, marginBottom:6 }}>⚠ FALSE POSITIVE</div>
-                      )}
-                      {flow.reasoning.replace(/^(MISSED|FALSE POSITIVE): /, "")}
-                    </div>
                   </div>
-                ) : (
-                  <div style={{ color:"#334155", padding:20, textAlign:"center", fontSize:11, marginTop:40 }}>
-                    ← Select a flow to inspect
-                  </div>
-                )}
+                </div>
               </div>
-            </div>
-          )}
 
-          {/* ── AGENT INSPECTOR ── */}
-          {tab === "agents" && (
-            <div>
-              <div className="agent-grid mb-3">
-                {AGENTS.map(a => (
-                  <div
-                    key={a.id}
-                    className={`agent-card ${selectedAgent === a.id ? "selected" : ""}`}
-                    style={{ borderColor: selectedAgent === a.id ? a.color : undefined }}
-                    onClick={() => { setSelectedAgent(a.id); setEditingPrompt(false); }}
-                  >
-                    <div className="agent-icon" style={{ color: a.color }}>{a.icon}</div>
-                    <div className="agent-name" style={{ color: a.color }}>{a.name}</div>
-                    <div className="agent-model">{a.model}</div>
-                    <div className="agent-role">{a.role}</div>
-                    <div className="stat-row">
-                      {Object.entries(a.stats).map(([k,v]) => (
-                        <div key={k} className="stat">
-                          <div className="stat-val" style={{ color: a.color, fontSize:14 }}>{v}</div>
-                          <div className="stat-label">{k}</div>
-                        </div>
+              {/* Phase 3c vs 3e comparison */}
+              <div className="analysis-card full mt-3">
+                <div className="card-title">DA Weight Experiment: Phase 3c (30%) vs Phase 3e (50%)</div>
+                <div className="section-label mb-2">Testing whether increasing DA weight fixes the false positive problem on realistic distributions</div>
+                <div className="overflow">
+                  <table className="evo-table">
+                    <thead>
+                      <tr>
+                        <th style={{ textAlign: "left" }}>Metric</th>
+                        <th style={{ borderBottom: "2px solid #f59e0b" }}>3c (DA=30%)</th>
+                        <th style={{ borderBottom: "2px solid #00d4aa" }}>3e (DA=50%)</th>
+                        <th>Delta</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        ["False Positives", "41", "35", "-6", true],
+                        ["True Negatives", "47", "53", "+6", true],
+                        ["True Positives", "7", "7", "0", false],
+                        ["False Negatives", "5", "5", "0", false],
+                        ["Accuracy", "54.0%", "60.0%", "+6.0%", true],
+                        ["Precision", "14.6%", "16.7%", "+2.1%", true],
+                        ["Recall", "58.3%", "58.3%", "0%", false],
+                        ["F1", "23.3%", "25.9%", "+2.6%", true],
+                        ["Flows fixed", "-", "6", "6 FPs corrected", true],
+                        ["Flows worsened", "-", "0", "0 new errors", true],
+                      ].map(([k, a, b, d, good]) => (
+                        <tr key={k}>
+                          <td style={{ textAlign: "left" }}>{k}</td>
+                          <td style={{ color: "#f59e0b" }}>{a}</td>
+                          <td style={{ color: "#00d4aa" }}>{b}</td>
+                          <td style={{ color: good ? "#4ade80" : "#475569" }}>{d}</td>
+                        </tr>
                       ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {agent && (
-                <div className="detail-panel fade-in">
-                  <div className="flex items-center justify-between mb-3">
-                    <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-                      <span style={{ fontSize:20, color: agent.color }}>{agent.icon}</span>
-                      <div>
-                        <div className="detail-title" style={{ marginBottom:0, color: agent.color }}>{agent.name} Agent</div>
-                        <div style={{ fontSize:10, color:"#475569" }}>{agent.model}</div>
-                      </div>
-                    </div>
-                    <div style={{ display:"flex", gap:8 }}>
-                      <button className={`btn ${editingPrompt ? "btn-primary" : "btn-ghost"}`}
-                        onClick={() => setEditingPrompt(!editingPrompt)}>
-                        {editingPrompt ? "Editing..." : "Edit System Prompt"}
-                      </button>
-                      {editingPrompt && (
-                        <button className="btn btn-primary"
-                          onClick={() => setEditingPrompt(false)}>
-                          Save Changes
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="section-label">System Prompt</div>
-                  {editingPrompt ? (
-                    <>
-                      <textarea
-                        className="prompt-editor"
-                        value={agentPrompts[agent.id]}
-                        onChange={e => setAgentPrompts(p => ({...p, [agent.id]: e.target.value}))}
-                      />
-                      <div className="warn-box" style={{ marginTop:8 }}>
-                        Changes will apply to the next experiment run. Save to persist, or reload to revert.
-                      </div>
-                    </>
-                  ) : (
-                    <div className="thinking-stream" style={{ maxHeight:300, whiteSpace:"pre-wrap" }}>
-                      {agentPrompts[agent.id]}
-                    </div>
-                  )}
-
-                  <div className="section-label mt-4">What this agent is responsible for</div>
-                  <div className="reasoning-box">{agent.role}</div>
-
-                  {agent.id === "temporal_agent" && (
-                    <div className="error-box" style={{ marginTop:12 }}>
-                      ⚠ <strong>Phase 1 Gap:</strong> This agent has no shared memory across flows in the current single-agent architecture. The Infiltration class (33.3% detection rate) is entirely attributable to the absence of this agent's cross-flow temporal window. Phase 2 directly addresses this.
-                    </div>
-                  )}
-                  {agent.id === "flow_analyst" && (
-                    <div className="warn-box" style={{ marginTop:12 }}>
-                      ⚠ <strong>Benign bias issue:</strong> Over-triggering on flows with normal statistical profiles. The agent's base threshold needs calibration — 13/15 benign flows were flagged suspicious. Consider adding explicit benign pattern recognition to this prompt.
-                    </div>
-                  )}
-                  {agent.id === "orchestrator" && (
-                    <div className="highlight-box" style={{ marginTop:12 }}>
-                      ✓ <strong>Retroactive reclassification</strong> is the core thesis contribution. When the temporal agent detects an infiltration burst, the orchestrator should retroactively reclassify all prior DNS flows in that window from BENIGN → SUSPICIOUS.
-                    </div>
-                  )}
+                    </tbody>
+                  </table>
                 </div>
-              )}
-            </div>
-          )}
-
-          {/* ── MISSED DETECTIONS ── */}
-          {tab === "comparison" && (
-            <div>
-              <div style={{ display:"flex", gap:12, marginBottom:16, flexWrap:"wrap" }}>
-                <div className="big-metric" style={{ flex:1 }}>
-                  <div className="big-metric-val" style={{ color:"#4ade80" }}>{HITS.length}</div>
-                  <div className="big-metric-label">Correct Detections</div>
-                </div>
-                <div className="big-metric" style={{ flex:1 }}>
-                  <div className="big-metric-val" style={{ color:"#f87171" }}>{MISSED.length}</div>
-                  <div className="big-metric-label">Missed Attacks</div>
-                </div>
-                <div className="big-metric" style={{ flex:1 }}>
-                  <div className="big-metric-val" style={{ color:"#fbbf24" }}>13</div>
-                  <div className="big-metric-label">False Positives (Benign)</div>
-                </div>
-                <div className="big-metric" style={{ flex:1 }}>
-                  <div className="big-metric-val" style={{ color:"#a855f7" }}>13.3%</div>
-                  <div className="big-metric-label">Benign Accuracy</div>
+                <div className="warn-box" style={{ marginTop: 12 }}>
+                  Conclusion: DA weight increase was surgically precise (6 FPs fixed, 0 regressions) but insufficient. 34 of 35 remaining FPs have 4/4 unanimous specialist agreement. The root cause is specialist prompt engineering, not orchestrator weighting. The DA argues benign with 0.80 mean confidence on these flows, but the orchestrator correctly defers to unanimous specialist consensus.
                 </div>
               </div>
 
-              <div className="comparison-grid">
-                {/* Hits */}
-                <div className="compare-card">
-                  <div className="compare-header">
-                    <span style={{ color:"#4ade80" }}>✓</span>
-                    <span style={{ color:"#4ade80" }}>Correctly Detected ({HITS.length})</span>
-                  </div>
-                  {HITS.map(f => (
-                    <div key={f.id} style={{ padding:"7px 0", borderBottom:"1px solid #0f1a28", cursor:"pointer" }}
-                      onClick={() => { setSelectedFlow(f.id); setTab("flows"); }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:3 }}>
-                        <span style={{ fontSize:10, color:"#4ade80", fontWeight:700 }}>{f.actual}</span>
-                        <span style={{ fontSize:9, color:"#334155" }}>T{f.tier} · ${f.cost.toFixed(3)}</span>
-                      </div>
-                      <div style={{ fontSize:10, color:"#475569" }}>{f.src} → port {f.port}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Missed */}
-                <div className="compare-card">
-                  <div className="compare-header">
-                    <span style={{ color:"#f87171" }}>✗</span>
-                    <span style={{ color:"#f87171" }}>Missed / False Positives ({MISSED.length + 1})</span>
-                  </div>
-                  {MISSED.map(f => (
-                    <div key={f.id} style={{ padding:"8px", marginBottom:6, background:"#2a0a0a", borderRadius:4, border:"1px solid #991b1b", cursor:"pointer" }}
-                      onClick={() => { setSelectedFlow(f.id); setTab("flows"); }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                        <span style={{ fontSize:11, color:"#f87171", fontWeight:700 }}>{f.actual}</span>
-                        <span className="badge" style={{ background: verdictColour(f.verdict).bg, borderColor: verdictColour(f.verdict).border, color: verdictColour(f.verdict).text }}>
-                          {f.verdict}
-                        </span>
-                      </div>
-                      <div style={{ fontSize:10, color:"#ef4444", marginBottom:4 }}>{f.src} → port {f.port}</div>
-                      <div style={{ fontSize:10, color:"#7f1d1d", lineHeight:1.5 }}>{f.reasoning.replace(/^(MISSED|FALSE POSITIVE): /,"")}</div>
-                    </div>
-                  ))}
-                  {/* The 13 benign FPs */}
-                  <div style={{ padding:"8px", background:"#2a1f0a", borderRadius:4, border:"1px solid #92400e", marginTop:4 }}>
-                    <div style={{ fontSize:11, color:"#fbbf24", fontWeight:700, marginBottom:4 }}>13× Benign → SUSPICIOUS (False Positives)</div>
-                    <div style={{ fontSize:10, color:"#92400e", lineHeight:1.5 }}>
-                      All 13 false positives share the same root cause: the agent lacks a benign baseline calibration. Normal DNS, DHCP, and HTTPS flows were flagged suspicious because the system has no learned definition of "normal" to compare against. The single-agent architecture defaults to suspicion when evidence is absent.
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Reasoning agent panel */}
-              <div className="detail-panel mt-4">
-                <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
-                  <span style={{ color:"#ec4899", fontSize:18 }}>◉</span>
+              {/* Methodology summary */}
+              <div className="analysis-card full mt-3">
+                <div className="card-title">Methodology Summary</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
                   <div>
-                    <div style={{ fontFamily:"Syne", fontWeight:700, fontSize:14, color:"#ec4899" }}>Explainability Agent — Root Cause Analysis</div>
-                    <div style={{ fontSize:10, color:"#475569" }}>Systematic failure analysis across all missed detections</div>
-                  </div>
-                </div>
-
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
-                  {[
-                    {
-                      title: "Infiltration (33.3%)",
-                      col: "#f87171",
-                      cause: "Root cause: single-flow isolation. Each DNS flow looks perfectly normal in isolation — 60-byte query, port 53, internal IP, TTL 60s. The attack signature (30 flows in 3.2 seconds from 2 IPs) is only visible across time.",
-                      fix: "Solution: Temporal Correlation Agent with 60-second rolling window. When >5 DNS queries/second detected from same source, retroactively flag all flows in burst."
-                    },
-                    {
-                      title: "Brute Force XSS (66.7%)",
-                      col: "#fbbf24",
-                      cause: "Root cause: protocol camouflage. The XSS flows were crafted to mimic DHCP packet sizes (328/357 bytes, UDP, short duration). Agent gave high-confidence BENIGN analysis — saw DHCP, didn't suspect attack.",
-                      fix: "Solution: Flow Analyst should flag DHCP-sized UDP flows targeting non-router IPs. 172.31.69.28 is not a DHCP server — context-aware port/role validation needed."
-                    },
-                    {
-                      title: "DoS Hulk (0% per-flow)",
-                      col: "#a855f7",
-                      cause: "Root cause: volume attack, single-flow detection. Each individual Hulk flow looks like legitimate HTTP (port 80, 16-26 packets, reasonable duration). The DoS is the aggregate — hundreds of concurrent connections.",
-                      fix: "Solution: Pattern Correlator Agent clusters flows by dest IP × time window. When >50 concurrent HTTP flows to same target detected, trigger DoS alert regardless of per-flow normalcy."
-                    },
-                  ].map(item => (
-                    <div key={item.title} style={{ background:"#0a1222", border:"1px solid #1a2840", borderRadius:4, padding:12 }}>
-                      <div style={{ fontFamily:"Syne", fontWeight:700, fontSize:12, color: item.col, marginBottom:8 }}>{item.title}</div>
-                      <div className="section-label">Root Cause</div>
-                      <div style={{ fontSize:10, color:"#94a3b8", lineHeight:1.6, marginBottom:8 }}>{item.cause}</div>
-                      <div className="section-label">Suggested Fix</div>
-                      <div style={{ fontSize:10, color:"#4ade80", lineHeight:1.6 }}>{item.fix}</div>
+                    <div className="section-label" style={{ color: "#64748b" }}>Phase 1 — MCP Baseline</div>
+                    <div className="reasoning-box" style={{ marginTop: 4 }}>
+                      Single Claude Sonnet agent with 13 MCP tools (AbuseIPDB, OTX, geolocation, MITRE ATT&CK, NetFlow analyzer). ReAct loop with up to 5 tool iterations per flow. Finding: 0/142 external tool calls returned meaningful data on anonymized IPs. Agent defaulted to SUSPICIOUS when uncertain, yielding high recall (93%) but many false positives.
                     </div>
-                  ))}
+                  </div>
+                  <div>
+                    <div className="section-label" style={{ color: "#f59e0b" }}>Phase 2 — Single-Agent Iterations</div>
+                    <div className="reasoning-box" style={{ marginTop: 4 }}>
+                      Two prompt engineering iterations on the same single-agent architecture. Iter 1 added SQLite-based temporal memory (60s sliding window per source IP) — improved precision to 85.3% but low injection rate (3.4%). Iter 2 added benign baseline calibration — reduced FPs from 13 to 9 but lost recall (77%).
+                    </div>
+                  </div>
+                  <div>
+                    <div className="section-label" style={{ color: "#00d4aa" }}>Phase 3 — Multi-Agent Architecture</div>
+                    <div className="reasoning-box" style={{ marginTop: 4 }}>
+                      6-agent system: 4 specialists (protocol, statistical, behavioural, temporal) analyse in parallel, then a Devil's Advocate argues benign, then an Orchestrator makes weighted consensus verdict. No MCP tools — pure LLM reasoning on 53 NetFlow features. Best result: 95.9% F1 on 150 flows. Cost: ~$0.07/flow. Key weakness: FP explosion on realistic 88% benign distributions.
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1011,17 +958,25 @@ export default function NIDSDashboard() {
                     <div key={exp.id} className={`exp-card ${selectedExp?.id === exp.id ? "selected":""}`}
                       onClick={() => setSelectedExp(exp)}>
                       <div className="exp-header">
+                        <span className="badge" style={{
+                          background: `${phaseColour(exp.phase)}22`,
+                          borderColor: phaseColour(exp.phase),
+                          color: phaseColour(exp.phase),
+                          fontSize: 9,
+                        }}>
+                          P{exp.phase}
+                        </span>
                         <div className="exp-name">{exp.name}</div>
                         <span className="badge" style={{
-                          background: exp.status==="complete" ? "#0f291f" : exp.status==="abandoned" ? "#2a0a0a" : "#2a1f0a",
-                          borderColor: exp.status==="complete" ? "#166534" : exp.status==="abandoned" ? "#991b1b" : "#92400e",
-                          color: exp.status==="complete" ? "#4ade80" : exp.status==="abandoned" ? "#f87171" : "#fbbf24",
+                          background: "#0f291f",
+                          borderColor: "#166534",
+                          color: "#4ade80",
                         }}>
-                          {exp.status.toUpperCase()}
+                          COMPLETE
                         </span>
                         <span style={{ marginLeft:"auto", fontSize:10, color:"#334155" }}>{exp.date}</span>
                       </div>
-                      <div style={{ fontSize:10, color:"#475569", lineHeight:1.5 }}>{exp.notes}</div>
+                      <div style={{ fontSize:10, color:"#475569", lineHeight:1.5, marginTop:4 }}>{exp.notes}</div>
                       <div className="metrics-row">
                         {[
                           { label:"Flows",    val: exp.flows },
@@ -1052,19 +1007,18 @@ export default function NIDSDashboard() {
                       <tbody>
                         {Object.entries(selectedExp.variables).map(([k, v]) => {
                           const otherVal = compExp?.variables[k];
-                          const changed = compExp && otherVal !== v;
+                          const changed = compExp && compExp.id !== selectedExp.id && String(otherVal) !== String(v);
                           return (
                             <tr key={k}>
                               <td>{k}</td>
                               <td className={changed ? "changed" : ""}>{String(v)}</td>
-                              {compExp && <td style={{ color:"#334155", fontSize:10 }}>{String(otherVal)}</td>}
+                              {compExp && compExp.id !== selectedExp.id && <td style={{ color:"#334155", fontSize:10 }}>{String(otherVal)}</td>}
                             </tr>
                           );
                         })}
                       </tbody>
                     </table>
 
-                    {/* Confusion Matrix + Verdict Distribution */}
                     {selectedExp.confusion && (
                       <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12, marginTop:12 }}>
                         <div>
@@ -1113,7 +1067,7 @@ export default function NIDSDashboard() {
                         <button key={e.id}
                           className={`filter-btn ${compExpId === e.id ? "active":""}`}
                           onClick={() => setCompExpId(e.id)}>
-                          {e.name}
+                          {e.name.split("\u2014")[0].trim()}
                         </button>
                       ))}
                     </div>
@@ -1125,8 +1079,8 @@ export default function NIDSDashboard() {
                           <thead>
                             <tr>
                               <td style={{ color:"#334155", fontSize:9 }}>METRIC</td>
-                              <td style={{ color:"#00d4aa", fontSize:9 }}>{selectedExp.name.split("—")[0].trim()}</td>
-                              <td style={{ color:"#f59e0b", fontSize:9 }}>{compExp.name.split("—")[0].trim()}</td>
+                              <td style={{ color:"#00d4aa", fontSize:9 }}>{selectedExp.name.split("\u2014")[0].trim()}</td>
+                              <td style={{ color:"#f59e0b", fontSize:9 }}>{compExp.name.split("\u2014")[0].trim()}</td>
                             </tr>
                           </thead>
                           <tbody>
@@ -1139,11 +1093,11 @@ export default function NIDSDashboard() {
                               ["Cost",      selectedExp.cost,      compExp.cost],
                               ["Time",      selectedExp.time,      compExp.time],
                               ["TP / FP",
-                                selectedExp.confusion ? `${selectedExp.confusion.tp} / ${selectedExp.confusion.fp}` : "N/A",
-                                compExp.confusion ? `${compExp.confusion.tp} / ${compExp.confusion.fp}` : "N/A"],
+                                `${selectedExp.confusion.tp} / ${selectedExp.confusion.fp}`,
+                                `${compExp.confusion.tp} / ${compExp.confusion.fp}`],
                               ["TN / FN",
-                                selectedExp.confusion ? `${selectedExp.confusion.tn} / ${selectedExp.confusion.fn}` : "N/A",
-                                compExp.confusion ? `${compExp.confusion.tn} / ${compExp.confusion.fn}` : "N/A"],
+                                `${selectedExp.confusion.tn} / ${selectedExp.confusion.fn}`,
+                                `${compExp.confusion.tn} / ${compExp.confusion.fn}`],
                             ].map(([k, a, b]) => (
                               <tr key={k}>
                                 <td>{k}</td>
@@ -1155,16 +1109,359 @@ export default function NIDSDashboard() {
                         </table>
                       </>
                     )}
-
-                    <div style={{ display:"flex", gap:8, marginTop:16 }}>
-                      <button className="btn btn-primary">Re-run Experiment</button>
-                      <button className="btn btn-ghost">Export CSV</button>
-                    </div>
                   </div>
                 </div>
               )}
             </div>
           )}
+
+          {/* ── AGENTS ── */}
+          {tab === "agents" && (
+            <div>
+              {/* Architecture diagram */}
+              <div className="analysis-card full mb-3">
+                <div className="card-title">Phase 3 Multi-Agent Architecture</div>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "16px 0", flexWrap: "wrap" }}>
+                  <div style={{ background: "#0a1222", border: "1px solid #1a2840", borderRadius: 6, padding: "10px 16px", textAlign: "center", fontSize: 11 }}>
+                    <div style={{ color: "#475569", fontSize: 9, letterSpacing: "0.1em", marginBottom: 4 }}>INPUT</div>
+                    <div style={{ color: "#94a3b8" }}>NetFlow Record</div>
+                    <div style={{ color: "#334155", fontSize: 9 }}>53 features</div>
+                  </div>
+                  <div style={{ color: "#334155", fontSize: 16 }}>{"\u2192"}</div>
+                  <div style={{ display: "flex", gap: 6, background: "#0a1222", border: "1px dashed #1a2840", borderRadius: 6, padding: 10 }}>
+                    {["Protocol", "Statistical", "Behavioural", "Temporal"].map((name, i) => (
+                      <div key={name} style={{ background: "#080d15", border: `1px solid ${["#3b82f6","#a855f7","#f59e0b","#ec4899"][i]}33`, borderRadius: 4, padding: "6px 10px", textAlign: "center" }}>
+                        <div style={{ color: ["#3b82f6","#a855f7","#f59e0b","#ec4899"][i], fontSize: 10, fontWeight: 700 }}>{name}</div>
+                        <div style={{ color: "#334155", fontSize: 8 }}>parallel</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ color: "#334155", fontSize: 16 }}>{"\u2192"}</div>
+                  <div style={{ background: "#080d15", border: "1px solid #ef444433", borderRadius: 6, padding: "10px 14px", textAlign: "center" }}>
+                    <div style={{ color: "#ef4444", fontSize: 11, fontWeight: 700 }}>Devil's Advocate</div>
+                    <div style={{ color: "#334155", fontSize: 8 }}>counter-argument</div>
+                  </div>
+                  <div style={{ color: "#334155", fontSize: 16 }}>{"\u2192"}</div>
+                  <div style={{ background: "#080d15", border: "1px solid #00d4aa33", borderRadius: 6, padding: "10px 14px", textAlign: "center" }}>
+                    <div style={{ color: "#00d4aa", fontSize: 11, fontWeight: 700 }}>Orchestrator</div>
+                    <div style={{ color: "#334155", fontSize: 8 }}>weighted consensus</div>
+                  </div>
+                  <div style={{ color: "#334155", fontSize: 16 }}>{"\u2192"}</div>
+                  <div style={{ background: "#0a1222", border: "1px solid #1a2840", borderRadius: 6, padding: "10px 16px", textAlign: "center", fontSize: 11 }}>
+                    <div style={{ color: "#475569", fontSize: 9, letterSpacing: "0.1em", marginBottom: 4 }}>OUTPUT</div>
+                    <div style={{ color: "#94a3b8" }}>Verdict + Reasoning</div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 10, color: "#475569", textAlign: "center" }}>
+                  6 LLM calls per flow (4 parallel + 2 sequential) | ~$0.07/flow | ~20s/flow
+                </div>
+              </div>
+
+              <div className="agent-grid mb-3">
+                {AGENTS.map(a => (
+                  <div
+                    key={a.id}
+                    className={`agent-card ${selectedAgent === a.id ? "selected" : ""}`}
+                    style={{ borderColor: selectedAgent === a.id ? a.color : undefined }}
+                    onClick={() => setSelectedAgent(selectedAgent === a.id ? null : a.id)}
+                  >
+                    <div className="agent-icon" style={{ color: a.color }}>{a.icon}</div>
+                    <div className="agent-name" style={{ color: a.color }}>{a.name}</div>
+                    <div className="agent-model">{a.model}</div>
+                    <div className="agent-role">{a.role}</div>
+                    <div className="stat-row">
+                      {Object.entries(a.stats).map(([k,v]) => (
+                        <div key={k} className="stat">
+                          <div className="stat-val" style={{ color: a.color, fontSize:14 }}>{v}</div>
+                          <div className="stat-label">{k}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {agent && (
+                <div className="detail-panel fade-in">
+                  <div style={{ display:"flex", gap:10, alignItems:"center", marginBottom:12 }}>
+                    <span style={{ fontSize:20, color: agent.color, fontFamily: "Syne", fontWeight: 800 }}>{agent.icon}</span>
+                    <div>
+                      <div className="detail-title" style={{ marginBottom:0, color: agent.color }}>{agent.name} Agent</div>
+                      <div style={{ fontSize:10, color:"#475569" }}>{agent.model}</div>
+                    </div>
+                  </div>
+                  <div className="reasoning-box">{agent.role}</div>
+
+                  {AGREEMENT.perAgent[agent.id] && (
+                    <div style={{ marginTop: 12 }}>
+                      <div className="section-label">Verdict Distribution (308 flows)</div>
+                      {[
+                        { label: "BENIGN", val: AGREEMENT.perAgent[agent.id].benign, col: "#4ade80" },
+                        { label: "SUSPICIOUS", val: AGREEMENT.perAgent[agent.id].suspicious, col: "#fbbf24" },
+                        { label: "MALICIOUS", val: AGREEMENT.perAgent[agent.id].malicious, col: "#f87171" },
+                      ].map(v => (
+                        <div key={v.label} style={{ marginBottom: 4 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, marginBottom: 2 }}>
+                            <span style={{ color: v.col }}>{v.label}</span>
+                            <span style={{ color: "#475569" }}>{v.val}/308</span>
+                          </div>
+                          <div style={{ background: "#0a1222", borderRadius: 2, height: 6, overflow: "hidden" }}>
+                            <div style={{ width: `${(v.val / 308) * 100}%`, height: "100%", background: v.col, borderRadius: 2 }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {agent.id === "temporal" && (
+                    <div className="highlight-box" style={{ marginTop: 12 }}>
+                      Most aggressive agent: 129 MALICIOUS verdicts (41.9% of flows). Provides critical same-IP temporal context that other agents lack. Responsible for Phase 3b's 100% recall when given rich same-IP flow history.
+                    </div>
+                  )}
+                  {agent.id === "protocol" && (
+                    <div className="highlight-box" style={{ marginTop: 12 }}>
+                      Most conservative agent: 216 BENIGN verdicts (70.1% of flows). Focuses purely on protocol correctness — if ports, flags, and packet sizes match protocol norms, it says BENIGN. Provides important counterbalance to other agents.
+                    </div>
+                  )}
+                  {agent.id === "devils_advocate" && (
+                    <div className="warn-box" style={{ marginTop: 12 }}>
+                      Successfully flipped 15 verdicts with 66.7% accuracy (10 correct, 5 incorrect). At 30% weight, it reduces FPs but cannot override unanimous specialist consensus. At 50% weight, it fixed 6 additional FPs without causing any new errors.
+                    </div>
+                  )}
+                  {agent.id === "orchestrator" && (
+                    <div className="warn-box" style={{ marginTop: 12 }}>
+                      Uses configurable consensus thresholds. Default DA weight is 30%. When 4/4 specialists agree on MALICIOUS, even 50% DA weight rarely overrides the verdict. The orchestrator correctly defers to specialist consensus — the problem is specialists being wrong.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── FLOW MONITOR ── */}
+          {tab === "flows" && (
+            <div className="split">
+              <div>
+                <div className="section-label mb-2">Phase 1 MCP Baseline — 20 sampled flows with per-flow detail</div>
+                <div className="metrics-bar">
+                  {[
+                    { val:"83.3%", label:"F1 Score",  col:"#00d4aa" },
+                    { val:"75.5%", label:"Precision",  col:"#3b82f6" },
+                    { val:"93.0%", label:"Recall",     col:"#a855f7" },
+                    { val:"72.4%", label:"Accuracy",   col:"#f59e0b" },
+                    { val:"0%",    label:"Ext. Tool Hit", col:"#ef4444" },
+                  ].map(m => (
+                    <div key={m.label} className="big-metric" style={{ flex:1 }}>
+                      <div className="big-metric-val" style={{ color: m.col }}>{m.val}</div>
+                      <div className="big-metric-label">{m.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="filter-row">
+                  <span style={{ fontSize:9, color:"#334155", letterSpacing:"0.1em" }}>FILTER:</span>
+                  {[
+                    ["all","All ("+FLOWS.length+")"],
+                    ["hit","Correct"],
+                    ["missed","Missed"],
+                    ["fp","False Positives"],
+                    ["suspicious","Suspicious"],
+                    ["benign","Benign"],
+                  ].map(([id, label]) => (
+                    <button key={id} className={`filter-btn ${filter===id?"active":""}`} onClick={()=>setFilter(id)}>{label}</button>
+                  ))}
+                </div>
+
+                <div className="overflow">
+                  <table className="flow-table">
+                    <thead>
+                      <tr>
+                        <th>#</th><th>Source</th><th>Dest</th><th>Port</th><th>Proto</th><th>Verdict</th><th>Actual</th><th>Conf</th><th>Cost</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredFlows.map(f => {
+                        const vc = verdictColour(f.verdict);
+                        const isMissed = f.reasoning.startsWith("MISSED");
+                        const isFP = f.reasoning.startsWith("FALSE");
+                        const isSelected = selectedFlow === f.id;
+                        return (
+                          <tr key={f.id}
+                            className={`flow-row mono ${isSelected?"selected":""} ${isMissed?"missed":""} ${isFP?"fp":""}`}
+                            onClick={() => setSelectedFlow(isSelected ? null : f.id)}>
+                            <td style={{ color:"#334155" }}>{String(f.id).padStart(3,"0")}</td>
+                            <td style={{ color:"#94a3b8" }}>{f.src}</td>
+                            <td style={{ color:"#64748b" }}>{f.dst}</td>
+                            <td style={{ color:"#475569" }}>{f.port}</td>
+                            <td style={{ color:"#475569" }}>{f.proto}</td>
+                            <td><span className="badge" style={{ background:vc.bg, borderColor:vc.border, color:vc.text }}>{f.verdict}</span></td>
+                            <td style={{ color: f.hit && !isMissed && !isFP ? "#4ade80" : isMissed ? "#f87171" : "#fbbf24", fontSize:10 }}>{f.actual}</td>
+                            <td style={{ color: f.conf >= 0.8 ? "#4ade80" : f.conf >= 0.6 ? "#fbbf24" : "#64748b" }}>{(f.conf*100).toFixed(0)}%</td>
+                            <td style={{ color:"#334155" }}>${f.cost.toFixed(3)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div>
+                {flow ? (
+                  <div className="detail-panel fade-in">
+                    <div className="section-label">Flow Detail — ID {String(flow.id).padStart(3,"0")}</div>
+                    <div className="detail-title">{flow.src} {"\u2192"} {flow.dst}</div>
+
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:12 }}>
+                      {[
+                        { k:"Port", v: flow.port },
+                        { k:"Protocol", v: flow.proto },
+                        { k:"Tier", v: `T${flow.tier} \u2014 ${tierLabel(flow.tier)}`, col: tierColour(flow.tier) },
+                        { k:"Confidence", v: `${(flow.conf*100).toFixed(0)}%` },
+                        { k:"Tools Used", v: flow.tools },
+                        { k:"Cost", v: `$${flow.cost.toFixed(4)}` },
+                      ].map(({k,v,col}) => (
+                        <div key={k} style={{ background:"#0a1222", borderRadius:3, padding:"6px 10px" }}>
+                          <div style={{ fontSize:9, color:"#334155", letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:2 }}>{k}</div>
+                          <div style={{ fontSize:12, color: col || "#c8d8e8" }}>{v}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {(() => { const vc = verdictColour(flow.verdict); return (
+                      <div style={{ background:vc.bg, border:`1px solid ${vc.border}`, borderRadius:4, padding:"8px 12px", marginBottom:12 }}>
+                        <div style={{ fontSize:9, color: vc.text, letterSpacing:"0.1em", marginBottom:2, opacity:0.7 }}>VERDICT</div>
+                        <div style={{ fontFamily:"Syne", fontWeight:700, fontSize:16, color: vc.text }}>{flow.verdict}</div>
+                        <div style={{ fontSize:10, color: "#64748b", marginTop:2 }}>Actual: <span style={{ color: flow.hit ? "#4ade80":"#f87171" }}>{flow.actual}</span></div>
+                      </div>
+                    ); })()}
+
+                    <div className="section-label">Tool Call Trace</div>
+                    {toolCalls.map((t, i) => (
+                      <div key={i} className="tool-row">
+                        <div className="tool-dot" style={{ background: toolColour(t.cat) }} />
+                        <span style={{ color:"#94a3b8", fontSize:10 }}>{t.name}</span>
+                        <span style={{ marginLeft:"auto", color: t.meaningful ? "#4ade80":"#ef4444", fontSize:9 }}>
+                          {t.meaningful ? "data" : "empty"}
+                        </span>
+                      </div>
+                    ))}
+
+                    <div className="section-label" style={{ marginTop:12 }}>Agent Reasoning</div>
+                    <div className="reasoning-box">
+                      {flow.reasoning.startsWith("MISSED") && <div style={{ color:"#f87171", fontWeight:700, marginBottom:6 }}>MISSED DETECTION</div>}
+                      {flow.reasoning.startsWith("FALSE") && <div style={{ color:"#fbbf24", fontWeight:700, marginBottom:6 }}>FALSE POSITIVE</div>}
+                      {flow.reasoning.replace(/^(MISSED|FALSE POSITIVE): /, "")}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ color:"#334155", padding:20, textAlign:"center", fontSize:11, marginTop:40 }}>
+                    Select a flow to inspect
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── MISSED DETECTIONS ── */}
+          {tab === "comparison" && (
+            <div>
+              <div className="section-label mb-2">Root cause analysis of missed detections and false positives across all phases</div>
+              <div style={{ display:"flex", gap:12, marginBottom:16, flexWrap:"wrap" }}>
+                <div className="big-metric" style={{ flex:1 }}>
+                  <div className="big-metric-val" style={{ color:"#4ade80" }}>136</div>
+                  <div className="big-metric-label">True Positives (Phase 3)</div>
+                </div>
+                <div className="big-metric" style={{ flex:1 }}>
+                  <div className="big-metric-val" style={{ color:"#f87171" }}>50</div>
+                  <div className="big-metric-label">False Positives (Phase 3)</div>
+                </div>
+                <div className="big-metric" style={{ flex:1 }}>
+                  <div className="big-metric-val" style={{ color:"#fbbf24" }}>24</div>
+                  <div className="big-metric-label">False Negatives (Phase 3)</div>
+                </div>
+                <div className="big-metric" style={{ flex:1 }}>
+                  <div className="big-metric-val" style={{ color:"#3b82f6" }}>98</div>
+                  <div className="big-metric-label">True Negatives (Phase 3)</div>
+                </div>
+              </div>
+
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12, marginBottom:16 }}>
+                {[
+                  {
+                    title: "Undetectable: Hulk + Infiltration + XSS",
+                    col: "#f87171",
+                    attacks: "DoS-Hulk (0%), Infiltration (0%), XSS (0%)",
+                    cause: "These attacks are invisible at the per-flow level. Hulk: each HTTP flow looks normal — the attack IS the volume. Infiltration: each DNS query is legitimate — the attack IS the 30-query burst in 3.2 seconds. XSS: flows mimic DHCP packet profiles.",
+                    fix: "Requires aggregate detection: cluster flows by destination x time window, detect volume anomalies, and analyse temporal bursts across flows rather than within individual flows."
+                  },
+                  {
+                    title: "FP Explosion on Realistic Distributions",
+                    col: "#fbbf24",
+                    attacks: "41 FPs on 88 benign flows in Phase 3c (46.6% FP rate)",
+                    cause: "Specialists hallucinate attack patterns in normal HTTPS, DNS, and NTP traffic. The statistical agent flags any traffic with unusual metrics. The behavioural agent pattern-matches too aggressively on short flows. 35/41 FPs had 4/4 specialists unanimously wrong.",
+                    fix: "Specialist prompts need benign-aware calibration. The current prompts were implicitly tuned on attack-heavy batches (70%+ attacks). Production traffic is 87%+ benign."
+                  },
+                  {
+                    title: "DA Cannot Fix Unanimous Error",
+                    col: "#a855f7",
+                    attacks: "34/35 remaining FPs after DA=50% have 4/4 specialist consensus",
+                    cause: "The orchestrator consensus mechanism correctly trusts unanimous specialist agreement. When all 4 specialists say MALICIOUS on a benign flow, even a 50% DA weight cannot flip the verdict. The DA argues benign at 0.80 confidence but is outweighed.",
+                    fix: "The fix must be at the specialist level. Options: add benign baseline examples to prompts, add explicit normal-traffic patterns, or add a pre-filter that routes obviously benign traffic around the multi-agent pipeline."
+                  },
+                ].map(item => (
+                  <div key={item.title} style={{ background:"#080d15", border:"1px solid #1a2840", borderRadius:6, padding:14 }}>
+                    <div style={{ fontFamily:"Syne", fontWeight:700, fontSize:12, color: item.col, marginBottom:8 }}>{item.title}</div>
+                    <div className="section-label">Affected</div>
+                    <div style={{ fontSize:10, color:"#94a3b8", lineHeight:1.6, marginBottom:8 }}>{item.attacks}</div>
+                    <div className="section-label">Root Cause</div>
+                    <div style={{ fontSize:10, color:"#94a3b8", lineHeight:1.6, marginBottom:8 }}>{item.cause}</div>
+                    <div className="section-label">Potential Fix</div>
+                    <div style={{ fontSize:10, color:"#4ade80", lineHeight:1.6 }}>{item.fix}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="analysis-card full">
+                <div className="card-title">Phase 1 Per-Flow Missed Detection Detail</div>
+                <div className="comparison-grid">
+                  <div className="compare-card">
+                    <div className="compare-header">
+                      <span style={{ color:"#4ade80" }}>Correct ({HITS.length})</span>
+                    </div>
+                    {HITS.map(f => (
+                      <div key={f.id} style={{ padding:"6px 0", borderBottom:"1px solid #0f1a28", cursor:"pointer" }}
+                        onClick={() => { setSelectedFlow(f.id); setTab("flows"); }}>
+                        <div style={{ display:"flex", justifyContent:"space-between" }}>
+                          <span style={{ fontSize:10, color:"#4ade80" }}>{f.actual}</span>
+                          <span style={{ fontSize:9, color:"#334155" }}>T{f.tier}</span>
+                        </div>
+                        <div style={{ fontSize:9, color:"#475569" }}>{f.src} : {f.port}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="compare-card">
+                    <div className="compare-header">
+                      <span style={{ color:"#f87171" }}>Missed / FP ({MISSED.length})</span>
+                    </div>
+                    {MISSED.map(f => (
+                      <div key={f.id} style={{ padding:"6px", marginBottom:4, background:"#2a0a0a", borderRadius:4, border:"1px solid #991b1b44", cursor:"pointer" }}
+                        onClick={() => { setSelectedFlow(f.id); setTab("flows"); }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", marginBottom:2 }}>
+                          <span style={{ fontSize:10, color:"#f87171", fontWeight:700 }}>{f.actual}</span>
+                          <span className="badge" style={{ background: verdictColour(f.verdict).bg, borderColor: verdictColour(f.verdict).border, color: verdictColour(f.verdict).text, fontSize:9 }}>
+                            {f.verdict}
+                          </span>
+                        </div>
+                        <div style={{ fontSize:9, color:"#7f1d1d", lineHeight:1.4 }}>{f.reasoning.replace(/^(MISSED|FALSE POSITIVE): /,"").slice(0, 120)}...</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </>
