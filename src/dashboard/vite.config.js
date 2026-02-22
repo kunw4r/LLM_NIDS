@@ -8,4 +8,9 @@ export default defineConfig({
     outDir: '../../docs',
     emptyOutDir: false,
   },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:5001',
+    },
+  },
 })

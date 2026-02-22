@@ -1,0 +1,22 @@
+# MCP Server
+mcp>=1.0.0
+requests>=2.31.0
+
+# MITRE ATT&CK
+stix2>=3.0.0
+taxii2-client>=2.3.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# LLM Agent
+anthropic>=0.18.0
+chromadb>=0.4.0
+
+# Utilities
+python-dotenv>=1.0.0
+
+# Dashboard server
+flask>=3.0.0
+flask-cors>=4.0.0
