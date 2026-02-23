@@ -221,6 +221,7 @@ def analyze_flow(
 
     return {
         "flow_idx": flow_idx,
+        "flow_features": {k: v for k, v in flow.items() if k != "flow_id"},
         "verdict": final_verdict,
         "confidence": orchestrator_result.get("confidence", 0.0),
         "attack_type_predicted": orchestrator_result.get("attack_type"),
@@ -499,6 +500,7 @@ def make_tier1_result(flow_idx: int, flow: dict, benign_confidence: float) -> di
     """Create an auto-classified BENIGN result for a Tier 1 filtered flow."""
     return {
         "flow_idx": flow_idx,
+        "flow_features": {k: v for k, v in flow.items() if k != "flow_id"},
         "verdict": "BENIGN",
         "confidence": benign_confidence,
         "attack_type_predicted": None,

@@ -315,6 +315,7 @@ def analyze_flow(flow_idx, flow, flows, ip_groups, agents):
 
     return {
         "flow_idx": flow_idx,
+        "flow_features": {k: v for k, v in flow.items() if k != "flow_id"},
         "verdict": orch_result.get("verdict", "ERROR"),
         "confidence": orch_result.get("confidence", 0.0),
         "attack_type_predicted": orch_result.get("attack_type"),
@@ -326,12 +327,14 @@ def analyze_flow(flow_idx, flow, flows, ip_groups, agents):
                 "confidence": r.get("confidence"),
                 "attack_type": r.get("attack_type"),
                 "key_findings": r.get("key_findings", []),
+                "reasoning": r.get("reasoning", ""),
             }
             for name, r in specialist_results.items()
         },
         "devils_advocate": {
             "confidence_benign": da_result.get("confidence_benign", 0.0),
             "strongest_benign_indicator": da_result.get("strongest_benign_indicator", ""),
+            "counter_argument": da_result.get("counter_argument", da_result.get("reasoning", "")),
         },
         "tokens": {"input": total_input, "output": total_output, "total": total_input + total_output},
         "cost_usd": total_cost,

@@ -1281,6 +1281,29 @@ export default function NIDSDashboard() {
                         </div>
                       </div>
 
+                      {/* Flow features (raw NetFlow data) */}
+                      {selectedFlow.flow_features && Object.keys(selectedFlow.flow_features).length > 0 && (
+                        <details style={{ border: "1px solid #e5e7eb", borderRadius: 8, marginBottom: 12, overflow: "hidden" }}>
+                          <summary style={{ padding: "10px 14px", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#6b7280", background: "#f9fafb" }}>
+                            NetFlow Features ({Object.keys(selectedFlow.flow_features).length} fields)
+                          </summary>
+                          <div style={{ padding: "8px 14px" }}>
+                            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+                              <tbody>
+                                {Object.entries(selectedFlow.flow_features).map(([key, val]) => (
+                                  <tr key={key} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                                    <td style={{ padding: "4px 8px 4px 0", color: "#6b7280", fontWeight: 500, whiteSpace: "nowrap" }}>{key}</td>
+                                    <td style={{ padding: "4px 0", fontFamily: "monospace", color: "#374151" }}>
+                                      {typeof val === "number" ? val.toLocaleString() : String(val)}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </details>
+                      )}
+
                       {/* Tier 1 filtered */}
                       {selectedFlow.tier1_filtered && (
                         <div style={{ border: "1px solid #d1d5db", borderRadius: 8, padding: "16px", background: "#f0fdf4", fontSize: 13, lineHeight: 1.6 }}>
