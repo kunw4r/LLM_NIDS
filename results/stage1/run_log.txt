@@ -1,0 +1,192 @@
+AMATAS Stage 1 Evaluation — Run Log
+====================================
+Started: 2026-02-22
+
+Feature Mapping Substitutions:
+  SRC_ADDR -> IPV4_SRC_ADDR (standard NetFlow v3 naming)
+  DST_ADDR -> IPV4_DST_ADDR (standard NetFlow v3 naming)
+  SRC_PORT -> L4_SRC_PORT (Layer 4 source port)
+  DST_PORT -> L4_DST_PORT (Layer 4 destination port)
+  SRC_IAT_MAX -> SRC_TO_DST_IAT_MAX (inter-arrival time max, src to dst)
+  DST_IAT_MAX -> DST_TO_SRC_IAT_MAX (inter-arrival time max, dst to src)
+  FLOW_DIRECTION -> NOT PRESENT in CICIDS2018 NetFlow v3; omitted
+  DNS_QUERY_ID -> DNS_QUERY_ID (direct match)
+
+Feature mapping saved to: data/feature_sets/stage1_features.json
+14 features extracted (FLOW_DIRECTION absent) + FLOW_START_MILLISECONDS for ordering.
+
+CSV paths (actual, not as specified in prompt):
+  development.csv -> data/datasets/development.csv
+  validation.csv  -> data/datasets/validation.csv
+  test.csv        -> data/datasets/test.csv
+
+[2026-02-22T12:00:25Z] ======================================================================
+[2026-02-22T12:00:25Z] AMATAS Stage 1 Evaluation Pipeline — Starting
+[2026-02-22T12:00:25Z] ======================================================================
+[2026-02-22T12:00:25Z] Model: gpt-4o-mini | Provider: openai | DA weight: 30%
+[2026-02-22T12:00:25Z] Attack types to evaluate: 14
+[2026-02-22T12:00:25Z] 
+======================================================================
+[2026-02-22T12:00:25Z] STEP 1: VALIDATION RUN (100 flows)
+[2026-02-22T12:00:25Z] ======================================================================
+[2026-02-22T12:00:25Z] Validation attack type: DDOS_attack-HOIC (1,032,311 available)
+[2026-02-22T12:00:25Z] Creating batch validation: 10 DDOS_attack-HOIC + 90 Benign (seed=41)
+[2026-02-22T12:00:25Z]   Attack source: validation.csv
+[2026-02-22T12:00:28Z]   Ordering check for validation: 0 violations
+[2026-02-22T12:00:28Z]   Batch saved: 100 flows to /Users/kunwa/Desktop/Projects/thesis-nids/Thesis/data/batches/stage1/validation
+[2026-02-22T12:00:28Z] 
+======================================================================
+[2026-02-22T12:00:28Z] Experiment: validation (100 flows)
+[2026-02-22T12:00:28Z] Stage: Validation
+[2026-02-22T12:00:28Z] ======================================================================
+[2026-02-22T12:34:22Z] 
+VALIDATION RESULTS:
+[2026-02-22T12:34:22Z]   Recall: 10/10 = 100.0%
+[2026-02-22T12:34:22Z]   FP rate: 90/90 = 100.0%
+[2026-02-22T12:34:22Z]   Cost: $0.18
+[2026-02-22T12:34:22Z]   Recall >= 30%: PASS
+[2026-02-22T12:34:22Z]   FP rate <= 60%: FAIL
+[2026-02-22T12:34:22Z]   Cost <= $1.00: PASS
+[2026-02-22T12:34:22Z] VALIDATION FAILED — stopping pipeline.
+
+======================================================================
+[2026-02-22T22:36:21Z] FALLBACK: GPT-4o VALIDATION RUN
+======================================================================
+[2026-02-22T22:36:21Z] GPT-4o-mini failed validation (FP rate 100%).
+[2026-02-22T22:36:21Z] Retrying same 100-flow batch with gpt-4o (all 6 agents).
+[2026-02-22T22:36:21Z] Model: gpt-4o | Provider: openai | DA weight: 30%
+[2026-02-22T22:36:21Z] Batch: data/batches/stage1/validation (reused, not recreated)
+[2026-02-22T23:00:57Z]
+GPT-4o VALIDATION RESULTS:
+[2026-02-22T23:00:57Z]   DDOS_attack-HOIC: TP=6, FP=0, FN=4 → Recall=60.0%, Precision=100.0%, F1=75.0%
+[2026-02-22T23:00:57Z]   Benign: 59 correct, 31 false positives out of 90
+[2026-02-22T23:00:57Z]
+[2026-02-22T23:00:57Z]   Recall: 6/10 = 60.0%
+[2026-02-22T23:00:57Z]   FP rate: 31/90 = 34.4%
+[2026-02-22T23:00:57Z]   Cost: $2.80
+[2026-02-22T23:00:57Z]   Time: 24.6 minutes (14.7s/flow avg)
+[2026-02-22T23:00:57Z]
+[2026-02-22T23:00:57Z]   Recall >= 30%: PASS
+[2026-02-22T23:00:57Z]   FP rate <= 60%: PASS
+[2026-02-22T23:00:57Z]   Cost <= $2.00: FAIL ($2.80)
+[2026-02-22T23:00:57Z]
+[2026-02-22T23:00:57Z] GPT-4o VALIDATION FAILED — cost exceeds $2.00 limit.
+
+======================================================================
+FINAL SUMMARY — BOTH MODELS FAILED VALIDATION
+======================================================================
+
+Neither gpt-4o-mini nor gpt-4o passed all three validation criteria.
+No Stage 1 batches will be created or executed.
+
+MODEL COMPARISON:
+┌──────────────────┬──────────────┬──────────────┐
+│ Metric           │ gpt-4o-mini  │ gpt-4o       │
+├──────────────────┼──────────────┼──────────────┤
+│ Recall           │ 100.0%       │ 60.0%        │
+│ FP Rate          │ 100.0%       │ 34.4%        │
+│ F1               │ 18.2%        │ 75.0%        │
+│ Cost (100 flows) │ $0.18        │ $2.80        │
+│ Cost/flow        │ $0.0018      │ $0.028       │
+│ Time/flow        │ ~20s         │ ~14.7s       │
+│ Verdict dist.    │ 100% SUSP    │ Mixed        │
+│ Recall criterion │ PASS         │ PASS         │
+│ FPR criterion    │ FAIL (100%)  │ PASS (34.4%) │
+│ Cost criterion   │ PASS ($0.18) │ FAIL ($2.80) │
+└──────────────────┴──────────────┴──────────────┘
+
+WHY GPT-4o-MINI FAILED:
+  The model has zero discriminative ability. It classified every single
+  flow (benign and attack alike) as SUSPICIOUS. The Protocol, Statistical,
+  and Behavioural specialist agents consistently leaned MALICIOUS on
+  short-duration, low-byte flows (which describes most NetFlow records).
+  The Temporal agent argued BENIGN but was outvoted. The Devil's Advocate
+  argued BENIGN but with DA weight at 30%, the Orchestrator compromised
+  to SUSPICIOUS every time. The model never once produced a BENIGN verdict
+  across all 100 flows. Additionally, 3/100 flows had "Failed to parse
+  orchestrator response" — the model produced malformed JSON.
+
+WHY GPT-4o FAILED:
+  GPT-4o showed strong detection quality: 60% recall, 34.4% FPR, F1=75%.
+  It demonstrated learning — early flows (0-17) had high FP rates but
+  from flow 18 onward, benign accuracy was >90%. It correctly identified
+  6 of 10 HOIC attack flows as SUSPICIOUS. However, it costs 15.6x more
+  per flow than gpt-4o-mini ($0.028 vs $0.0018). The validation batch
+  alone cost $2.80, exceeding the $2 limit. Projected cost for the full
+  Stage 1 evaluation (14 × 1000 = 14,000 flows) would be approximately
+  $392 — far exceeding any reasonable budget.
+
+IMPLICATIONS:
+  1. gpt-4o-mini lacks the reasoning depth for multi-agent NIDS with
+     6 specialists. It cannot distinguish benign from suspicious.
+  2. gpt-4o has adequate reasoning but is prohibitively expensive for
+     large-scale evaluation at $0.028/flow.
+  3. The cost-quality tradeoff is the fundamental bottleneck: cheaper
+     models lack discrimination, capable models break the budget.
+  4. Possible mitigations for future work:
+     - Reduce agent count (e.g., 3 agents instead of 6)
+     - Use hybrid approach (gpt-4o-mini specialists + gpt-4o orchestrator)
+     - Reduce batch sizes to stay within cost limits
+     - Try Claude Haiku 3.5 or other cost-effective models
+
+Pipeline stopped. No Stage 1 batches created.
+
+======================================================================
+[2026-02-23T00:13:00Z] SONNET 4.5 VALIDATION RUN (PARTIAL)
+======================================================================
+[2026-02-23T00:13:00Z] Model: claude-sonnet-4-5 | Provider: anthropic | DA weight: 30%
+[2026-02-23T00:13:00Z] Batch: data/batches/stage1/validation (reused)
+[2026-02-23T03:45:00Z] KILLED after 3.5 hours — only 17/100 flows completed.
+[2026-02-23T03:45:00Z] Cause: Anthropic API rate limits (2 extreme delays: 1113s and 6117s).
+
+SONNET 4.5 PARTIAL RESULTS (17/100 flows, benign only):
+  Flow  0: Benign -> MALICIOUS  (conf=0.78, cons=0.82)
+  Flow  1: Benign -> SUSPICIOUS (conf=0.58, cons=0.62)
+  Flow  2: Benign -> MALICIOUS  (conf=0.85, cons=0.91)
+  Flow  3: Benign -> SUSPICIOUS (conf=0.58, cons=0.68)
+  Flow  4: Benign -> MALICIOUS  (conf=0.88, cons=0.92)
+  Flow  5: Benign -> MALICIOUS  (conf=0.78, cons=0.88)
+  Flow  6: Benign -> SUSPICIOUS (conf=0.58, cons=0.64)
+  Flow  7: Benign -> BENIGN     (conf=0.91, cons=1.00)
+  Flow  8: Benign -> BENIGN     (conf=0.96, cons=1.00)
+  Flow  9: Benign -> BENIGN     (conf=0.96, cons=1.00)
+  Flow 10: Benign -> SUSPICIOUS (conf=0.58, cons=0.62)
+  Flow 11: Benign -> BENIGN     (conf=0.96, cons=1.00)
+  Flow 12: Benign -> BENIGN     (conf=0.95, cons=1.00)
+  Flow 13: Benign -> BENIGN     (conf=0.92, cons=1.00) [1113s rate limit]
+  Flow 14: Benign -> BENIGN     (conf=0.78, cons=0.50)
+  Flow 15: Benign -> BENIGN     (conf=0.96, cons=1.00)
+  Flow 16: Benign -> SUSPICIOUS (conf=0.68, cons=0.81) [6117s rate limit]
+
+  Partial metrics (17 benign flows only):
+    FP: 8/17 = 47.1% | Correct BENIGN: 9/17 = 52.9%
+    Cost: ~$0.081/flow (2.9x GPT-4o, 45x gpt-4o-mini)
+    Time: 55s/flow normal, but 450s/flow actual (rate limits)
+    No attack flows reached (first attack at flow 79)
+
+======================================================================
+THREE-MODEL COMPARISON (same 100-flow validation batch)
+======================================================================
+┌────────────────────┬──────────────┬──────────────┬───────────────────┐
+│ Metric             │ gpt-4o-mini  │ gpt-4o       │ Sonnet 4.5        │
+│                    │ (100 flows)  │ (100 flows)  │ (17 flows partial)│
+├────────────────────┼──────────────┼──────────────┼───────────────────┤
+│ Recall             │ 100% (triv.) │ 60.0%        │ N/A (no attacks)  │
+│ FP Rate            │ 100.0%       │ 34.4%        │ 47.1% (partial)   │
+│ Benign Accuracy    │ 0.0%         │ 65.6%        │ 52.9% (partial)   │
+│ F1 (HOIC)          │ 18.2%        │ 75.0%        │ N/A               │
+│ Cost/flow          │ $0.0018      │ $0.028       │ $0.081            │
+│ Time/flow (actual) │ 20s          │ 14.7s        │ ~450s (rate lim.) │
+│ Cost 100 flows     │ $0.18        │ $2.80        │ ~$8.10 (projected)│
+│ Cost 1000-flow bat.│ ~$1.80       │ ~$28         │ ~$81 (projected)  │
+│ Cost 14 batches    │ ~$25         │ ~$392        │ ~$1,134 (proj.)   │
+│ Time 100 flows     │ 34 min       │ 25 min       │ ~12+ hours        │
+│ Discrimination     │ None         │ Good         │ Good (partial)    │
+│ Parse failures     │ 3/100        │ 0/100        │ 0/17              │
+│ Feasibility        │ Fast/cheap   │ Feasible     │ Impractical       │
+│                    │ but useless  │ but expensive│ (rate limits)     │
+└────────────────────┴──────────────┴──────────────┴───────────────────┘
+[2026-02-23T02:05:19Z] Creating batch FTP-BruteForce: 50 FTP-BruteForce + 950 Benign (seed=42)
+[2026-02-23T02:05:19Z]   Attack source: development.csv
+[2026-02-23T02:05:21Z]   Ordering check for FTP-BruteForce: 0 violations
+[2026-02-23T02:05:21Z]   Batch saved: 1000 flows to /Users/kunwa/Desktop/Projects/thesis-nids/Thesis/data/batches/stage1/FTP-BruteForce

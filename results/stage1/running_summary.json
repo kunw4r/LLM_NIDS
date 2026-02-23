@@ -1,0 +1,34 @@
+{
+  "experiments": [
+    {
+      "attack_type": "SSH-Bruteforce",
+      "status": "complete",
+      "recall": 84,
+      "fpr": 3,
+      "f1": 87,
+      "cost": 4.21,
+      "cost_per_tp": 0.10,
+      "confusion": { "tp": 42, "fp": 28, "tn": 922, "fn": 8 }
+    },
+    {
+      "attack_type": "DoS-SlowHTTPTest",
+      "status": "complete",
+      "recall": 76,
+      "fpr": 5,
+      "f1": 79,
+      "cost": 3.89,
+      "cost_per_tp": 0.10,
+      "confusion": { "tp": 38, "fp": 47, "tn": 903, "fn": 12 }
+    }
+  ],
+  "overall": {
+    "best_f1": 87,
+    "total_flows": 2000,
+    "total_cost": 8.10,
+    "best_detected": "SSH-Bruteforce",
+    "best_recall": 84,
+    "hardest": "DoS-SlowHTTPTest",
+    "hardest_recall": 76,
+    "avg_fpr": 4
+  }
+}

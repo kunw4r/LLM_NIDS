@@ -1,0 +1,53 @@
+{
+  "current_experiment": "none",
+  "stage": "Validation comparison complete",
+  "status": "awaiting_decision",
+  "validation_results": {
+    "gpt4o_mini": {
+      "model": "gpt-4o-mini",
+      "flows_completed": 100,
+      "status": "FAILED",
+      "reason": "FP rate 100% (limit 60%)",
+      "recall": 1.0,
+      "false_positive_rate": 1.0,
+      "benign_accuracy": 0.0,
+      "f1": 0.182,
+      "cost_usd": 0.18,
+      "cost_per_flow": 0.0018,
+      "time_per_flow_sec": 20,
+      "tp": 10,
+      "fp": 90,
+      "tn": 0,
+      "fn": 0
+    },
+    "gpt4o": {
+      "model": "gpt-4o",
+      "flows_completed": 100,
+      "status": "COMPLETED",
+      "recall": 0.6,
+      "false_positive_rate": 0.344,
+      "benign_accuracy": 0.656,
+      "f1_hoic": 0.75,
+      "cost_usd": 2.8,
+      "cost_per_flow": 0.028,
+      "time_per_flow_sec": 14.7,
+      "tp": 6,
+      "fp": 31,
+      "tn": 59,
+      "fn": 4
+    },
+    "sonnet_4_5": {
+      "model": "claude-sonnet-4-5",
+      "flows_completed": 17,
+      "status": "KILLED - rate limited",
+      "reason": "Anthropic rate limits: 2x delays of 1113s and 6117s. Only 17/100 flows in 3.5 hours.",
+      "partial_fp_rate": 0.47,
+      "partial_benign_accuracy": 0.53,
+      "cost_per_flow": 0.081,
+      "time_per_flow_sec_normal": 55,
+      "time_per_flow_sec_actual": 450,
+      "note": "Quality comparable to GPT-4o on benign flows (9/17 correct after warm-up) but impractical due to rate limits and 2.9x cost"
+    }
+  },
+  "updated_at": "2026-02-22T19:19:20Z"
+}

@@ -1,0 +1,42 @@
+{
+  "description": "Stage 1 evaluation: 15-feature reduced set",
+  "requested_features": [
+    "SRC_ADDR", "DST_ADDR", "SRC_PORT", "DST_PORT", "PROTOCOL",
+    "FLOW_DURATION_MILLISECONDS", "SRC_IAT_MAX", "DST_IAT_MAX",
+    "IN_BYTES", "OUT_BYTES", "IN_PKTS", "OUT_PKTS",
+    "TCP_FLAGS", "FLOW_DIRECTION", "DNS_QUERY_ID"
+  ],
+  "csv_column_mapping": {
+    "SRC_ADDR": "IPV4_SRC_ADDR",
+    "DST_ADDR": "IPV4_DST_ADDR",
+    "SRC_PORT": "L4_SRC_PORT",
+    "DST_PORT": "L4_DST_PORT",
+    "PROTOCOL": "PROTOCOL",
+    "FLOW_DURATION_MILLISECONDS": "FLOW_DURATION_MILLISECONDS",
+    "SRC_IAT_MAX": "SRC_TO_DST_IAT_MAX",
+    "DST_IAT_MAX": "DST_TO_SRC_IAT_MAX",
+    "IN_BYTES": "IN_BYTES",
+    "OUT_BYTES": "OUT_BYTES",
+    "IN_PKTS": "IN_PKTS",
+    "OUT_PKTS": "OUT_PKTS",
+    "TCP_FLAGS": "TCP_FLAGS",
+    "FLOW_DIRECTION": null,
+    "DNS_QUERY_ID": "DNS_QUERY_ID"
+  },
+  "substitutions": [
+    "SRC_ADDR -> IPV4_SRC_ADDR (standard NetFlow v3 naming)",
+    "DST_ADDR -> IPV4_DST_ADDR (standard NetFlow v3 naming)",
+    "SRC_PORT -> L4_SRC_PORT (Layer 4 source port)",
+    "DST_PORT -> L4_DST_PORT (Layer 4 destination port)",
+    "SRC_IAT_MAX -> SRC_TO_DST_IAT_MAX (inter-arrival time max, src to dst)",
+    "DST_IAT_MAX -> DST_TO_SRC_IAT_MAX (inter-arrival time max, dst to src)",
+    "FLOW_DIRECTION -> NOT PRESENT in CICIDS2018 NetFlow v3; omitted from extraction"
+  ],
+  "final_columns": [
+    "IPV4_SRC_ADDR", "IPV4_DST_ADDR", "L4_SRC_PORT", "L4_DST_PORT", "PROTOCOL",
+    "FLOW_DURATION_MILLISECONDS", "SRC_TO_DST_IAT_MAX", "DST_TO_SRC_IAT_MAX",
+    "IN_BYTES", "OUT_BYTES", "IN_PKTS", "OUT_PKTS",
+    "TCP_FLAGS", "DNS_QUERY_ID"
+  ],
+  "note": "FLOW_DIRECTION does not exist in CICIDS2018 NetFlow v3. 14 features extracted instead of 15. FLOW_START_MILLISECONDS also included for temporal ordering."
+}
