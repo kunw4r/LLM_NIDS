@@ -1,0 +1,1889 @@
+{
+  "evaluation_metadata": {
+    "model": "claude-sonnet-4-20250514",
+    "specialist_model": "claude-sonnet-4-20250514",
+    "batch_dir": "data/batches/scaled/batch_1_brute_force",
+    "total_flows": 1000,
+    "evaluated_flows": 20,
+    "started_at": "2026-02-21T15:00:04.475492",
+    "architecture": "Phase 3: 6-Agent Multi-Agent NIDS",
+    "agents": [
+      "protocol",
+      "statistical",
+      "behavioural",
+      "temporal",
+      "devils_advocate",
+      "orchestrator"
+    ],
+    "da_weight": "30%",
+    "specialist_parallel": true,
+    "cost_rates": {
+      "input_per_1m_tokens": 3.0,
+      "output_per_1m_tokens": 15.0
+    },
+    "completed_at": "2026-02-21T15:12:17.298635",
+    "total_time_seconds": 732.7681949138641,
+    "total_cost_usd": 3.769469999999999,
+    "total_tokens": {
+      "input": 1055700,
+      "output": 40158,
+      "total": 1095858
+    },
+    "agent_stats": {
+      "protocol": {
+        "agent_name": "protocol",
+        "call_count": 20,
+        "total_input_tokens": 30225,
+        "total_output_tokens": 4622,
+        "total_cost": 0.160005
+      },
+      "statistical": {
+        "agent_name": "statistical",
+        "call_count": 20,
+        "total_input_tokens": 33985,
+        "total_output_tokens": 4479,
+        "total_cost": 0.16914
+      },
+      "behavioural": {
+        "agent_name": "behavioural",
+        "call_count": 20,
+        "total_input_tokens": 33745,
+        "total_output_tokens": 5987,
+        "total_cost": 0.19104
+      },
+      "temporal": {
+        "agent_name": "temporal",
+        "call_count": 20,
+        "total_input_tokens": 841241,
+        "total_output_tokens": 7308,
+        "total_cost": 2.633343
+      },
+      "devils_advocate": {
+        "agent_name": "devils_advocate",
+        "call_count": 20,
+        "total_input_tokens": 50616,
+        "total_output_tokens": 10412,
+        "total_cost": 0.308028
+      },
+      "orchestrator": {
+        "agent_name": "orchestrator",
+        "call_count": 20,
+        "total_input_tokens": 65888,
+        "total_output_tokens": 7350,
+        "total_cost": 0.307914
+      }
+    },
+    "metrics": {
+      "accuracy": 0.7,
+      "precision": 0.7777777777777778,
+      "recall": 0.875,
+      "f1": 0.823529411764706,
+      "confusion": {
+        "tp": 14,
+        "fp": 4,
+        "tn": 0,
+        "fn": 2
+      },
+      "per_attack_type": {
+        "Benign": {
+          "tp": 0,
+          "fp": 4,
+          "tn": 0,
+          "fn": 0,
+          "total": 4,
+          "precision": 0.0,
+          "recall": 0,
+          "f1": 0
+        },
+        "SSH-Bruteforce": {
+          "tp": 14,
+          "fp": 0,
+          "tn": 0,
+          "fn": 2,
+          "total": 16,
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1": 0.9333333333333333
+        }
+      },
+      "per_tier": {
+        "0": {
+          "tp": 14,
+          "fp": 4,
+          "tn": 0,
+          "fn": 2,
+          "total": 20,
+          "accuracy": 0.7,
+          "precision": 0.7777777777777778,
+          "recall": 0.875,
+          "f1": 0.823529411764706
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "flow_idx": 0,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.65,
+      "attack_type_predicted": "RDP Brute Force Attempt",
+      "reasoning": "Three of four specialists (Statistical, Behavioural, Temporal) identified this as SUSPICIOUS with 0.75 confidence each, while Protocol agent assessed it as BENIGN (0.85 confidence). The specialist consensus points to RDP brute force activity based on: external IP targeting RDP port 3389, short 2.6-second duration typical of authentication attempts, high IAT variance suggesting automated timing, and packet size distribution consistent with credential exchange. However, the Devil's Advocate raises compelling counterarguments with 0.8 confidence, noting the substantial bidirectional data exchange (3393 total bytes), zero retransmissions, and clean TCP termination which could indicate successful RDP session establishment rather than failed brute force. The DA's strongest point is that the data volume contradicts typical failed authentication patterns. Given the 3:1 specialist split toward malicious assessment but strong DA counterweight (30%), the evidence suggests suspicious activity that warrants investigation, but with moderate rather than high confidence due to legitimate alternative explanations.",
+      "consensus_score": 0.7,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Destination port 3389 correctly identifies RDP service",
+            "TCP protocol (6) is appropriate for RDP",
+            "Source port 5388 is in valid ephemeral range",
+            "TCP flags 30 (SYN+ACK+PSH+FIN) indicate normal connection lifecycle",
+            "Bidirectional traffic with reasonable byte counts (1520 in, 1873 out)",
+            "Packet size distribution is consistent with RDP data transfer",
+            "L7_PROTO value 88 may indicate application-level protocol detection",
+            "No retransmissions suggest stable connection",
+            "Connection duration of 2.6 seconds is reasonable for RDP session establishment"
+          ]
+        },
+        "statistical": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.75,
+          "attack_type": "RDP Brute Force or Reconnaissance",
+          "key_findings": [
+            "External IP targeting RDP port 3389",
+            "High IAT standard deviation (423ms src, 506ms dst) indicating bursty, non-human timing",
+            "IAT_MIN of 0 with high IAT_MAX suggests burst behavior typical of automated tools",
+            "Packet size distribution spans full range (40-1213 bytes) consistent with RDP handshake attempts",
+            "Short flow duration (2.6s) with bidirectional traffic typical of failed authentication",
+            "11 small packets (<128 bytes) suggesting multiple request/response cycles"
+          ]
+        },
+        "behavioural": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.75,
+          "attack_type": "RDP Brute Force Attempt",
+          "key_findings": [
+            "RDP port 3389 targeted",
+            "Short duration connection (2.6 seconds)",
+            "Small data volumes typical of authentication attempts",
+            "TCP flags indicate connection termination",
+            "External-to-internal RDP access attempt",
+            "Packet size pattern consistent with credential exchange"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.75,
+          "attack_type": "RDP brute force or exploitation attempt",
+          "key_findings": [
+            "External to internal RDP connection attempt",
+            "Unusual L7_PROTO value (88) for RDP traffic",
+            "Bidirectional data exchange suggesting protocol interaction",
+            "Flow duration and packet sizes consistent with authentication attempt",
+            "Source IP appears to be external/public addressing internal RFC 1918 space"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "The substantial bidirectional data exchange (3393 total bytes) with clean TCP termination and zero retransmissions strongly suggests successful RDP protocol negotiation and session establishment, which contradicts the brute force hypothesis that would show minimal data transfer and connection failures"
+      },
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "tokens": {
+        "input": 12415,
+        "output": 2113,
+        "total": 14528
+      },
+      "cost_usd": 0.06894,
+      "agent_costs": {
+        "protocol": 0.008556000000000001,
+        "statistical": 0.008595,
+        "behavioural": 0.010149,
+        "temporal": 0.009531000000000001,
+        "devils_advocate": 0.016184999999999998,
+        "orchestrator": 0.015924
+      },
+      "time_seconds": 47.40647292137146,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 1,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.65,
+      "attack_type_predicted": "SMB/NetBIOS exploitation attempt",
+      "reasoning": "All four specialists identify this as an external-to-internal SMB connection warranting concern, with the behavioral agent showing highest confidence (0.92) for malicious activity. The protocol agent identifies TCP flag inconsistencies and external SMB access as high-risk indicators. The statistical agent notes automated response patterns and reconnaissance-like characteristics. The temporal agent confirms the suspicious nature of isolated external SMB access. However, the Devil's Advocate presents a compelling 0.85 confidence argument for legitimate scenarios including VPN users, cloud services, or remote workers accessing authorized file shares. The successful bidirectional data exchange (707/528 bytes) with proper TCP lifecycle could indicate valid authentication rather than exploitation. The lack of scanning patterns, failed connections, or typical attack signatures moderates the threat assessment. While external SMB access remains inherently risky and the specialist consensus (3/4 viewing as suspicious/malicious) cannot be ignored, the strong benign alternatives and clean connection characteristics prevent a definitive malicious verdict.",
+      "consensus_score": 0.8,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.8,
+          "attack_type": "SMB/NetBIOS exploitation attempt",
+          "key_findings": [
+            "External IP (122.154.103.133) connecting to SMB port 445 - high risk for lateral movement",
+            "TCP flags mismatch: CLIENT_TCP_FLAGS=26 vs SERVER_TCP_FLAGS=30 suggests connection issues",
+            "L7_PROTO=10 may not align with expected SMB/CIFS protocol indicators",
+            "Bidirectional data transfer (707 in, 528 out) suggests successful protocol negotiation",
+            "Short flow duration (1.08s) with data exchange typical of reconnaissance or exploitation",
+            "Packet size distribution indicates protocol handshake followed by data transfer"
+          ]
+        },
+        "statistical": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.75,
+          "attack_type": "SMB/NetBIOS exploitation attempt",
+          "key_findings": [
+            "External to internal SMB connection (122.154.103.133 -> 172.31.67.108:445)",
+            "Perfect server response timing (DST_TO_SRC_IAT_STDDEV = 0) indicates automated responses",
+            "All packets are small (<=256 bytes) suggesting protocol negotiation/enumeration rather than file transfer",
+            "Short connection duration (1.08s) with immediate disconnect pattern",
+            "Client IAT shows burst pattern (min=0, high stddev=107) typical of automated tools",
+            "Asymmetric throughput ratio (5232:3907) consistent with reconnaissance traffic"
+          ]
+        },
+        "behavioural": {
+          "verdict": "MALICIOUS",
+          "confidence": 0.92,
+          "attack_type": "SMB/NetBIOS exploitation attempt",
+          "key_findings": [
+            "External-to-internal SMB connection (port 445)",
+            "Bidirectional data transfer indicating successful connection",
+            "Short duration with moderate data exchange typical of reconnaissance",
+            "TCP flags show complete connection lifecycle",
+            "Source IP appears to be external/public range"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.75,
+          "attack_type": "SMB/NetBIOS exploitation attempt",
+          "key_findings": [
+            "External to internal network connection",
+            "Targeting SMB port 445",
+            "Successful bidirectional data exchange",
+            "Complete TCP session with proper teardown",
+            "Single isolated connection limits pattern analysis"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.85,
+        "strongest_benign_indicator": "The successful bidirectional data exchange with proper TCP connection establishment and teardown, combined with packet sizes consistent with SMB authentication handshake rather than exploitation payloads, strongly suggests legitimate file sharing access with valid credentials"
+      },
+      "mitre_techniques": [
+        "T1021.002",
+        "T1135",
+        "T1083"
+      ],
+      "tokens": {
+        "input": 12135,
+        "output": 1920,
+        "total": 14055
+      },
+      "cost_usd": 0.06520500000000001,
+      "agent_costs": {
+        "protocol": 0.00807,
+        "statistical": 0.008739,
+        "behavioural": 0.009783,
+        "temporal": 0.009255,
+        "devils_advocate": 0.01446,
+        "orchestrator": 0.014898000000000002
+      },
+      "time_seconds": 30.408489227294922,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 2,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.65,
+      "attack_type_predicted": "Port Scanning / Network Reconnaissance",
+      "reasoning": "The specialist consensus is strongly aligned (3/4 MALICIOUS, 1/4 SUSPICIOUS) identifying classic port scanning indicators: TCP SYN-only packet to uncommon port 5555 with no server response, extremely short 1ms duration, and unidirectional traffic. The Protocol Agent notes the non-standard port and lack of response, Statistical Agent identifies the anomalous unidirectional pattern with high confidence (0.95), Behavioural Agent confirms reconnaissance signatures with MITRE T1046, and Temporal Agent confirms scanning characteristics despite limited context. However, the Devil's Advocate presents a compelling 30% counterweight argument: the source IP appears academic (129.21.x.x), port 5555 has legitimate enterprise uses (Oracle WebCenter, pcAnywhere), and the single attempt with no retries suggests well-behaved client software rather than aggressive scanning tools. The lack of systematic multi-port scanning and absence of follow-up attempts weakens the malicious case. While the technical indicators strongly suggest reconnaissance, the alternative explanation of a failed legitimate connection attempt cannot be dismissed. The verdict balances the strong specialist evidence against the reasonable doubt raised by the benign interpretation.",
+      "consensus_score": 0.81,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "Port Scanning",
+          "key_findings": [
+            "TCP SYN (flag=2) to non-standard port 5555",
+            "No server response (SERVER_TCP_FLAGS=0, OUT_BYTES=0)",
+            "Single packet flow with no established connection",
+            "Port 5555 not associated with common legitimate services",
+            "Pattern typical of reconnaissance/port scanning activity"
+          ]
+        },
+        "statistical": {
+          "verdict": "MALICIOUS",
+          "confidence": 0.95,
+          "attack_type": "Port Scanning (SYN Scan)",
+          "key_findings": [
+            "TCP_FLAGS=2 (SYN only) with SERVER_TCP_FLAGS=0 indicates no response",
+            "Completely one-directional traffic: IN_BYTES=40, OUT_BYTES=0",
+            "Extremely short flow duration (1ms) with no bidirectional communication",
+            "Target port 5555 is non-standard service port",
+            "High throughput (320000) for single packet suggests rapid scanning",
+            "Zero IAT values indicate single packet transmission",
+            "No retransmissions despite failed connection"
+          ]
+        },
+        "behavioural": {
+          "verdict": "MALICIOUS",
+          "confidence": 0.85,
+          "attack_type": "Port Scanning / Reconnaissance",
+          "key_findings": [
+            "TCP SYN flag only (TCP_FLAGS=2) with no ACK response",
+            "Zero return traffic (OUT_BYTES=0, OUT_PKTS=0)",
+            "Extremely short flow duration (1ms)",
+            "Single packet probe to uncommon port 5555",
+            "Server TCP flags = 0 indicating no response from target",
+            "Small packet size consistent with TCP SYN probe"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.7,
+          "attack_type": "port_scanning",
+          "key_findings": [
+            "TCP SYN only packet with no server response",
+            "Target port 5555 is uncommon/non-standard",
+            "Extremely short flow duration (1ms) typical of failed connection attempts",
+            "Zero server response bytes indicates port likely closed or filtered",
+            "Single packet probe pattern consistent with port scanning tools"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "Single failed connection attempt with no retries from academic network IP to commonly-used enterprise service port, exhibiting well-behaved client characteristics inconsistent with automated scanning tools"
+      },
+      "mitre_techniques": [
+        "T1046"
+      ],
+      "tokens": {
+        "input": 11861,
+        "output": 1823,
+        "total": 13684
+      },
+      "cost_usd": 0.062928,
+      "agent_costs": {
+        "protocol": 0.007023,
+        "statistical": 0.008591999999999999,
+        "behavioural": 0.009036,
+        "temporal": 0.008883,
+        "devils_advocate": 0.014447999999999999,
+        "orchestrator": 0.014946000000000001
+      },
+      "time_seconds": 29.605021953582764,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 3,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "RDP Brute Force Attack",
+      "reasoning": "Four specialist agents reached strong consensus (2 MALICIOUS, 2 SUSPICIOUS) identifying this as an RDP attack. The Protocol Agent flagged unusual TCP flags 222 indicating aggressive connection behavior from external source to internal RDP port 3389. The Statistical Agent identified suspicious timing patterns with high variance and short duration inconsistent with normal RDP use. The Behavioural Agent provided strongest evidence with 0.85 confidence, identifying classic RDP brute force characteristics including abnormal TCP flags, authentication-sized packets, and irregular timing patterns. The Temporal Agent confirmed external-to-internal RDP targeting with encrypted application layer activity. While the Devil's Advocate raised valid points about legitimate RDP connections and NAT/firewall effects, the combination of TCP flags 222 (indicating connection reset/termination issues), external source targeting internal RDP, short duration with bidirectional traffic suggesting failed authentication, and irregular timing patterns characteristic of automated tools provides compelling evidence of malicious activity. The DA's strongest argument about successful bidirectional exchange is countered by the fact that even failed brute force attempts often involve some data exchange during authentication handshake before termination.",
+      "consensus_score": 0.81,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.8,
+          "attack_type": "potential_rdp_attack",
+          "key_findings": [
+            "External IP (13.250.114.71) connecting to internal RDP port 3389",
+            "Unusual CLIENT_TCP_FLAGS value 222 indicates multiple flag combinations (RST+SYN+FIN+PSH+ACK+URG)",
+            "Flag combination suggests aggressive connection behavior or potential attack tool",
+            "RDP connections from internet-facing sources are high-risk",
+            "Bidirectional data transfer confirms established connection",
+            "Large packet size variation (40-1189 bytes) consistent with RDP protocol"
+          ]
+        },
+        "statistical": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.75,
+          "attack_type": "RDP Brute Force or Exploitation Attempt",
+          "key_findings": [
+            "External to internal RDP connection (port 3389)",
+            "Short connection duration (2.4s) for RDP protocol",
+            "High inter-arrival time variance (StdDev 373ms vs Avg 346ms)",
+            "Mix of very small (40 bytes) and very large (1189 bytes) packets",
+            "10 packets under 128 bytes suggesting multiple small interactions",
+            "Bidirectional traffic with reasonable balance but suspicious timing patterns"
+          ]
+        },
+        "behavioural": {
+          "verdict": "MALICIOUS",
+          "confidence": 0.85,
+          "attack_type": "RDP Brute Force Attack",
+          "key_findings": [
+            "Connection to RDP port 3389",
+            "Abnormal TCP flags (222) indicating connection issues",
+            "Short flow duration with bidirectional traffic",
+            "Small packet sizes typical of authentication attempts",
+            "External to internal RDP connection",
+            "Irregular inter-arrival time patterns"
+          ]
+        },
+        "temporal": {
+          "verdict": "MALICIOUS",
+          "confidence": 0.85,
+          "attack_type": "RDP Brute Force Attack",
+          "key_findings": [
+            "external_to_internal_rdp",
+            "authentication_traffic_pattern",
+            "suspicious_tcp_flags",
+            "encrypted_application_layer"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.7,
+        "strongest_benign_indicator": "The successful bidirectional data exchange (1384/1721 bytes) with zero packet retransmissions indicates a clean, legitimate protocol negotiation rather than a failed attack attempt"
+      },
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "tokens": {
+        "input": 12294,
+        "output": 2014,
+        "total": 14308
+      },
+      "cost_usd": 0.06709200000000001,
+      "agent_costs": {
+        "protocol": 0.007683000000000001,
+        "statistical": 0.009042000000000001,
+        "behavioural": 0.010520999999999999,
+        "temporal": 0.008913,
+        "devils_advocate": 0.015456000000000001,
+        "orchestrator": 0.015477
+      },
+      "time_seconds": 34.561086893081665,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 4,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "SSH brute force attack",
+      "reasoning": "Despite three agents finding individual flows benign, the temporal agent's analysis reveals this flow is part of a clear SSH brute force campaign from IP 13.58.98.64. The temporal context is decisive: 399 consecutive flows to the same SSH destination over 10 minutes with uniform characteristics strongly indicates automated attack behavior. While the devil's advocate raises valid points about legitimate automation scenarios, the pattern lacks the variation expected from genuine DevOps tools. The bidirectional data transfer (3216/3765 bytes) cited as evidence of successful authentication is actually consistent with SSH protocol exchanges during failed login attempts, including banner exchange, key negotiation, and authentication failure responses. The 394ms duration aligns with typical brute force timing rather than successful interactive sessions. The temporal pattern overrides individual flow legitimacy - this represents a sophisticated brute force attack where each attempt follows proper SSH protocol but fails authentication.",
+      "consensus_score": 0.68,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.9,
+          "attack_type": null,
+          "key_findings": [
+            "Port 22 correctly matches SSH service",
+            "TCP protocol (6) is appropriate for SSH",
+            "Source port 44438 is in proper ephemeral range",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) indicate normal connection lifecycle",
+            "Bidirectional data transfer (3216 in, 3765 out bytes) typical of interactive SSH session",
+            "Packet size distribution shows mix of small control packets and larger data packets consistent with SSH",
+            "No retransmissions indicate clean connection",
+            "L7_PROTO value 92 suggests proper application layer detection",
+            "Connection duration of 394ms is reasonable for SSH handshake and brief interaction"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced traffic: 3216 IN vs 3765 OUT bytes indicates interactive SSH session",
+            "Normal packet distribution: Mix of small control packets (34 \u2264128 bytes) and larger data packets",
+            "Reasonable flow duration of 394ms with moderate throughput (~65-76 Kbps)",
+            "IAT patterns show interactive behavior: avg 16-19ms with moderate variance",
+            "Zero retransmissions indicate clean connection",
+            "TCP window sizes (26K+) are normal for SSH"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "legitimate_ssh_connection",
+            "bidirectional_data_transfer",
+            "proper_tcp_handshake",
+            "interactive_traffic_pattern",
+            "no_retransmissions",
+            "normal_packet_size_distribution"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH brute force attack",
+          "key_findings": [
+            "399 consecutive flows to same SSH destination",
+            "Uniform flow characteristics across all connections",
+            "Short connection durations (200-460ms) typical of failed login attempts",
+            "Consistent byte/packet patterns suggesting automated tool",
+            "No legitimate SSH session establishment patterns observed",
+            "10+ minute sustained attack duration",
+            "Target flow matches exact attack pattern"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "The consistent bidirectional data transfer pattern (3216 in/3765 out bytes) with clean TCP connection lifecycle indicates successful SSH sessions rather than failed brute force attempts, as failed login attempts would show minimal return data and abrupt disconnections"
+      },
+      "mitre_techniques": [
+        "T1110.001",
+        "T1021.004"
+      ],
+      "tokens": {
+        "input": 62974,
+        "output": 2016,
+        "total": 64990
+      },
+      "cost_usd": 0.21916200000000002,
+      "agent_costs": {
+        "protocol": 0.008088,
+        "statistical": 0.008202000000000001,
+        "behavioural": 0.009801,
+        "temporal": 0.162336,
+        "devils_advocate": 0.015629999999999998,
+        "orchestrator": 0.015105
+      },
+      "time_seconds": 34.16845703125,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 5,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "SSH_BRUTE_FORCE_ATTEMPT",
+      "reasoning": "Despite this individual flow showing characteristics of a successful SSH connection, the temporal context provides overwhelming evidence of a coordinated brute force attack. Three of four specialists (Protocol, Statistical, Behavioural) assessed this flow as benign based on its intrinsic properties: substantial bidirectional data transfer (6.9KB total), proper TCP connection lifecycle, varied packet sizes including large 1028-byte packets typical of SSH key exchange, and zero retransmissions. However, the Temporal Agent revealed critical context: this flow is part of a massive campaign of 399 flows from the same source IP targeting the same SSH port over 65 minutes - a clear brute force pattern. The Devil's Advocate raises valid points about legitimate automation scenarios and notes the flow's successful connection characteristics, carrying 30% weight in the decision. However, the scale and uniformity of the temporal pattern (399 connections with nearly identical byte patterns and short durations) overwhelmingly indicates malicious intent. This specific flow likely represents one successful authentication attempt within a broader brute force campaign, explaining why it shows normal SSH session characteristics while being part of an attack sequence. The temporal evidence is too compelling to ignore despite the flow's individual benign characteristics.",
+      "consensus_score": 0.25,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.9,
+          "attack_type": null,
+          "key_findings": [
+            "Correct port-service alignment: TCP port 22 for SSH",
+            "Source port 44810 in ephemeral range",
+            "TCP flags 27 indicate normal connection lifecycle",
+            "Bidirectional data transfer (3148 in, 3765 out bytes)",
+            "Packet size distribution normal for SSH (mix of small control and larger data packets)",
+            "No retransmissions indicate stable connection",
+            "All protocol-specific fields (DNS, FTP, ICMP) correctly zeroed"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced bidirectional traffic (3148 IN vs 3765 OUT bytes)",
+            "SSH protocol (port 22, L7_PROTO 92) with expected packet sizes",
+            "Interactive timing pattern (IAT StdDev higher than mean indicates human interaction)",
+            "Zero retransmissions indicating clean connection",
+            "Packet size distribution typical for SSH terminal session",
+            "Flow duration of 380ms reasonable for SSH handshake/authentication"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "SSH port 22 communication",
+            "Bidirectional data transfer with balanced volumes",
+            "Normal TCP connection lifecycle flags",
+            "Varied packet sizes including large packets typical of SSH key exchange",
+            "No retransmissions - clean connection",
+            "Interactive timing patterns in IAT statistics"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH_BRUTE_FORCE_ATTEMPT",
+          "key_findings": [
+            "399_total_flows_from_single_IP_in_65_minutes",
+            "all_flows_target_SSH_port_22_same_destination",
+            "uniform_byte_patterns_typical_of_brute_force_attempts",
+            "short_connection_durations_indicating_failed_logins",
+            "sustained_attack_over_extended_timeframe",
+            "target_flow_matches_attack_pattern_exactly"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.75,
+        "strongest_benign_indicator": "The substantial bidirectional data transfer (3148 bytes in, 3765 bytes out) with varied packet sizes up to 1028 bytes demonstrates successful SSH authentication and command execution, which is incompatible with failed brute force attempts that typically involve minimal data exchange"
+      },
+      "mitre_techniques": [
+        "T1110.001"
+      ],
+      "tokens": {
+        "input": 62967,
+        "output": 2095,
+        "total": 65062
+      },
+      "cost_usd": 0.220326,
+      "agent_costs": {
+        "protocol": 0.008343,
+        "statistical": 0.007932,
+        "behavioural": 0.009126,
+        "temporal": 0.162741,
+        "devils_advocate": 0.016002,
+        "orchestrator": 0.016182000000000002
+      },
+      "time_seconds": 38.013587951660156,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 6,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "SSH Brute Force Attack",
+      "reasoning": "While this individual flow shows characteristics of a successful SSH connection with proper bidirectional data transfer (3148/3817 bytes), varied packet sizes up to 1028 bytes, and clean protocol termination, the temporal context is overwhelming. The Temporal Agent identified 399 flows from the same source IP (13.58.98.64) to the same SSH destination over 17.8 minutes - approximately 22 connections per minute. This rate and pattern strongly indicates automated brute force activity. The Devil's Advocate argument about AWS infrastructure automation has merit and reduces confidence, but legitimate automation typically doesn't require this volume of connections to a single host in such rapid succession. The successful data transfer in this specific flow suggests it may represent a successful authentication attempt within the broader brute force campaign, making it part of the attack sequence rather than benign automation. The uniform characteristics across all 399 flows (similar packet counts, byte volumes, and durations) support automated tooling rather than varied legitimate tasks.",
+      "consensus_score": 0.6,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Port 22 correctly aligned with TCP protocol for SSH service",
+            "Source port 44936 in proper ephemeral range",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) indicate complete connection lifecycle",
+            "Bidirectional traffic (3148 in, 3817 out bytes) typical of SSH interactive session",
+            "L7_PROTO 92 matches SSH protocol classification",
+            "Packet size distribution shows mix of small control packets and larger data packets",
+            "No retransmissions indicate healthy connection",
+            "Flow duration of 351ms reasonable for SSH handshake and brief activity"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced traffic: 3148 bytes in vs 3817 bytes out (1.21 ratio)",
+            "Even packet counts: 23 in vs 22 out packets",
+            "Appropriate flow duration: 351ms with substantial data exchange",
+            "Mixed packet sizes: majority small packets (34/45 \u2264128 bytes) with some larger ones",
+            "Reasonable IAT variation: avg 15-16ms with moderate stddev indicating interactive session",
+            "No retransmissions: indicates good network conditions",
+            "High but balanced throughput: 71KB/s vs 87KB/s bidirectional"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "SSH protocol on port 22",
+            "Bidirectional data exchange indicating successful connection",
+            "Normal packet size distribution for SSH handshake",
+            "No retransmissions suggesting successful communication",
+            "Interactive timing patterns rather than automated attempts"
+          ]
+        },
+        "temporal": {
+          "verdict": "MALICIOUS",
+          "confidence": 0.95,
+          "attack_type": "SSH Brute Force Attack",
+          "key_findings": [
+            "399 total flows from same source IP to same SSH destination",
+            "All flows target port 22 (SSH service)",
+            "Uniform flow characteristics indicate automated tooling",
+            "Sustained attack over 17.8 minutes",
+            "Short connection durations typical of failed login attempts",
+            "No variation in target - focused attack on single host"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.75,
+        "strongest_benign_indicator": "Bidirectional data transfer of 3148/3817 bytes with varied packet sizes up to 1028 bytes strongly indicates successful SSH authentication and encrypted data exchange, which would not occur in brute force attempts that fail at the authentication stage"
+      },
+      "mitre_techniques": [
+        "T1110.001",
+        "T1110.003"
+      ],
+      "tokens": {
+        "input": 62950,
+        "output": 2058,
+        "total": 65008
+      },
+      "cost_usd": 0.21972,
+      "agent_costs": {
+        "protocol": 0.007938,
+        "statistical": 0.008697,
+        "behavioural": 0.009696,
+        "temporal": 0.161916,
+        "devils_advocate": 0.015741,
+        "orchestrator": 0.015732
+      },
+      "time_seconds": 33.16355800628662,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 7,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.65,
+      "attack_type_predicted": "Automated SSH Activity - Potential Reconnaissance/Brute Force",
+      "reasoning": "Synthesis of specialist analyses reveals significant disagreement requiring careful weighing of evidence. The Temporal Agent provides the most compelling evidence with 399 SSH connections over 15 minutes showing highly uniform characteristics - this level of repetition strongly indicates automated behavior. The Statistical Agent corroborates this with suspicious timing patterns (378ms duration, 47 packets in <400ms, bursty IAT patterns). However, the Protocol and Behavioural Agents identify legitimate SSH protocol usage with substantial bidirectional data transfer (7KB total) and proper TCP handshake patterns. The Devil's Advocate presents a strong counterargument (30% weight) suggesting legitimate AWS infrastructure automation, noting the AWS source IP, successful data exchanges, and uniform patterns typical of professional DevOps tools rather than failed brute force attempts. The key tension is between the temporal pattern (highly suspicious automation) and the successful data exchanges (suggesting legitimate authentication). Given 2/4 specialists rate as suspicious/malicious against 2/4 benign, combined with strong DA arguments about legitimate cloud automation, this warrants a SUSPICIOUS verdict with moderate confidence pending further investigation.",
+      "consensus_score": 0.5,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.9,
+          "attack_type": null,
+          "key_findings": [
+            "Correct TCP protocol for SSH service on port 22",
+            "Proper ephemeral source port (45858)",
+            "Bidirectional encrypted traffic with 3288/3765 bytes",
+            "Normal TCP flags indicating data transfer and graceful close",
+            "No retransmissions or suspicious timing patterns",
+            "Packet size distribution consistent with SSH protocol overhead",
+            "L7_PROTO value 92 aligns with encrypted/SSH traffic classification"
+          ]
+        },
+        "statistical": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.7,
+          "attack_type": "SSH Brute Force or Automated Attack",
+          "key_findings": [
+            "Extremely short SSH session duration (378ms) with significant data exchange (7KB)",
+            "High packet density: 47 packets in 378ms indicates rapid-fire communication",
+            "IAT patterns show bursty behavior (IAT_MIN=0, high stddev) typical of automated tools",
+            "Bidirectional traffic volume slightly favors server response, consistent with login attempt rejection",
+            "TCP window sizes normal but session termination very quick for SSH protocol",
+            "Packet size distribution shows mix of small control packets and larger data packets"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "ssh_port_connection",
+            "bidirectional_data_transfer",
+            "normal_packet_distribution",
+            "proper_tcp_handshake",
+            "interactive_session_pattern"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH Brute Force / Automated Login Attempts",
+          "key_findings": [
+            "399 total SSH connections from same source to same destination",
+            "Extremely uniform flow characteristics across all connections",
+            "Sustained activity over ~15 minute timespan",
+            "All connections target SSH port 22 on single host",
+            "Flow durations consistently 300-430ms suggesting automated tools",
+            "Packet and byte counts show minimal variation typical of scripted activity",
+            "No legitimate SSH session diversity expected from human usage"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "The consistent successful bidirectional data exchange (3,288 bytes in, 3,765 bytes out) across all connections strongly indicates legitimate authenticated SSH sessions rather than failed brute force attempts, as failed authentication would produce minimal server response data"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 63076,
+        "output": 2118,
+        "total": 65194
+      },
+      "cost_usd": 0.22099800000000003,
+      "agent_costs": {
+        "protocol": 0.008147999999999999,
+        "statistical": 0.008682,
+        "behavioural": 0.009036,
+        "temporal": 0.162951,
+        "devils_advocate": 0.016107,
+        "orchestrator": 0.016073999999999998
+      },
+      "time_seconds": 39.421807050704956,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 8,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.65,
+      "attack_type_predicted": "SSH Brute Force or Automated SSH Tool",
+      "reasoning": "This flow represents part of a high-volume automated SSH activity pattern that warrants investigation despite showing successful connection characteristics. The temporal agent's finding of 399 SSH flows from the same IP in 6 minutes is the most significant indicator, suggesting automated behavior that could be malicious. While the protocol and behavioural agents correctly note successful SSH connection establishment with bidirectional data transfer (3132/3869 bytes) and proper protocol detection (L7_PROTO 92), the statistical agent's identification of automation patterns (0ms minimum IAT, high throughput) aligns with the temporal findings. The Devil's Advocate raises valid points about legitimate DevOps automation, particularly from AWS infrastructure, and the successful data transfer does argue against typical failed brute force attempts. However, the sheer volume and uniformity of connections, combined with the high-speed automation patterns, creates enough concern to classify this as suspicious pending further investigation to determine if this represents legitimate infrastructure management or credential stuffing/brute force with some successful authentications.",
+      "consensus_score": 0.5,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Port 22 correctly matches SSH service",
+            "TCP protocol (6) appropriate for SSH",
+            "Source port 46308 in valid ephemeral range",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) indicate established connection with data transfer",
+            "Bidirectional traffic (3132 in, 3869 out bytes) typical of interactive SSH session",
+            "Packet size distribution shows mix of small control packets and larger data packets",
+            "L7_PROTO 92 suggests SSH protocol detection",
+            "No retransmissions indicate stable connection"
+          ]
+        },
+        "statistical": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.7,
+          "attack_type": "SSH Brute Force or Automated SSH Tool",
+          "key_findings": [
+            "Very high throughput (76-94K bps) for SSH port 22 in short 325ms duration",
+            "IAT minimum of 0ms in both directions indicates bursty/automated traffic",
+            "High proportion of small packets (35 out of 46 total under 128 bytes) typical of authentication handshakes",
+            "Short flow duration with significant data transfer suggests automated tool rather than human interaction",
+            "Balanced packet counts (23 each direction) but unbalanced byte counts suggest rapid request-response cycles"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "SSH port 22 connection with bidirectional data transfer",
+            "Balanced packet exchange indicating successful handshake",
+            "Varied packet sizes suggesting legitimate application data",
+            "Normal TCP windows and proper connection flags",
+            "Reasonable duration for SSH session establishment"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH brute force or automated exploitation attempt",
+          "key_findings": [
+            "Massive volume: 399 SSH flows from single IP in ~6 minutes",
+            "Uniform flow characteristics suggesting automation",
+            "All flows target same destination:port (172.31.69.25:22)",
+            "Short connection durations (~325ms average) typical of failed auth attempts",
+            "Consistent byte patterns across flows indicating scripted behavior",
+            "No variation in targeting - exclusive focus on one SSH server"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "Successful bidirectional data transfer (3132/3869 bytes) with proper SSH protocol detection (L7_PROTO 92) indicates completed authentication and legitimate data exchange, which is incompatible with failed brute force attempts"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 62806,
+        "output": 1969,
+        "total": 64775
+      },
+      "cost_usd": 0.217953,
+      "agent_costs": {
+        "protocol": 0.007802999999999999,
+        "statistical": 0.008322,
+        "behavioural": 0.009156000000000001,
+        "temporal": 0.161616,
+        "devils_advocate": 0.016026,
+        "orchestrator": 0.01503
+      },
+      "time_seconds": 35.78213906288147,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 9,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.6,
+      "attack_type_predicted": "SSH brute force attack",
+      "reasoning": "This presents a challenging case where individual flow analysis suggests legitimate SSH activity, but temporal analysis reveals a concerning attack pattern. The protocol, statistical, and behavioural agents all identify normal SSH session characteristics: proper port 22 usage, balanced bidirectional traffic (3116/3869 bytes), complete TCP handshake, and packet sizes consistent with SSH key exchange. However, the temporal agent provides compelling evidence of sustained automated behavior - 399 consecutive SSH connections from the same source over 1 hour 49 minutes, each with remarkably similar characteristics (200-460ms duration, ~3KB traffic volumes). The Devil's Advocate raises valid points about legitimate automation tools, but the scale and uniformity of connections strongly suggests automated reconnaissance or brute force attempts. While individual connections appear technically valid, the aggregate pattern indicates malicious intent. The substantial data volumes could represent failed authentication handshakes rather than successful sessions, as SSH protocol exchanges significant data even during failed attempts.",
+      "consensus_score": 0.25,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Proper port-service alignment: port 22 for SSH",
+            "Correct transport protocol: TCP (6) for SSH",
+            "Ephemeral source port 46412 is normal",
+            "Bidirectional data flow (3116 in, 3869 out bytes) indicates interactive session",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) suggest complete connection lifecycle",
+            "Packet size range 52-1028 bytes is typical for SSH encrypted traffic",
+            "No suspicious protocol field mismatches",
+            "Connection duration of 335ms with 23 packets each direction shows brief but active session"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced packet counts (23 IN, 23 OUT) typical of interactive SSH",
+            "Reasonable byte asymmetry (3116 IN, 3869 OUT) for SSH terminal session",
+            "Normal flow duration (335ms) for SSH connection establishment",
+            "Diverse packet sizes (52-1028 bytes) consistent with SSH protocol overhead and data",
+            "Zero retransmissions indicate clean connection",
+            "IAT patterns show interactive timing with reasonable variation",
+            "TCP window sizes normal for established connection"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "SSH port 22 connection",
+            "Balanced bidirectional traffic",
+            "Proper TCP connection lifecycle",
+            "Variable packet sizes including large packets",
+            "Reasonable session duration",
+            "Normal inter-arrival time patterns"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH brute force attack",
+          "key_findings": [
+            "399 consecutive SSH connections from same source to same destination",
+            "Uniform connection durations (200-460ms) indicating automated scripted behavior",
+            "Consistent traffic volumes per connection (~3KB in, ~3.8KB out) typical of failed SSH auth",
+            "Sustained attack over 1 hour 49 minutes with no successful long-lived sessions",
+            "Target flow exhibits identical characteristics to the attack pattern"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.75,
+        "strongest_benign_indicator": "The substantial bidirectional data exchange (3116 bytes in, 3869 bytes out) with large packet sizes up to 1028 bytes indicates successful SSH session establishment and data transfer, which contradicts the brute force hypothesis that would typically show minimal data exchange and connection failures"
+      },
+      "mitre_techniques": [
+        "T1110.001"
+      ],
+      "tokens": {
+        "input": 62849,
+        "output": 1931,
+        "total": 64780
+      },
+      "cost_usd": 0.217512,
+      "agent_costs": {
+        "protocol": 0.008373,
+        "statistical": 0.008157000000000001,
+        "behavioural": 0.009096,
+        "temporal": 0.16206600000000002,
+        "devils_advocate": 0.015279000000000001,
+        "orchestrator": 0.014541
+      },
+      "time_seconds": 34.344090938568115,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 10,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "SSH brute force attack",
+      "reasoning": "Despite three specialists classifying this individual flow as benign based on normal SSH protocol characteristics, the temporal agent's discovery of 399 flows from the same source IP to the same destination creates an overwhelming pattern of malicious activity. The devil's advocate raises valid points about legitimate DevOps automation, but several factors undermine this explanation: (1) 399 connections in 13 minutes is excessive even for aggressive automation, (2) legitimate automation typically uses persistent connections or connection pooling rather than creating hundreds of separate flows, (3) the uniform characteristics across all flows suggest systematic credential testing rather than varied administrative tasks, (4) the temporal pattern shows sustained repetitive behavior characteristic of brute force attacks. While this specific flow shows successful data transfer, it represents one attempt in a larger attack campaign. The temporal context transforms what appears to be a normal SSH session into evidence of a successful authentication attempt within a broader brute force attack.",
+      "consensus_score": 0.62,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.9,
+          "attack_type": null,
+          "key_findings": [
+            "Port 22 correctly matches SSH service",
+            "TCP protocol (6) appropriate for SSH",
+            "Source port 46502 in valid ephemeral range",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) indicate normal connection lifecycle",
+            "Bidirectional data transfer (3340 in, 3869 out) typical of interactive SSH",
+            "Packet size distribution normal for SSH encrypted traffic",
+            "No retransmissions indicate stable connection",
+            "DNS/FTP fields correctly zero for SSH traffic"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced traffic: 3340 IN_BYTES vs 3869 OUT_BYTES (1.16 ratio)",
+            "Appropriate packet count: 27 IN_PKTS vs 23 OUT_PKTS for interactive session",
+            "Normal SSH packet distribution: majority small packets (39 \u2264128 bytes) with occasional larger ones",
+            "Zero retransmissions indicating clean connection",
+            "IAT patterns consistent with interactive SSH: moderate variability (stddev 17-29ms)",
+            "TCP window sizes normal for SSH (26K range)",
+            "Flow duration 365ms reasonable for SSH handshake completion"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "SSH port 22 connection with successful bidirectional data transfer",
+            "Normal flow duration and packet patterns for SSH session",
+            "No retransmissions indicating stable connection",
+            "Packet size distribution consistent with SSH protocol overhead and data",
+            "Balanced throughput in both directions"
+          ]
+        },
+        "temporal": {
+          "verdict": "MALICIOUS",
+          "confidence": 0.95,
+          "attack_type": "SSH brute force attack",
+          "key_findings": [
+            "399 total flows from same source IP - massive volume",
+            "100% of flows target identical destination IP and port (172.31.69.25:22)",
+            "Uniform flow characteristics across all attempts indicate automation",
+            "SSH protocol (port 22) targeted consistently",
+            "Regular timing intervals between connection attempts",
+            "Sustained attack over 13+ minute timespan",
+            "No port scanning - direct focus on SSH service"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "Three specialist agents (protocol, statistical, behavioral) all classified as BENIGN with high confidence, and the successful bidirectional data transfer (3340/3869 bytes) strongly indicates successful authentication rather than failed brute force attempts"
+      },
+      "mitre_techniques": [
+        "T1110.001"
+      ],
+      "tokens": {
+        "input": 62763,
+        "output": 1864,
+        "total": 64627
+      },
+      "cost_usd": 0.21624900000000002,
+      "agent_costs": {
+        "protocol": 0.007473,
+        "statistical": 0.008622,
+        "behavioural": 0.009516,
+        "temporal": 0.161781,
+        "devils_advocate": 0.014193,
+        "orchestrator": 0.014664
+      },
+      "time_seconds": 48.48183798789978,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 11,
+      "verdict": "MALICIOUS",
+      "confidence": 0.8,
+      "attack_type_predicted": "SSH Brute Force Attack",
+      "reasoning": "Despite the Devil's Advocate presenting plausible cloud infrastructure explanations, the temporal evidence overwhelmingly indicates malicious activity. The temporal agent identified 399 SSH connections from the same source IP to the same destination over 1.4 hours - a pattern that strongly suggests automated brute force attacks rather than legitimate administration. While individual flows like this one show successful data transfer (indicating authentication success), this is actually consistent with brute force attacks that eventually succeed after multiple attempts. The statistical agent's findings of irregular timing patterns and high small packet ratios support automated tool usage. The protocol and behavioral agents correctly identified legitimate SSH characteristics for this specific flow, but failed to consider the broader attack context. The Devil's Advocate's AWS infrastructure argument has merit (13.58.x.x is indeed AWS Ohio region, 172.31.x.x is default VPC range), but legitimate cloud management tools don't typically require 399 separate SSH sessions in 1.4 hours to a single target - they use persistent connections or proper API calls. The successful data transfer in this flow likely represents either a successful brute force attempt or reconnaissance activity following credential compromise.",
+      "consensus_score": 0.6,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.95,
+          "attack_type": null,
+          "key_findings": [
+            "Port 22 correctly matches SSH service",
+            "Source port 46800 is in valid ephemeral range",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) indicate established connection with data transfer",
+            "Bidirectional traffic (3064 bytes in, 3869 bytes out) consistent with interactive SSH session",
+            "Packet size distribution normal for SSH (mix of small control packets and larger data packets)",
+            "No suspicious protocol mismatches or anomalous field values",
+            "Session duration of 423ms with active data exchange is reasonable for SSH"
+          ]
+        },
+        "statistical": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.7,
+          "attack_type": "SSH Brute Force or Automated Login Attempt",
+          "key_findings": [
+            "High small packet ratio (34/45 packets \u2264128 bytes) for SSH protocol",
+            "Very high IAT standard deviation (52ms/59ms) indicates bursty, irregular timing",
+            "Rapid packet exchange (423ms duration, 45 total packets) suggests automated interaction",
+            "Packet size distribution skewed toward small control packets rather than typical SSH data transfer",
+            "IAT_MIN of 0 with high IAT_MAX indicates burst transmission patterns typical of tools"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "SSH port 22 destination",
+            "Bidirectional data exchange with reasonable volumes",
+            "Varied packet sizes indicating interactive session",
+            "Proper TCP connection lifecycle",
+            "No retransmissions",
+            "Reasonable flow duration for SSH session"
+          ]
+        },
+        "temporal": {
+          "verdict": "MALICIOUS",
+          "confidence": 0.95,
+          "attack_type": "SSH Brute Force Attack",
+          "key_findings": [
+            "399 total connections from same source IP all targeting SSH port 22",
+            "Sustained attack over 1.4 hours with regular timing intervals",
+            "Uniform flow characteristics indicating automated tool usage",
+            "Single destination target suggesting focused brute force attack",
+            "Short-lived connections typical of failed authentication attempts",
+            "High connection frequency averaging one attempt every 12-15 seconds"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "Successful bidirectional data transfer of 6933 total bytes with large packet sizes up to 1028 bytes proves this was a successful SSH session that completed authentication and transferred actual data, which would not occur in a brute force attack scenario"
+      },
+      "mitre_techniques": [
+        "T1110.001",
+        "T1021.004"
+      ],
+      "tokens": {
+        "input": 63012,
+        "output": 2097,
+        "total": 65109
+      },
+      "cost_usd": 0.22049100000000002,
+      "agent_costs": {
+        "protocol": 0.008388,
+        "statistical": 0.008232,
+        "behavioural": 0.009306000000000002,
+        "temporal": 0.16284600000000002,
+        "devils_advocate": 0.015726,
+        "orchestrator": 0.015993
+      },
+      "time_seconds": 38.362207889556885,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 12,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "SSH Brute Force Attack",
+      "reasoning": "Despite three specialists finding this individual flow benign based on its protocol compliance and normal SSH characteristics, the temporal agent's discovery of 399 uniform SSH connections from the same source IP creates overwhelming evidence of a brute force campaign. While the Devil's Advocate raises valid points about AWS automation and successful data transfer, the sheer volume and uniformity of connections (399 flows with identical byte ranges, packet counts, and durations) far exceeds normal automation patterns. The key insight is that successful brute force attacks include both failed attempts AND successful authentications - this flow likely represents a successful login within the broader attack campaign. The 374ms duration with 7KB bidirectional data is consistent with successful SSH authentication followed by brief command execution, which attackers often perform to validate compromised credentials. The temporal pattern's extreme uniformity (consistent 3000-3400 byte ranges across 399 flows) indicates scripted attack tools rather than legitimate automation diversity.",
+      "consensus_score": 0.25,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Port 22 correctly aligned with TCP protocol for SSH service",
+            "Source port 47382 in expected ephemeral range",
+            "TCP flags value 27 (FIN+PSH+ACK+SYN) indicates normal connection lifecycle",
+            "Bidirectional traffic with reasonable byte counts (3324 in, 3765 out)",
+            "Packet size distribution consistent with SSH encrypted data transfer",
+            "No retransmissions indicate stable connection",
+            "L7_PROTO value 92 may indicate SSH protocol detection by DPI",
+            "Short duration (374ms) suggests brief but legitimate session"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced bidirectional traffic (3324 IN vs 3765 OUT bytes)",
+            "Normal SSH packet distribution with mix of small control packets and larger data packets",
+            "Reasonable flow duration (374ms) for SSH handshake/initial exchange",
+            "IAT patterns show interactive variability (stddev 20-32ms) not automated tools",
+            "Zero retransmissions indicate clean network conditions",
+            "TCP window sizes normal for SSH connections"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "SSH protocol on port 22",
+            "Substantial bidirectional data transfer",
+            "Normal packet size distribution for encrypted traffic",
+            "Reasonable flow duration and inter-arrival times",
+            "Successful connection with no retransmissions"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH Brute Force Attack",
+          "key_findings": [
+            "399 total flows from same source IP to same SSH destination",
+            "Extremely uniform flow characteristics across all attempts",
+            "Consistent byte patterns (3000-3400 IN_BYTES, 3700-3900 OUT_BYTES)",
+            "Uniform packet counts (20-27 in, 21-24 out) suggesting automated tools",
+            "Duration consistency (200-460ms) indicating scripted timing",
+            "Target flow fits exact pattern of sustained brute force campaign",
+            "All flows target SSH service (port 22) on same host",
+            "No legitimate user variation in connection patterns"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "The substantial bidirectional data transfer (3324 bytes in, 3765 bytes out) with zero retransmissions clearly indicates a successful SSH authentication and command execution session, which directly contradicts the brute force attack hypothesis that would show minimal data transfer and connection failures"
+      },
+      "mitre_techniques": [
+        "T1110.001"
+      ],
+      "tokens": {
+        "input": 62948,
+        "output": 2052,
+        "total": 65000
+      },
+      "cost_usd": 0.21962399999999999,
+      "agent_costs": {
+        "protocol": 0.007938,
+        "statistical": 0.007947,
+        "behavioural": 0.009696,
+        "temporal": 0.162921,
+        "devils_advocate": 0.015252000000000002,
+        "orchestrator": 0.015870000000000002
+      },
+      "time_seconds": 37.74008893966675,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 13,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "SSH Brute Force Attack",
+      "reasoning": "While individual flow analysis shows successful SSH connections, the temporal context reveals a clear automated attack pattern. The temporal agent identified 399 flows from the same IP in 10 minutes, all targeting SSH with mechanically uniform characteristics - this is textbook SSH brute force behavior. The statistical agent's findings of 76% small packets, bursty timing patterns, and rapid automated sequences support this conclusion. Although the protocol and behavioral agents correctly note the individual connection appears successful, this actually strengthens the brute force case - successful authentication during credential stuffing attacks is expected as attackers eventually find valid credentials. The devil's advocate's automation argument fails to explain why legitimate infrastructure would require 399 separate SSH connections in 10 minutes to the same host - legitimate automation typically uses persistent connections or reasonable intervals. The combination of volume (399 attempts), velocity (10-minute timespan), uniformity (identical connection patterns), and targeting (single SSH service) creates overwhelming evidence of malicious intent that outweighs the benign characteristics of this individual successful connection.",
+      "consensus_score": 0.6,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Port 22 correctly aligned with TCP protocol for SSH service",
+            "Ephemeral source port 47492 is appropriate for client connection",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) indicate complete connection lifecycle",
+            "Bidirectional traffic with reasonable byte counts (3148 IN, 3869 OUT)",
+            "Short duration (379ms) suggests quick SSH session or handshake",
+            "No retransmissions indicate clean connection",
+            "Packet size distribution shows mix of control and data packets",
+            "L7_PROTO 92 corresponds to SSH protocol identification"
+          ]
+        },
+        "statistical": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.7,
+          "attack_type": "SSH Brute Force or Automated Attack",
+          "key_findings": [
+            "Excessive small packets: 35 packets \u2264128 bytes out of 46 total (76%) unusual for interactive SSH",
+            "High IAT standard deviation (31-39ms) with low average (16ms) indicates bursty, non-human traffic patterns",
+            "Short flow duration (379ms) with significant data transfer (7017 total bytes) suggests rapid automated interaction",
+            "Packet size distribution skewed toward small packets inconsistent with typical SSH keyboard interaction",
+            "IAT_MIN of 0 in both directions indicates back-to-back packet transmission typical of automated tools"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "successful_ssh_connection",
+            "bidirectional_data_transfer",
+            "normal_tcp_completion",
+            "interactive_traffic_pattern",
+            "no_retransmissions"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH brute force attack",
+          "key_findings": [
+            "399 total flows from same IP in ~10 minutes",
+            "All flows target same SSH service (port 22)",
+            "Uniform connection patterns suggesting automation",
+            "Rapid-fire sequential attempts with minimal gaps",
+            "Target flow matches exact profile of attack pattern",
+            "No variation in behavior typical of human interaction"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "The successful bidirectional data transfer totaling 7KB with clean TCP connection completion and zero retransmissions definitively indicates successful SSH authentication and legitimate session activity, not failed brute force attempts"
+      },
+      "mitre_techniques": [
+        "T1110.001",
+        "T1021.004"
+      ],
+      "tokens": {
+        "input": 62962,
+        "output": 2026,
+        "total": 64988
+      },
+      "cost_usd": 0.21927600000000003,
+      "agent_costs": {
+        "protocol": 0.007968,
+        "statistical": 0.008427,
+        "behavioural": 0.009366,
+        "temporal": 0.162366,
+        "devils_advocate": 0.015747,
+        "orchestrator": 0.015401999999999999
+      },
+      "time_seconds": 36.93556213378906,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 14,
+      "verdict": "BENIGN",
+      "confidence": 0.92,
+      "attack_type_predicted": null,
+      "reasoning": "All four specialist agents unanimously classified this flow as BENIGN with high confidence (0.85-0.95), creating an exceptionally strong consensus. The Protocol Agent confirmed proper SSH protocol usage on port 22 with appropriate TCP flags and bidirectional data transfer. The Statistical Agent found normal traffic patterns with balanced byte counts and typical SSH packet distributions. The Behavioural Agent identified successful TCP handshake patterns and interactive session characteristics with no attack signatures. The Temporal Agent provided the strongest evidence, showing this flow is part of sustained, legitimate SSH sessions from AWS infrastructure (13.58.98.64) to a private server over 10+ hours with human-like usage patterns. The Devil's Advocate analysis (30% weight) actually reinforces the benign verdict, noting that all technical indicators perfectly align with legitimate remote access patterns and finding no weaknesses in the benign interpretation. The AWS EC2 source IP connecting to a private network address (172.31.69.25) represents a standard cloud infrastructure management scenario. The bidirectional traffic volumes (3148 IN, 3765 OUT bytes), clean connection with no retransmissions, and interactive timing patterns all consistently point to legitimate SSH administration activity.",
+      "consensus_score": 1.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.9,
+          "attack_type": null,
+          "key_findings": [
+            "Port 22 correctly indicates SSH service",
+            "TCP protocol (6) matches SSH expectations",
+            "Source port 48128 is in proper ephemeral range",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) indicate normal connection lifecycle",
+            "Bidirectional traffic with 3148 bytes in, 3765 bytes out is typical for SSH",
+            "Packet size range 52-1028 bytes is normal for SSH data transfer",
+            "No retransmissions indicate healthy connection",
+            "L7_PROTO value 92 likely represents SSH in the classification system"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced bidirectional traffic (3148 IN vs 3765 OUT bytes)",
+            "Normal SSH packet size distribution with mix of small control packets and larger data packets",
+            "Appropriate flow duration (376ms) for SSH handshake/authentication",
+            "IAT patterns show interactive behavior with reasonable variance",
+            "No retransmissions indicate healthy connection",
+            "TCP window sizes normal for SSH protocol"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "successful_tcp_handshake",
+            "bidirectional_data_transfer",
+            "normal_ssh_packet_sizes",
+            "clean_connection_no_retransmissions",
+            "reasonable_flow_duration"
+          ]
+        },
+        "temporal": {
+          "verdict": "BENIGN",
+          "confidence": 0.95,
+          "attack_type": null,
+          "key_findings": [
+            "sustained_legitimate_ssh_sessions",
+            "consistent_bidirectional_traffic_volumes",
+            "stable_connection_characteristics",
+            "aws_source_to_private_destination",
+            "human_usage_timing_patterns"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "Unanimous BENIGN classification by all four specialist agents with high confidence scores, combined with perfect alignment of all technical indicators (port 22, bidirectional SSH traffic, AWS source, clean TCP connection) with legitimate remote access patterns"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 62515,
+        "output": 1735,
+        "total": 64250
+      },
+      "cost_usd": 0.21357,
+      "agent_costs": {
+        "protocol": 0.008343,
+        "statistical": 0.007692,
+        "behavioural": 0.008841,
+        "temporal": 0.16095600000000002,
+        "devils_advocate": 0.013617,
+        "orchestrator": 0.014121
+      },
+      "time_seconds": 30.879549264907837,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 15,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "SSH Brute Force Attack",
+      "reasoning": "Despite Devil's Advocate arguments, the weight of evidence strongly supports malicious activity. The temporal agent provides the most damning evidence: 399 consecutive SSH connections from the same source IP over 2.4 hours, averaging one attempt every 22 seconds - a clear brute force pattern. While the protocol agent sees normal SSH behavior and the behavioral agent notes successful data transfer, these findings must be contextualized within the broader attack campaign. The statistical agent's identification of automated timing patterns (bursty IAT with high standard deviation) and excessive throughput for typical SSH sessions supports the brute force hypothesis. The Devil's Advocate's argument about legitimate automation is weakened by several factors: (1) legitimate automation typically doesn't require 399 consecutive connections to the same target, (2) configuration management tools use persistent connections or scheduled intervals, not sustained rapid-fire attempts, and (3) while individual flows show data transfer, this is consistent with modern SSH brute force tools that attempt actual command execution after successful authentication. The substantial bidirectional data transfer actually supports credential stuffing attacks where successful logins are followed by reconnaissance commands. The temporal pattern is the decisive factor - no legitimate automation scenario requires this volume and frequency of connections to a single SSH target.",
+      "consensus_score": 0.65,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.9,
+          "attack_type": null,
+          "key_findings": [
+            "TCP protocol (6) correctly used for SSH service on port 22",
+            "Ephemeral source port 48456 indicates client-initiated connection",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) suggest established connection with data transfer and graceful close",
+            "Bidirectional traffic pattern (3112 in, 3869 out bytes) consistent with interactive SSH session",
+            "Packet size distribution normal for SSH (mix of small control packets and larger data packets)",
+            "No retransmissions indicate stable connection",
+            "Connection duration of 330ms with 45 total packets suggests brief but active session"
+          ]
+        },
+        "statistical": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.7,
+          "attack_type": "SSH Brute Force or Automated Tool",
+          "key_findings": [
+            "Very high throughput (75K-93K bps) for SSH protocol indicates automated data exchange",
+            "Bursty IAT pattern: IAT_MIN=0ms with IAT_MAX=112ms and high standard deviation suggests automated tool timing",
+            "High StdDev/Mean ratio (1.8-2.2) in IAT indicates irregular, non-interactive timing",
+            "Packet size distribution heavily skewed to small packets (34/45 packets \u2264128 bytes) typical of authentication attempts",
+            "Short 330ms duration with high data volume suggests rapid automated interaction rather than human SSH session"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "SSH port 22 connection with substantial data exchange",
+            "Balanced bidirectional traffic indicating successful session",
+            "Normal packet size distribution for SSH protocol",
+            "Consistent inter-arrival times without brute force patterns",
+            "No retransmissions suggesting successful connection"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH brute force / credential stuffing attack",
+          "key_findings": [
+            "399 consecutive SSH connections from same source IP over 2.4 hours",
+            "All flows target identical destination IP and port (172.31.69.25:22)",
+            "Highly uniform flow characteristics indicating automated tool usage",
+            "Sustained attack rate of ~1 connection every 22 seconds",
+            "Target flow occurs during peak attack activity (flow 15 of 403)",
+            "Flow durations consistently short (200-500ms) suggesting failed login attempts",
+            "No variation in destination suggesting focused brute force attack"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "The substantial bidirectional data transfer (3112 bytes in, 3869 bytes out) with successful TCP session establishment and graceful termination demonstrates authenticated SSH sessions performing actual work, not failed brute force attempts"
+      },
+      "mitre_techniques": [
+        "T1110.001",
+        "T1078"
+      ],
+      "tokens": {
+        "input": 63164,
+        "output": 2161,
+        "total": 65325
+      },
+      "cost_usd": 0.221907,
+      "agent_costs": {
+        "protocol": 0.008253,
+        "statistical": 0.008862,
+        "behavioural": 0.009906000000000002,
+        "temporal": 0.162966,
+        "devils_advocate": 0.015657,
+        "orchestrator": 0.016263
+      },
+      "time_seconds": 37.7026629447937,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 16,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.65,
+      "attack_type_predicted": "SSH Brute Force Attack Campaign",
+      "reasoning": "This individual flow shows characteristics of successful SSH authentication (bidirectional data transfer, proper TCP lifecycle, substantial byte counts), but the temporal agent's discovery of 399 consecutive SSH connections from the same source IP over 7.8 hours creates a compelling malicious context. While the Devil's Advocate makes valid points about legitimate automation (AWS infrastructure, DevOps tools), the pattern specifics argue against this: the connections target only one destination host and exclusively port 22 with uniform characteristics. The statistical agent's identification of automated timing patterns (perfect packet symmetry, bursty IAT behavior) supports the brute force hypothesis. However, the successful data transfer in this specific flow suggests either a successful compromise within the attack campaign or a hybrid scenario where legitimate tools are being misused. The protocol and behavioral agents correctly identify this individual flow as technically valid SSH traffic, but they lack the broader temporal context that reveals the attack pattern.",
+      "consensus_score": 0.5,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.9,
+          "attack_type": null,
+          "key_findings": [
+            "Port 22 correctly matches SSH service with TCP protocol 6",
+            "Source port 50914 is in proper ephemeral range (>1024)",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) indicate normal connection lifecycle",
+            "Bidirectional traffic (3180 IN_BYTES, 3869 OUT_BYTES) typical of interactive SSH session",
+            "L7_PROTO 92 corresponds to SSH protocol classification",
+            "No retransmissions indicate stable connection quality",
+            "Packet size distribution normal for SSH (mix of small control and larger data packets)",
+            "Connection duration 361ms reasonable for SSH handshake and brief interaction"
+          ]
+        },
+        "statistical": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.7,
+          "attack_type": "SSH brute force or automated tool",
+          "key_findings": [
+            "Perfect packet symmetry (23 IN/23 OUT) unusual for interactive SSH",
+            "High IAT standard deviation (28/34) with low average (15ms) indicates automated bursty behavior",
+            "Short flow duration (361ms) with significant data exchange suggests rapid authentication attempts",
+            "Packet size distribution (35 small packets, few large) consistent with authentication protocol rather than interactive session",
+            "IAT min of 0ms indicates some packets sent in rapid succession"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "SSH port 22 communication",
+            "Bidirectional data transfer with substantial byte counts",
+            "Normal TCP connection lifecycle (flags 27)",
+            "Interactive timing patterns (varied IAT)",
+            "No retransmissions indicating successful connection",
+            "Varied packet size distribution consistent with SSH protocol"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH Brute Force Attack",
+          "key_findings": [
+            "399 consecutive SSH connections from single source IP",
+            "All flows target same destination (172.31.69.25:22)",
+            "Uniform flow characteristics suggest automated tooling",
+            "Sustained 7.8-hour attack duration",
+            "Short connection durations (~361ms) typical of failed auth attempts",
+            "No port diversity - exclusively targeting SSH service",
+            "Consistent packet/byte patterns across all attempts"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "The substantial bidirectional data transfer (7KB total) with equal packet counts and no retransmissions clearly indicates successful SSH authentication and command execution, which is incompatible with failed brute force attempts that show minimal data exchange and early connection termination"
+      },
+      "mitre_techniques": [
+        "T1110.001"
+      ],
+      "tokens": {
+        "input": 62951,
+        "output": 2028,
+        "total": 64979
+      },
+      "cost_usd": 0.219273,
+      "agent_costs": {
+        "protocol": 0.007968,
+        "statistical": 0.008352,
+        "behavioural": 0.009921,
+        "temporal": 0.161856,
+        "devils_advocate": 0.015918,
+        "orchestrator": 0.015258
+      },
+      "time_seconds": 36.34679985046387,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 17,
+      "verdict": "BENIGN",
+      "confidence": 0.88,
+      "attack_type_predicted": null,
+      "reasoning": "This is a unanimous BENIGN classification with exceptional consensus across all specialist agents. The Protocol Agent (0.85 confidence) confirmed proper SSH protocol alignment with correct port usage, valid TCP flags (27 indicating complete connection lifecycle), and appropriate bidirectional data transfer. The Statistical Agent (0.85 confidence) validated normal interactive session characteristics with balanced traffic (3212/3765 bytes), reasonable packet distribution, and typical SSH timing patterns. The Behavioural Agent (0.85 confidence) found clear evidence of successful SSH handshake completion rather than attack patterns, noting the bidirectional exchange and natural timing variation. Most significantly, the Temporal Agent (0.95 confidence) provided crucial context showing this flow is part of a sustained legitimate pattern of 399 SSH connections over 45 minutes from the same source to the same destination. The Devil's Advocate (0.95 confidence) reinforced the benign classification, noting that all specialists already agreed and highlighting the strong evidence of successful SSH session establishment. The synthesis reveals a textbook legitimate SSH administrative session with no indicators of malicious activity.",
+      "consensus_score": 1.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Destination port 22 correctly matches SSH service",
+            "Source port 51382 in proper ephemeral range",
+            "TCP protocol (6) appropriate for SSH",
+            "TCP flags 27 (FIN+PSH+ACK+SYN) indicate normal connection lifecycle",
+            "Bidirectional traffic with reasonable data volumes (3.2KB in, 3.7KB out)",
+            "Packet size distribution normal for SSH with mix of control and data packets",
+            "No retransmissions indicating good connection quality",
+            "L7_PROTO 92 likely indicates SSH application detection"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced traffic: IN_BYTES=3212, OUT_BYTES=3765 (17% difference is normal for SSH)",
+            "Similar packet counts: IN_PKTS=23, OUT_PKTS=21 indicating interactive session",
+            "Appropriate flow duration of 399ms for SSH handshake/initial exchange",
+            "Normal packet size distribution with mix of small (33 packets <128 bytes) and larger packets",
+            "IAT patterns show interactive behavior: avg 17-19ms with moderate stddev 41-50ms",
+            "No retransmissions indicate clean network conditions",
+            "TCP window sizes (26K) are normal for SSH"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "successful_ssh_handshake",
+            "bidirectional_data_exchange",
+            "normal_packet_size_distribution",
+            "proper_tcp_connection_lifecycle",
+            "no_retransmissions",
+            "natural_timing_variation"
+          ]
+        },
+        "temporal": {
+          "verdict": "BENIGN",
+          "confidence": 0.95,
+          "attack_type": null,
+          "key_findings": [
+            "All 399 flows target single destination IP on SSH port 22",
+            "Consistent bidirectional traffic patterns across all flows",
+            "Uniform packet and byte counts indicating normal SSH sessions",
+            "Regular temporal distribution over 45-minute span",
+            "Target flow matches established baseline perfectly",
+            "No reconnaissance or scanning behavior observed"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The unanimous BENIGN verdict from all four specialist agents with high confidence scores (0.85-0.95), supported by clear evidence of successful SSH session establishment with bidirectional data exchange and integration into a sustained pattern of 399 legitimate SSH connections over 45 minutes."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 63080,
+        "output": 2031,
+        "total": 65111
+      },
+      "cost_usd": 0.219705,
+      "agent_costs": {
+        "protocol": 0.007833,
+        "statistical": 0.008607,
+        "behavioural": 0.010371000000000002,
+        "temporal": 0.162471,
+        "devils_advocate": 0.015747,
+        "orchestrator": 0.014676000000000002
+      },
+      "time_seconds": 34.92575263977051,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 18,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "SSH Brute Force Attack",
+      "reasoning": "Despite strong protocol-level legitimacy indicators from three specialists, the temporal agent's analysis reveals a critical pattern that fundamentally changes the assessment. The temporal agent identified 399 nearly identical SSH flows from the same source IP over 9+ hours, all targeting the same destination - a clear automation signature inconsistent with normal operations. While the Devil's Advocate raises valid points about legitimate automation and the bidirectional data transfer suggesting successful authentication, the sheer volume (399 connections), perfect uniformity in characteristics, and sustained duration are hallmarks of credential testing attacks. Modern SSH brute force tools can achieve successful logins and still be malicious - the attack pattern lies in the repetitive probing behavior, not necessarily failed attempts. The protocol, statistical, and behavioral agents correctly identified this individual flow as technically valid, but they lack the temporal context that reveals the broader attack campaign. The Devil's Advocate's argument about operational automation is weakened by the extreme uniformity and volume - legitimate automation typically shows more variation in timing, duration, or connection characteristics.",
+      "consensus_score": 0.5,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.9,
+          "attack_type": null,
+          "key_findings": [
+            "Destination port 22 correctly matches SSH service",
+            "Source port 51926 is in proper ephemeral range",
+            "TCP protocol (6) is appropriate for SSH",
+            "TCP flags value 27 (FIN+PSH+ACK+SYN) indicates normal connection lifecycle",
+            "Bidirectional traffic with reasonable byte counts (3180 in, 3869 out)",
+            "Packet size distribution consistent with SSH encrypted data transfer",
+            "No retransmissions indicate clean connection",
+            "All non-relevant protocol fields (DNS, FTP, ICMP) are properly zeroed"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced packet count (23 in/23 out) typical of interactive protocols",
+            "Appropriate byte asymmetry (3180 in, 3869 out) for SSH client-server communication",
+            "Flow duration of 394ms reasonable for SSH handshake/initial data exchange",
+            "Packet size distribution normal with mix of small control packets and larger data packets",
+            "IAT patterns show interactive timing (avg 17ms, moderate stddev) consistent with human or automated SSH usage",
+            "Zero retransmissions indicate clean network connection",
+            "TCP window sizes normal (26K+ bytes) for modern systems"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "bidirectional_data_transfer",
+            "proper_tcp_handshake",
+            "variable_packet_sizes",
+            "no_retransmissions",
+            "interactive_timing_patterns"
+          ]
+        },
+        "temporal": {
+          "verdict": "MALICIOUS",
+          "confidence": 0.95,
+          "attack_type": "SSH Brute Force Attack",
+          "key_findings": [
+            "399 total flows from same source IP - massive volume",
+            "100% targeting same destination IP and SSH port (172.31.69.25:22)",
+            "Extremely uniform flow characteristics across 9+ hours",
+            "Short-lived connections (250-460ms) typical of failed login attempts",
+            "Consistent packet counts (20-27) and byte volumes (3000-3500) indicating automated tool",
+            "No variation in timing or behavior patterns - clear automation signature",
+            "Sustained attack duration spanning from 1518631327989 to 1518636746205 (9+ hours)"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.8,
+        "strongest_benign_indicator": "The substantial bidirectional data exchange (3180/3869 bytes, 23/23 packets) indicates successful SSH authentication and data transfer, which directly contradicts the brute force hypothesis that would show minimal return traffic from failed login attempts"
+      },
+      "mitre_techniques": [
+        "T1110.001"
+      ],
+      "tokens": {
+        "input": 62947,
+        "output": 2039,
+        "total": 64986
+      },
+      "cost_usd": 0.219426,
+      "agent_costs": {
+        "protocol": 0.007683,
+        "statistical": 0.008577,
+        "behavioural": 0.009321,
+        "temporal": 0.16265100000000002,
+        "devils_advocate": 0.015264,
+        "orchestrator": 0.01593
+      },
+      "time_seconds": 37.03519105911255,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 19,
+      "verdict": "MALICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": "SSH Brute Force Attack",
+      "reasoning": "While individual flow analysis shows legitimate SSH characteristics (successful handshake, bidirectional data transfer, zero retransmissions), the temporal context is overwhelming evidence of malicious activity. The Temporal Agent identified 399 SSH connections from the same source IP to the same destination over 5+ minutes - a classic brute force pattern. Three specialists (Protocol, Statistical, Behavioural) assessed the individual flow as benign based on technical indicators, but the Temporal Agent's high-confidence finding of sustained, high-volume SSH attempts cannot be dismissed. The Devil's Advocate argues for legitimate automation, but even in DevOps environments, 399 connections in 5 minutes (1.3 connections/second) to a single target is excessive and inconsistent with typical automation patterns. The substantial data transfer in individual flows doesn't negate brute force - modern SSH implementations exchange significant data during failed authentication attempts including banner exchange, key negotiation, and authentication protocol overhead. The consensus breaks down as 3/4 specialists say BENIGN but the temporal evidence is definitive for attack classification.",
+      "consensus_score": 0.25,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "BENIGN",
+          "confidence": 0.95,
+          "attack_type": null,
+          "key_findings": [
+            "Correct port-service alignment (port 22 = SSH, protocol TCP)",
+            "Appropriate ephemeral source port (52766)",
+            "Normal TCP flags pattern for established connection",
+            "Bidirectional traffic with reasonable throughput",
+            "No retransmissions indicating healthy connection",
+            "Packet size distribution consistent with SSH traffic",
+            "Short duration (207ms) typical for SSH handshake/brief session"
+          ]
+        },
+        "statistical": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "Balanced traffic: 3056 IN_BYTES vs 3765 OUT_BYTES (1.23:1 ratio)",
+            "Nearly equal packet counts: 20 IN_PKTS vs 21 OUT_PKTS",
+            "Appropriate flow duration of 207ms for SSH handshake/initial exchange",
+            "Normal packet size distribution with mix of small control packets and larger data packets",
+            "Reasonable IAT patterns with low averages (9-10ms) and moderate standard deviation",
+            "Zero retransmissions indicate good connection quality",
+            "TCP window sizes (26k) are normal for modern systems",
+            "Port 22 (SSH) with protocol 6 (TCP) is expected"
+          ]
+        },
+        "behavioural": {
+          "verdict": "BENIGN",
+          "confidence": 0.85,
+          "attack_type": null,
+          "key_findings": [
+            "successful_ssh_handshake",
+            "bidirectional_data_transfer",
+            "normal_packet_distribution",
+            "no_retransmissions",
+            "proper_tcp_flags"
+          ]
+        },
+        "temporal": {
+          "verdict": "SUSPICIOUS",
+          "confidence": 0.85,
+          "attack_type": "SSH Brute Force Attack",
+          "key_findings": [
+            "399 total flows from same source IP to same SSH destination",
+            "Sustained attack spanning over 5 minutes (304+ seconds)",
+            "Uniform flow characteristics indicating automated tooling",
+            "All connections target SSH port 22 on single host",
+            "Short connection durations typical of failed auth attempts",
+            "High frequency connection attempts (1-2 per second average)",
+            "Target flow exhibits identical behavioral signature"
+          ]
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "The substantial bidirectional data transfer (6.8KB total) with balanced packet counts and zero retransmissions definitively proves successful SSH authentication and command execution, which is impossible in a brute force attack scenario where failed attempts would show minimal data exchange and immediate disconnection"
+      },
+      "mitre_techniques": [
+        "T1110.001"
+      ],
+      "tokens": {
+        "input": 63031,
+        "output": 2068,
+        "total": 65099
+      },
+      "cost_usd": 0.22011300000000003,
+      "agent_costs": {
+        "protocol": 0.008133,
+        "statistical": 0.008862,
+        "behavioural": 0.009396000000000002,
+        "temporal": 0.16232100000000002,
+        "devils_advocate": 0.015573,
+        "orchestrator": 0.015828
+      },
+      "time_seconds": 37.48383116722107,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    }
+  ]
+}

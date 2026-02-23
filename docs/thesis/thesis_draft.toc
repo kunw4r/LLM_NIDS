@@ -1,0 +1,147 @@
+\contentsline {part}{I\hspace {1em}Deep Analysis of Experimental Results}{5}{part.1}%
+\contentsline {chapter}{\numberline {1}Phase 1: MCP-Augmented Single-Agent Evaluation}{6}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Experiment Configuration}{6}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Tiered Test Batch Design}{6}{subsection.1.1.1}%
+\contentsline {section}{\numberline {1.2}Overall Results}{7}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Per-Tier Performance}{7}{subsection.1.2.1}%
+\contentsline {section}{\numberline {1.3}Deep Interpretation of Phase 1 Numbers}{7}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Why Recall is High (93.0\%) but Accuracy is Low (72.4\%)}{7}{subsection.1.3.1}%
+\contentsline {subsection}{\numberline {1.3.2}Why External Tools Returned 0\% Meaningful Data}{8}{subsection.1.3.2}%
+\contentsline {subsection}{\numberline {1.3.3}Why Feature-Rich Attacks Were Easy (Tiers 1--2: 100\% F1)}{8}{subsection.1.3.3}%
+\contentsline {subsection}{\numberline {1.3.4}Why Temporal-Context Attacks Were Hard (Tier 3: 85.7\% F1)}{8}{subsection.1.3.4}%
+\contentsline {subsection}{\numberline {1.3.5}Why Benign Accuracy Collapsed (Tier 4: 13.3\%)}{9}{subsection.1.3.5}%
+\contentsline {subsection}{\numberline {1.3.6}Cost and Scalability Analysis}{9}{subsection.1.3.6}%
+\contentsline {chapter}{\numberline {2}Phase 2: Iterative Improvement}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Iteration Summary}{10}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Iteration 1: Temporal Memory}{10}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}What Changed}{10}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}What Improved}{10}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}What Degraded}{11}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Interpretation}{11}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}Iteration 2: Benign Baseline Calibration}{11}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}What Changed}{11}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}What Improved}{12}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}What Degraded}{12}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}Interpretation}{12}{subsection.2.3.4}%
+\contentsline {section}{\numberline {2.4}Iteration 3: Combined Approach}{12}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}What Changed}{12}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Full Results (58 Flows)}{13}{subsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.4.3}Root Cause: Confidence Override Over-Suppression}{13}{subsection.2.4.3}%
+\contentsline {subsection}{\numberline {2.4.4}Tool Call Degradation}{13}{subsection.2.4.4}%
+\contentsline {subsection}{\numberline {2.4.5}Per-Attack Detection}{14}{subsection.2.4.5}%
+\contentsline {subsection}{\numberline {2.4.6}Interpretation}{14}{subsection.2.4.6}%
+\contentsline {section}{\numberline {2.5}Cross-Iteration Analysis}{14}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}The Precision--Recall--Benign Trade-off}{14}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Key Patterns}{14}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.3}The Single-Agent Ceiling}{15}{subsection.2.5.3}%
+\contentsline {part}{II\hspace {1em}Thesis Notes}{16}{part.2}%
+\contentsline {chapter}{\numberline {3}Methodology Decisions}{17}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Key Findings}{18}{chapter.4}%
+\contentsline {chapter}{\numberline {5}Limitations}{19}{chapter.5}%
+\contentsline {chapter}{\numberline {6}Future Work}{20}{chapter.6}%
+\contentsline {part}{III\hspace {1em}Draft Thesis Sections}{21}{part.3}%
+\contentsline {chapter}{Abstract}{22}{chapter*.11}%
+\contentsline {chapter}{\numberline {7}Introduction}{23}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Background}{23}{section.7.1}%
+\contentsline {section}{\numberline {7.2}The Model Context Protocol}{23}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Research Gap}{24}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Research Question}{24}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Contributions}{25}{section.7.5}%
+\contentsline {section}{\numberline {7.6}Thesis Outline}{25}{section.7.6}%
+\contentsline {chapter}{\numberline {8}Literature Review}{26}{chapter.8}%
+\contentsline {section}{\numberline {8.1}LLMs Applied to Network Intrusion Detection}{26}{section.8.1}%
+\contentsline {subsection}{\numberline {8.1.1}LLMs as Explainers, Not Classifiers}{26}{subsection.8.1.1}%
+\contentsline {subsection}{\numberline {8.1.2}Direct Classification Attempts and Their Limits}{26}{subsection.8.1.2}%
+\contentsline {subsection}{\numberline {8.1.3}Agentic Approaches: Tools and Reasoning Loops}{27}{subsection.8.1.3}%
+\contentsline {subsection}{\numberline {8.1.4}Survey-Level Context}{27}{subsection.8.1.4}%
+\contentsline {section}{\numberline {8.2}Multi-Agent Architectures for NIDS}{27}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}Academic Evidence for Multi-Agent Superiority}{27}{subsection.8.2.1}%
+\contentsline {subsection}{\numberline {8.2.2}Collaboration Protocols and Disagreement Resolution}{28}{subsection.8.2.2}%
+\contentsline {subsection}{\numberline {8.2.3}Industry Validation at Scale}{28}{subsection.8.2.3}%
+\contentsline {subsection}{\numberline {8.2.4}Framework Implementations}{28}{subsection.8.2.4}%
+\contentsline {section}{\numberline {8.3}CICIDS Dataset Limitations}{29}{section.8.3}%
+\contentsline {subsection}{\numberline {8.3.1}Systematic Errors in Flow Construction and Labelling}{29}{subsection.8.3.1}%
+\contentsline {subsection}{\numberline {8.3.2}Class Imbalance and Representativeness}{29}{subsection.8.3.2}%
+\contentsline {subsection}{\numberline {8.3.3}NetFlow V3 Temporal Features}{29}{subsection.8.3.3}%
+\contentsline {section}{\numberline {8.4}Documented LLM Behaviours Relevant to NIDS}{29}{section.8.4}%
+\contentsline {subsection}{\numberline {8.4.1}The Suspicious-by-Default Bias}{29}{subsection.8.4.1}%
+\contentsline {subsection}{\numberline {8.4.2}Prompt Interference and the Iteration 3 Collapse}{30}{subsection.8.4.2}%
+\contentsline {subsection}{\numberline {8.4.3}Temporal Reasoning as an Inherent Weakness}{30}{subsection.8.4.3}%
+\contentsline {chapter}{\numberline {9}Methodology}{31}{chapter.9}%
+\contentsline {section}{\numberline {9.1}System Architecture}{31}{section.9.1}%
+\contentsline {subsection}{\numberline {9.1.1}LLM Agent}{31}{subsection.9.1.1}%
+\contentsline {subsection}{\numberline {9.1.2}MCP Server}{32}{subsection.9.1.2}%
+\contentsline {section}{\numberline {9.2}Dataset}{32}{section.9.2}%
+\contentsline {subsection}{\numberline {9.2.1}CICIDS2018 NetFlow v3}{32}{subsection.9.2.1}%
+\contentsline {subsection}{\numberline {9.2.2}Dataset Split}{33}{subsection.9.2.2}%
+\contentsline {section}{\numberline {9.3}Evaluation Design}{33}{section.9.3}%
+\contentsline {subsection}{\numberline {9.3.1}Tiered Test Batch}{33}{subsection.9.3.1}%
+\contentsline {subsection}{\numberline {9.3.2}Metrics}{33}{subsection.9.3.2}%
+\contentsline {subsection}{\numberline {9.3.3}Iteration Protocol}{34}{subsection.9.3.3}%
+\contentsline {chapter}{\numberline {10}Results}{35}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Phase 1: MCP Baseline Evaluation}{35}{section.10.1}%
+\contentsline {subsection}{\numberline {10.1.1}Overall Performance}{35}{subsection.10.1.1}%
+\contentsline {subsection}{\numberline {10.1.2}MCP Tool Effectiveness}{35}{subsection.10.1.2}%
+\contentsline {subsection}{\numberline {10.1.3}Per-Attack-Type Detection}{36}{subsection.10.1.3}%
+\contentsline {subsection}{\numberline {10.1.4}Cost Analysis}{36}{subsection.10.1.4}%
+\contentsline {section}{\numberline {10.2}Phase 2: Iterative Improvements}{36}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}Iteration 1: Temporal Memory}{36}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}Iteration 2: Benign Calibration}{37}{subsection.10.2.2}%
+\contentsline {subsection}{\numberline {10.2.3}Iteration 3: Combined Approach}{37}{subsection.10.2.3}%
+\contentsline {section}{\numberline {10.3}Phase 3: AMATAS Multi-Agent Evaluation}{37}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}Evaluation Methodology}{37}{subsection.10.3.1}%
+\contentsline {subsection}{\numberline {10.3.2}Phase 3a: Direct Comparison with Phases 1--2}{38}{subsection.10.3.2}%
+\contentsline {subsection}{\numberline {10.3.3}Phase 3 Performance Across Batch Sizes}{38}{subsection.10.3.3}%
+\contentsline {subsection}{\numberline {10.3.4}Per-Attack-Type Detection Across Batches}{39}{subsection.10.3.4}%
+\contentsline {subsection}{\numberline {10.3.5}Agent Vote Distribution}{39}{subsection.10.3.5}%
+\contentsline {subsection}{\numberline {10.3.6}Devil's Advocate Impact}{40}{subsection.10.3.6}%
+\contentsline {subsection}{\numberline {10.3.7}Phase 3e: Devil's Advocate Weight Tuning}{40}{subsection.10.3.7}%
+\contentsline {subsection}{\numberline {10.3.8}Phase 3 Key Findings}{41}{subsection.10.3.8}%
+\contentsline {paragraph}{Temporal context requires batch depth (3b $\gg $ 3a).}{41}{section*.28}%
+\contentsline {paragraph}{Realistic distributions expose false-positive risk (3c).}{41}{section*.29}%
+\contentsline {paragraph}{The Devil's Advocate trade-off.}{41}{section*.30}%
+\contentsline {paragraph}{Perfect detection classes.}{41}{section*.31}%
+\contentsline {paragraph}{Cost efficiency.}{41}{section*.32}%
+\contentsline {chapter}{\numberline {11}Discussion}{42}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Three-Beat Narrative}{42}{section.11.1}%
+\contentsline {subsection}{\numberline {11.1.1}Beat 1: The Tools Work, but the Data Doesn't Match}{42}{subsection.11.1.1}%
+\contentsline {subsection}{\numberline {11.1.2}Beat 2: Flow Features Already Contain the Answer}{42}{subsection.11.1.2}%
+\contentsline {subsection}{\numberline {11.1.3}Beat 3: This Isn't a Failure---It's a Finding}{43}{subsection.11.1.3}%
+\contentsline {section}{\numberline {11.2}Phase 2 Analysis: The Precision--Recall--Benign Trade-off}{43}{section.11.2}%
+\contentsline {section}{\numberline {11.3}Scalability and the Value Proposition}{44}{section.11.3}%
+\contentsline {section}{\numberline {11.4}Generalisation and Overfitting Mitigation}{44}{section.11.4}%
+\contentsline {subsection}{\numberline {11.4.1}No Dataset-Specific Thresholds}{44}{subsection.11.4.1}%
+\contentsline {subsection}{\numberline {11.4.2}Multi-Batch Testing}{44}{subsection.11.4.2}%
+\contentsline {subsection}{\numberline {11.4.3}Iterative Architectural Refinement}{45}{subsection.11.4.3}%
+\contentsline {subsection}{\numberline {11.4.4}Limitations: Single-Dataset Evaluation}{45}{subsection.11.4.4}%
+\contentsline {section}{\numberline {11.5}Research Pivot: From Tool Augmentation to Pure LLM Reasoning}{45}{section.11.5}%
+\contentsline {subsection}{\numberline {11.5.1}The Null Tool Result as a Natural Experiment}{45}{subsection.11.5.1}%
+\contentsline {subsection}{\numberline {11.5.2}The Single-Agent Ceiling as Motivation}{46}{subsection.11.5.2}%
+\contentsline {subsection}{\numberline {11.5.3}The Phase 3 Question}{46}{subsection.11.5.3}%
+\contentsline {chapter}{\numberline {12}Phase 3: Proposed AMATAS Architecture}{47}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Architecture Overview}{47}{section.12.1}%
+\contentsline {section}{\numberline {12.2}Agent Specifications}{48}{section.12.2}%
+\contentsline {subsection}{\numberline {12.2.1}Agent 1: Protocol Semantics Agent}{48}{subsection.12.2.1}%
+\contentsline {subsection}{\numberline {12.2.2}Agent 2: Statistical Pattern Agent}{48}{subsection.12.2.2}%
+\contentsline {subsection}{\numberline {12.2.3}Agent 3: Behavioural Fingerprint Agent}{49}{subsection.12.2.3}%
+\contentsline {subsection}{\numberline {12.2.4}Agent 4: Temporal Correlation Agent}{49}{subsection.12.2.4}%
+\contentsline {subsection}{\numberline {12.2.5}Agent 5: Devil's Advocate Agent}{50}{subsection.12.2.5}%
+\contentsline {subsection}{\numberline {12.2.6}Agent 6: Orchestrator + Analyst Report Generator}{50}{subsection.12.2.6}%
+\contentsline {section}{\numberline {12.3}Design Principles}{50}{section.12.3}%
+\contentsline {section}{\numberline {12.4}Failure Mode Coverage}{51}{section.12.4}%
+\contentsline {section}{\numberline {12.5}Limitations}{52}{section.12.5}%
+\contentsline {subsection}{\numberline {12.5.1}Internal Validity}{52}{subsection.12.5.1}%
+\contentsline {subsection}{\numberline {12.5.2}External Validity}{52}{subsection.12.5.2}%
+\contentsline {subsection}{\numberline {12.5.3}Scalability}{52}{subsection.12.5.3}%
+\contentsline {chapter}{\numberline {13}Conclusion}{53}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Answers to Research Questions}{53}{section.13.1}%
+\contentsline {paragraph}{RQ1: Can NetFlow augmentation via MCP improve the detection performance and explainability of LLM-based NIDS?}{53}{section*.41}%
+\contentsline {paragraph}{RQ2: Can a multi-agent architecture of specialised LLM reasoning agents match or exceed human analyst performance on network intrusion detection?}{53}{section*.42}%
+\contentsline {section}{\numberline {13.2}Summary}{53}{section.13.2}%
+\contentsline {section}{\numberline {13.3}Future Work}{54}{section.13.3}%
+\contentsline {chapter}{\numberline {A}Per-Flow Reasoning Examples}{55}{appendix.A}%
+\contentsline {subsection}{\numberline {A.0.1}True Positive: FTP Brute Force (Flow 3)}{55}{subsection.A.0.1}%
+\contentsline {subsection}{\numberline {A.0.2}False Negative: Infiltration via DNS (Flow 50)}{55}{subsection.A.0.2}%
+\contentsline {subsection}{\numberline {A.0.3}False Positive: Benign DNS (Flow 7)}{55}{subsection.A.0.3}%
+\contentsline {chapter}{\numberline {B}Full Phase 2 Per-Attack Detection Rates}{56}{appendix.B}%
+\contentsline {chapter}{References}{57}{appendix*.44}%

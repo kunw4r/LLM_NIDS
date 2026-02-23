@@ -1,0 +1,3059 @@
+{
+  "evaluation_metadata": {
+    "model": "gpt-4o",
+    "specialist_model": "gpt-4o",
+    "provider": "openai",
+    "specialist_provider": "anthropic",
+    "batch_dir": "data/batches/stage1/validation",
+    "total_flows": 100,
+    "evaluated_flows": 100,
+    "started_at": "2026-02-23T07:56:38.917217",
+    "architecture": "Phase 3: 6-Agent Multi-Agent NIDS",
+    "agents": [
+      "protocol",
+      "statistical",
+      "behavioural",
+      "temporal",
+      "devils_advocate",
+      "orchestrator"
+    ],
+    "da_weight": "30%",
+    "specialist_parallel": true,
+    "cost_rates": {
+      "input_per_1m_tokens": 3.0,
+      "output_per_1m_tokens": 15.0
+    },
+    "completed_at": "2026-02-23T08:18:00.761101",
+    "total_time_seconds": 1281.7703540325165,
+    "total_cost_usd": 0.12007750000000002,
+    "total_tokens": {
+      "input": 27955,
+      "output": 5019,
+      "total": 32974
+    },
+    "agent_stats": {
+      "protocol": {
+        "agent_name": "protocol",
+        "provider": "anthropic",
+        "model": "gpt-4o",
+        "call_count": 0,
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "total_cost": 0.0
+      },
+      "statistical": {
+        "agent_name": "statistical",
+        "provider": "anthropic",
+        "model": "gpt-4o",
+        "call_count": 0,
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "total_cost": 0.0
+      },
+      "behavioural": {
+        "agent_name": "behavioural",
+        "provider": "anthropic",
+        "model": "gpt-4o",
+        "call_count": 0,
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "total_cost": 0.0
+      },
+      "temporal": {
+        "agent_name": "temporal",
+        "provider": "anthropic",
+        "model": "gpt-4o",
+        "call_count": 0,
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "total_cost": 0.0
+      },
+      "devils_advocate": {
+        "agent_name": "devils_advocate",
+        "provider": "openai",
+        "model": "gpt-4o",
+        "call_count": 10,
+        "total_input_tokens": 11525,
+        "total_output_tokens": 3197,
+        "total_cost": 0.060782499999999996
+      },
+      "orchestrator": {
+        "agent_name": "orchestrator",
+        "provider": "openai",
+        "model": "gpt-4o",
+        "call_count": 10,
+        "total_input_tokens": 16430,
+        "total_output_tokens": 1822,
+        "total_cost": 0.05929500000000001
+      }
+    },
+    "tier1": {
+      "enabled": true,
+      "threshold": 0.15,
+      "flows_filtered": 90,
+      "flows_sent_to_llm": 10,
+      "filter_rate": 0.9,
+      "llm_cost": 0.12007750000000002,
+      "estimated_cost_without_tier1": 1.2007750000000001
+    },
+    "metrics": {
+      "accuracy": 0.9,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 90,
+        "fn": 10
+      },
+      "per_attack_type": {
+        "Benign": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 90,
+          "fn": 0,
+          "total": 90,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "DDOS_attack-HOIC": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 10,
+          "total": 10,
+          "precision": 0,
+          "recall": 0.0,
+          "f1": 0
+        }
+      },
+      "per_tier": {
+        "0": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 90,
+          "fn": 10,
+          "total": 100,
+          "accuracy": 0.9,
+          "precision": 0,
+          "recall": 0.0,
+          "f1": 0
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "flow_idx": 0,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 1,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 2,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 3,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 4,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 5,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 6,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 7,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 8,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 9,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 10,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 11,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 12,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 13,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 14,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 15,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 16,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 17,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 18,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 19,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 20,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 21,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 22,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 23,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 24,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 25,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 26,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 27,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 28,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 29,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 30,
+      "verdict": "BENIGN",
+      "confidence": 0.9999,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 0.9999,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 31,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 32,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 33,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 34,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 35,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 36,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 37,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 38,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 39,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 40,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 41,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 42,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 43,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 44,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 45,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 46,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 47,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 48,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 49,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 50,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 51,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 52,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 53,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 54,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 55,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 56,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 57,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 58,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 59,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 60,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 61,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 62,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 63,
+      "verdict": "BENIGN",
+      "confidence": 0.9981,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 0.9981,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 64,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 65,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 66,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 67,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 68,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 69,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 70,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 71,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 72,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 73,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 74,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 75,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 76,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 77,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 78,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 79,
+      "verdict": "BENIGN",
+      "confidence": 0.87,
+      "attack_type_predicted": null,
+      "reasoning": "All specialist agents returned errors, providing no evidence of malicious activity. The Devil's Advocate presents a strong argument that the flow's characteristics\u2014short duration, balanced packets, and destination port 80\u2014are consistent with normal HTTP web traffic patterns. The TCP flags, although unusual, could result from network devices optimizing traffic which is a common benign operation. Given the absence of contrary specialist findings and robust benign indicators, the flow is considered benign.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "The flow description matches a pattern typical of benign web browsing or API interaction, characterized by short connection duration and balanced packet exchange."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2771,
+        "output": 451,
+        "total": 3222
+      },
+      "cost_usd": 0.011437500000000001,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.005850000000000001,
+        "orchestrator": 0.0055875000000000005
+      },
+      "time_seconds": 15.578192949295044,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 80,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "All specialist agents reported errors without providing an analysis, thus no evidence of malicious behavior was presented. The Devil's Advocate provided a strong benign argument, noting the symmetric nature of in/out packets and sizes, typical of regular web traffic. Additional explanation regarding the TCP flags, potential middlebox interference, and commonality in CDN interactions further support a benign interpretation. With no contrary evidence from specialists, and with the DA presenting a logical and high-confidence benign argument, the flow is classified as benign.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The perfectly symmetric in and out packet count and size strongly indicate a balanced request-response typically seen in web traffic."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2811,
+        "output": 527,
+        "total": 3338
+      },
+      "cost_usd": 0.012297500000000003,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.006337500000000001,
+        "orchestrator": 0.005960000000000001
+      },
+      "time_seconds": 16.604509115219116,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 81,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "All specialist agents encountered errors and did not provide a verdict. The Devil's Advocate argued for a benign interpretation, emphasizing that the flow data involves port 80, typically used for web traffic, indicative of normal web browsing or communication with a web service. The balanced byte count and packet numbers suggest normal bidirectional communication. Although the TCP flags are atypical, they could be attributed to NAT traversal or load balancers. No specific evidence suggests malicious activity.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "The utilization of port 80 in the communication strongly suggests legitimate web traffic activity."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2740,
+        "output": 434,
+        "total": 3174
+      },
+      "cost_usd": 0.011190000000000002,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.005435000000000001,
+        "orchestrator": 0.005755000000000001
+      },
+      "time_seconds": 14.510946989059448,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 82,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "All specialist agents failed to produce any assessment due to operational errors, yielding no evidence of a security threat. The Devil's Advocate provides a strong argument for benign interpretation, emphasizing the normalcy of HTTP traffic patterns associated with the flow data. The flow shows balanced packet exchange and typical HTTP traffic characteristics, such as use of port 80, aligning with legitimate web communication behaviors.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "The traffic pattern is consistent with typical web traffic on port 80, inherent to normal web browser or API activity."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2737,
+        "output": 426,
+        "total": 3163
+      },
+      "cost_usd": 0.011102500000000001,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.0054625,
+        "orchestrator": 0.00564
+      },
+      "time_seconds": 13.291037321090698,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 83,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "All specialist agents encountered errors and did not provide verdicts or evidence related to malicious activity. The Devil's Advocate, however, presents a compelling argument for benign traffic. It explains the flow's use of HTTP over port 80, TCP protocol usage, and short flow duration with symmetric inter-arrival times as being indicative of normal web traffic. Additionally, the asymmetric byte flow, with more bytes outgoing, aligns with typical web resource fetching, perhaps involving media content from a web page. The TCP flags set to 219 may be attributed to modifications by NAT or load balancers rather than malicious intent. The Devil's Advocate's analysis points out these benign characteristics with a high confidence of 0.95.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The use of port 80 for HTTP and the asymmetric byte flow are highly typical of an innocent web-based request and response interaction."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2846,
+        "output": 585,
+        "total": 3431
+      },
+      "cost_usd": 0.012965,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.0066525,
+        "orchestrator": 0.0063125
+      },
+      "time_seconds": 17.292461156845093,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 84,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "All four specialist agents reported errors due to a model retrieval issue, providing no specific analysis on the flow's characteristics. Therefore, no malicious activities are flagged directly by the specialists. The Devil's Advocate notes several compelling reasons for the flow to be benign: the use of port 80 corresponds to standard HTTP traffic, which is common for legitimate web activities. The brief flow duration and balanced packet exchange imply a normal handshake or quick data retrieval, possibly from web applications or services. Without contrasting evidence from the specialists, the benign argument is strong and unchallengeable, and the absence of direct flags reinforces the assessment.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "The traffic is directed towards port 80, a standard HTTP server port, which is typically associated with legitimate web traffic."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2825,
+        "output": 547,
+        "total": 3372
+      },
+      "cost_usd": 0.0125325,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.0064600000000000005,
+        "orchestrator": 0.0060725
+      },
+      "time_seconds": 14.936344146728516,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 85,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "Due to the failure of all specialist agents to provide analysis, the Devil's Advocate argument carries significant weight. The flow involves HTTP traffic (port 80) with normal packet exchange, consistent with benign web browsing. The symmetrical packet exchange suggests a standard HTTP request and response. The combination of short flow duration, IAT metrics, and balanced byte exchange supports the interpretation of normal, low-latency web interactions, such as loading a simple web page or fetching small web elements. With a 0.95 confidence in a benign interpretation from the DA and no contrary evidence, the flow is deemed benign.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "HTTP traffic over port 80 with normal packet exchange is typical of benign web browsing activities."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2782,
+        "output": 510,
+        "total": 3292
+      },
+      "cost_usd": 0.012055,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.00589,
+        "orchestrator": 0.006165
+      },
+      "time_seconds": 1144.7943329811096,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 86,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "Due to processing errors in all four specialists, no concrete malicious indicators were identified. The Devil's Advocate presents a strong argument for benign behavior, noting the standard use of HTTP on port 80, symmetrical packet counts, and typical flow duration and volume. The errors in the specialists' analyses further weaken the malicious case, resulting in a verdict supported predominantly by the benign explanation and the absence of contrary evidence.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "Standard HTTP traffic patterns on port 80 with balanced packet exchange typical of ordinary web interactions."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2779,
+        "output": 448,
+        "total": 3227
+      },
+      "cost_usd": 0.0114275,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.005895000000000001,
+        "orchestrator": 0.0055325
+      },
+      "time_seconds": 13.634095191955566,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 87,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 88,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 89,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 90,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 91,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 92,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 93,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 94,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "All specialist analyses returned errors, preventing any further insights into the protocol, statistical anomalies, behavior, or temporal patterns of the flow. However, the Devil's Advocate argument strongly supports a benign interpretation. The flow characteristics, such as the use of destination port 80, brief duration, symmetrical packet exchange, and absence of DNS queries, align with typical web browsing or API call behavior over HTTP. The lack of large data transfers or use of non-standard ports, along with the flow volume resembling routine web traffic, further supports this assessment. Without evidence indicating malicious activity and with a near-universal specialist failure to provide data, the Devil's Advocate presents a compelling case for the flow being benign.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The traffic to port 80 over a short duration with minimal data transfer signifies standard web interaction activity."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2851,
+        "output": 569,
+        "total": 3420
+      },
+      "cost_usd": 0.0128175,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.006542500000000001,
+        "orchestrator": 0.006275
+      },
+      "time_seconds": 16.496361017227173,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 95,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "All four specialist agents encountered errors and provided no verdict, thus contributing no information toward identifying malicious activity. Therefore, no specialist consensus can be established. The Devil's Advocate's argument that the network flow represents typical HTTP traffic on port 80 combined with short-duration, bidirectional data transfer indicative of standard web browsing activities stands as the most convincing analysis. Given the symmetrical nature and context of the packet exchange, there is strong evidence for benign behavior, reinforced by a high confidence level in the benign nature of this flow.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "The flow attributes, including short duration and balanced bidirectional data on port 80, align closely with normal HTTP web browsing activities."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 2813,
+        "output": 522,
+        "total": 3335
+      },
+      "cost_usd": 0.012252500000000001,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.006257500000000001,
+        "orchestrator": 0.005995
+      },
+      "time_seconds": 14.632073163986206,
+      "tier": 0,
+      "attack_type_actual": "DDOS_attack-HOIC",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 96,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 97,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 98,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 99,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "Tier 1 RF pre-filter: classified as obviously benign",
+      "consensus_score": 0.0,
+      "specialist_results": {},
+      "devils_advocate": {
+        "confidence_benign": 1.0,
+        "strongest_benign_indicator": "Tier 1 pre-filter"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 0,
+        "output": 0,
+        "total": 0
+      },
+      "cost_usd": 0.0,
+      "agent_costs": {},
+      "time_seconds": 0.0,
+      "tier1_filtered": true,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    }
+  ]
+}

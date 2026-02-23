@@ -437,6 +437,8 @@ def run_experiment(batch_dir: Path, experiment_name: str, agents: dict,
             "verdict": result["verdict"],
             "correct": correct,
             "confidence": result["confidence"],
+            "flow_number": i,
+            "tier1_filtered": result.get("tier1_filtered", False),
         }
         recent_verdicts.append(rv)
         if len(recent_verdicts) > 20:
@@ -674,6 +676,19 @@ def main():
         experiments_completed.append(metrics)
         running_summary.append(metrics)
 
+        # Generate thesis chapter draft
+        try:
+            import subprocess
+            result_file = RESULTS_DIR / f"{batch_name}_results.json"
+            subprocess.run(
+                [sys.executable, str(PROJECT_ROOT / "scripts" / "generate_chapter_draft.py"),
+                 str(result_file), "--attack-type", attack_type],
+                timeout=30,
+            )
+            log(f"  Thesis draft generated for {attack_type}")
+        except Exception as e:
+            log(f"  Thesis draft generation failed: {e}")
+
         # Save running summary
         with open(SUMMARY_FILE, "w") as f:
             json.dump(running_summary, f, indent=2)
@@ -700,7 +715,7 @@ def main():
         try:
             f1_val = metrics["f1"]
             commit_msg = f"Stage 1: {attack_type} complete - F1:{f1_val:.3f}"
-            os.system(f'cd "{PROJECT_ROOT}" && git add results/stage1/ && git commit -m "{commit_msg}" && git push')
+            os.system(f'cd "{PROJECT_ROOT}" && git add results/stage1/ results/thesis_drafts/ && git commit -m "{commit_msg}" && git push')
         except Exception as e:
             log(f"  Git push failed: {e}")
 
@@ -745,7 +760,7 @@ def main():
 
     # Final git push
     try:
-        os.system(f'cd "{PROJECT_ROOT}" && git add results/stage1/ && git commit -m "Stage 1: Final report complete" && git push')
+        os.system(f'cd "{PROJECT_ROOT}" && git add results/stage1/ results/thesis_drafts/ && git commit -m "Stage 1: Final report complete" && git push')
     except Exception as e:
         log(f"  Git push failed: {e}")
 

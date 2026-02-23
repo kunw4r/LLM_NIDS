@@ -1,0 +1,1266 @@
+{
+  "evaluation_metadata": {
+    "model": "claude-sonnet-4-20250514",
+    "specialist_model": "claude-haiku-3-5-20251001",
+    "batch_dir": "data/batches/scaled/batch_1_brute_force",
+    "total_flows": 1000,
+    "evaluated_flows": 20,
+    "started_at": "2026-02-21T15:20:04.551812",
+    "architecture": "Phase 3: 6-Agent Multi-Agent NIDS",
+    "agents": [
+      "protocol",
+      "statistical",
+      "behavioural",
+      "temporal",
+      "devils_advocate",
+      "orchestrator"
+    ],
+    "da_weight": "30%",
+    "specialist_parallel": true,
+    "cost_rates": {
+      "input_per_1m_tokens": 3.0,
+      "output_per_1m_tokens": 15.0
+    },
+    "completed_at": "2026-02-21T15:29:02.033420",
+    "total_time_seconds": 537.4376454353333,
+    "total_cost_usd": 0.4977240000000001,
+    "total_tokens": {
+      "input": 93828,
+      "output": 14416,
+      "total": 108244
+    },
+    "agent_stats": {
+      "protocol": {
+        "agent_name": "protocol",
+        "call_count": 0,
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "total_cost": 0.0
+      },
+      "statistical": {
+        "agent_name": "statistical",
+        "call_count": 0,
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "total_cost": 0.0
+      },
+      "behavioural": {
+        "agent_name": "behavioural",
+        "call_count": 0,
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "total_cost": 0.0
+      },
+      "temporal": {
+        "agent_name": "temporal",
+        "call_count": 0,
+        "total_input_tokens": 0,
+        "total_output_tokens": 0,
+        "total_cost": 0.0
+      },
+      "devils_advocate": {
+        "agent_name": "devils_advocate",
+        "call_count": 20,
+        "total_input_tokens": 40799,
+        "total_output_tokens": 8914,
+        "total_cost": 0.25610700000000003
+      },
+      "orchestrator": {
+        "agent_name": "orchestrator",
+        "call_count": 20,
+        "total_input_tokens": 53029,
+        "total_output_tokens": 5502,
+        "total_cost": 0.241617
+      }
+    },
+    "metrics": {
+      "accuracy": 0.2,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 4,
+        "fn": 16
+      },
+      "per_attack_type": {
+        "Benign": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 4,
+          "fn": 0,
+          "total": 4,
+          "precision": 0,
+          "recall": 0,
+          "f1": 0
+        },
+        "SSH-Bruteforce": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 0,
+          "fn": 16,
+          "total": 16,
+          "precision": 0,
+          "recall": 0.0,
+          "f1": 0
+        }
+      },
+      "per_tier": {
+        "0": {
+          "tp": 0,
+          "fp": 0,
+          "tn": 4,
+          "fn": 16,
+          "total": 20,
+          "accuracy": 0.2,
+          "precision": 0,
+          "recall": 0.0,
+          "f1": 0
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "flow_idx": 0,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "This analysis presents a unique scenario where all four specialist agents experienced system errors and failed to produce verdicts, leaving only the Devil's Advocate analysis available. The DA provides compelling evidence for benign classification: (1) Standard RDP connection to port 3389 with proper TCP handshake (flags=30), (2) Balanced bidirectional traffic (1520 in, 1873 out) typical of authentication attempts, (3) Clean connection with zero retransmissions indicating legitimate protocol behavior, (4) Short 2.6-second duration consistent with failed auth or timeout scenarios common in enterprise environments, (5) Normal packet size distribution for RDP protocol overhead. The absence of any specialist findings combined with textbook-normal RDP characteristics strongly supports legitimate remote access activity. While external RDP connections warrant monitoring, this specific flow exhibits no anomalous patterns.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The complete absence of any malicious findings from all specialist agents (all returned ERROR) combined with the textbook-normal RDP connection characteristics - proper port (3389), reasonable traffic volume, clean TCP handshake, and short duration typical of authentication attempts"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4786,
+        "output": 827,
+        "total": 5613
+      },
+      "cost_usd": 0.026763000000000002,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.014205,
+        "orchestrator": 0.012558
+      },
+      "time_seconds": 30.12692093849182,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 1,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "With all four specialist agents encountering technical errors and providing no analysis, the Devil's Advocate's assessment becomes the primary source of evidence. The DA provides a compelling case for benign activity: this is standard SMB/CIFS traffic on port 445 between a client (122.154.103.133) and internal server (172.31.67.108). The flow characteristics strongly support legitimate file sharing - balanced bidirectional traffic (707 bytes in, 528 bytes out), normal 1.08-second duration for SMB operations, and clean TCP connection establishment/termination (flags=30). The packet sizes and timing patterns are consistent with SMB negotiation and small file operations. Port 445 is a standard business protocol extensively used in enterprise environments. Without any specialist evidence of malicious activity, and given the DA's detailed technical analysis showing normal SMB behavior, this appears to be legitimate network activity.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "This is standard SMB file sharing traffic on port 445 between what appears to be a client and internal file server, showing normal bidirectional communication patterns with proper connection establishment and termination"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4644,
+        "output": 665,
+        "total": 5309
+      },
+      "cost_usd": 0.023906999999999998,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012123,
+        "orchestrator": 0.011784
+      },
+      "time_seconds": 24.70220708847046,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 2,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "All four specialist agents encountered system errors and provided no analysis of the flow data. In the absence of any technical evidence of malicious activity, the Devil's Advocate provides a compelling and technically sound benign interpretation. The flow shows a single TCP SYN packet (flags=2, 40 bytes) from what appears to be an academic network (129.21.x.x) attempting to connect to port 5555, with no response received. This is textbook normal network behavior - legitimate applications routinely attempt connections that fail due to closed ports, unavailable services, or network timeouts. The packet characteristics (size, structure, single attempt) are entirely consistent with standard TCP connection establishment attempts. With no specialist evidence of malicious behavior and strong technical arguments for benign interpretation, this represents normal failed connection attempt traffic.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "This is a single, standard TCP SYN packet that received no response - the most common and benign type of network traffic that occurs when legitimate applications attempt to connect to unavailable services"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4737,
+        "output": 743,
+        "total": 5480
+      },
+      "cost_usd": 0.025356,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.013632,
+        "orchestrator": 0.011724
+      },
+      "time_seconds": 26.78223180770874,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 3,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "All four specialist agents (Protocol, Statistical, Behavioural, Temporal) returned system errors and provided no analysis, leaving only the Devil's Advocate assessment available. The DA presents a compelling case for benign RDP traffic: the flow shows connection to standard RDP port 3389 from AWS infrastructure (13.250.114.71) to an internal server (172.31.66.10), with normal bidirectional traffic patterns (1384 bytes in, 1721 bytes out over 2.4 seconds), proper TCP connection lifecycle (flags 222/26), and L7_PROTO detection indicating RDP protocol. The packet distribution, timing patterns, and throughput metrics all align with legitimate remote desktop administration. Without any specialist evidence of malicious activity and given the strong technical indicators supporting legitimate RDP usage, the verdict is BENIGN with high confidence.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "The connection uses standard RDP port 3389 with normal protocol behavior, balanced bidirectional traffic, and proper TCP connection lifecycle, which are hallmarks of legitimate remote desktop administration rather than malicious activity"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4709,
+        "output": 739,
+        "total": 5448
+      },
+      "cost_usd": 0.025212,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012936,
+        "orchestrator": 0.012276
+      },
+      "time_seconds": 25.279990673065186,
+      "tier": 0,
+      "attack_type_actual": "Benign",
+      "label_actual": 0
+    },
+    {
+      "flow_idx": 4,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "This analysis faces a critical situation where all four specialist agents experienced system errors and provided no actual assessment of the network flow. However, the Devil's Advocate presents a compelling case for benign interpretation with 95% confidence. The flow data shows a connection from 13.58.98.64:44438 to 172.31.69.25:22 (SSH port) with characteristics entirely consistent with legitimate SSH traffic: proper TCP flags (27) indicating complete handshake, bidirectional encrypted data exchange (3216 bytes in, 3765 bytes out), reasonable 394ms duration, no retransmissions, and packet size distribution typical of SSH protocol overhead. The L7_PROTO value of 92 likely indicates encrypted/SSH traffic classification. Without any specialist evidence of malicious behavior and given the strong technical arguments for legitimate SSH administration traffic, the Devil's Advocate's assessment carries significant weight despite normally being a counterbalance.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "This is standard SSH traffic to port 22 with normal encrypted session characteristics, proper TCP handshake completion, and traffic volumes consistent with legitimate remote administration"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4650,
+        "output": 705,
+        "total": 5355
+      },
+      "cost_usd": 0.024524999999999998,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012375,
+        "orchestrator": 0.01215
+      },
+      "time_seconds": 25.843979597091675,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 5,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "Due to system errors, all four specialist agents (protocol, statistical, behavioural, temporal) failed to provide analyses, resulting in 0/4 specialist verdicts for MALICIOUS. In the absence of any malicious findings from specialists, the Devil's Advocate argument becomes the primary assessment. The DA presents a compelling case with 95% confidence for benign classification, identifying this as a standard SSH connection from AWS infrastructure (13.58.98.64) to an internal server on port 22. Key benign indicators include: proper TCP connection lifecycle (flags 27), balanced bidirectional traffic (3148/3765 bytes, 23/21 packets), short duration (380ms) typical of administrative tasks, clean termination with no retransmissions, and source from legitimate Amazon Ohio region. The packet size distribution and throughput rates are consistent with normal SSH protocol behavior. Without any specialist evidence suggesting malicious activity and strong evidence for legitimate administrative traffic, the verdict is clearly BENIGN.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "Standard SSH connection pattern with proper protocol behavior, reasonable duration, balanced bidirectional traffic, clean connection termination, and source from legitimate AWS infrastructure - all characteristics of normal system administration activity"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4720,
+        "output": 772,
+        "total": 5492
+      },
+      "cost_usd": 0.02574,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.013377,
+        "orchestrator": 0.012363
+      },
+      "time_seconds": 30.676830053329468,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 6,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "With all four specialist agents returning ERROR verdicts due to model unavailability, the analysis relies entirely on the Devil's Advocate assessment and direct flow examination. The flow shows classic characteristics of legitimate SSH administrative traffic: successful bidirectional communication to port 22 (SSH service), balanced packet exchange (23 in, 22 out), appropriate data volumes (3,148/3,817 bytes), proper TCP connection establishment and termination (flags=27), and clean network conditions (zero retransmissions, consistent TTL=63). The 351ms duration with balanced throughput indicates successful authentication and brief command execution typical of automated SSH operations or administrative tasks. Without any malicious indicators from specialist analysis and strong benign characteristics evident in the flow data itself, this appears to be routine infrastructure traffic.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.85,
+        "strongest_benign_indicator": "This is a clean, successful SSH session to port 22 with balanced bidirectional traffic and proper connection establishment/termination - the hallmark of legitimate system administration"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4709,
+        "output": 722,
+        "total": 5431
+      },
+      "cost_usd": 0.024957,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.013131,
+        "orchestrator": 0.011826
+      },
+      "time_seconds": 26.596763849258423,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 7,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "Due to system errors, all four specialist agents failed to provide analyses, leaving only the Devil's Advocate assessment available. However, examining the raw flow data independently confirms the DA's benign interpretation. This is a standard SSH connection (port 22, L7_PROTO 92) from an AWS EC2 instance to an internal server, showing all hallmarks of legitimate remote administration: balanced bidirectional traffic (3288 in/3765 out bytes), appropriate duration (378ms), clean TCP flags (27 = normal connection lifecycle), zero retransmissions indicating stable connection, and normal packet size distribution. The source IP 13.58.98.64 resolves to AWS us-east-2 region, consistent with cloud-to-infrastructure management. Without any specialist evidence of malicious behavior, and with strong technical indicators supporting legitimate SSH usage, the verdict is clearly benign.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "Clean SSH connection on port 22 with balanced bidirectional traffic, zero retransmissions, and normal packet size distribution - this is textbook legitimate remote administration"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4677,
+        "output": 711,
+        "total": 5388
+      },
+      "cost_usd": 0.024696,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012806999999999999,
+        "orchestrator": 0.011889
+      },
+      "time_seconds": 26.894827127456665,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 8,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "All four specialist agents experienced technical failures and returned ERROR verdicts with 0.0 confidence, providing no evidence of malicious activity. In this exceptional circumstance, the Devil's Advocate analysis (carrying 30% weight) becomes the primary source of technical assessment. The DA provides compelling evidence for benign classification: (1) Flow shows classic SSH session characteristics with balanced bidirectional traffic (23 packets each way, 3132/3869 bytes), (2) Source IP 13.58.98.64 is legitimate AWS EC2 infrastructure from us-east-2 region, (3) 325ms duration with clean TCP completion indicates successful authentication/brief session, (4) L7_PROTO 92 correctly identifies SSH protocol, (5) Zero retransmissions and consistent TTL=63 show healthy network conditions, (6) Packet size distribution matches SSH encryption overhead patterns. With no specialist evidence contradicting this assessment and strong technical indicators supporting legitimate SSH administrative access, the verdict is BENIGN with high confidence.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The perfectly balanced bidirectional packet exchange (23 packets each way) with reasonable byte counts and clean TCP completion represents textbook legitimate SSH session behavior"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4727,
+        "output": 819,
+        "total": 5546
+      },
+      "cost_usd": 0.026466,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.013455,
+        "orchestrator": 0.013011
+      },
+      "time_seconds": 29.474365949630737,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 9,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "All four specialist agents (protocol, statistical, behavioral, temporal) encountered technical errors and were unable to provide any analysis or identify malicious indicators. In the absence of any negative findings from the specialists, the Devil's Advocate's comprehensive benign argument becomes the primary source of evidence. The DA presents compelling technical analysis showing this is a legitimate SSH administrative session: balanced bidirectional traffic (3116 out, 3869 in bytes), normal interactive timing patterns (14ms average IAT), proper TCP connection handling (flags=27), zero retransmissions indicating stable connection, and packet size distribution typical of terminal sessions. The source IP appears to be AWS infrastructure, consistent with cloud-based administration. With no specialist dissent and strong benign technical indicators, this represents normal administrative SSH traffic.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The balanced bidirectional SSH traffic (3116 bytes out, 3869 bytes in) with normal interactive timing patterns and zero retransmissions is characteristic of legitimate remote administration sessions"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4693,
+        "output": 669,
+        "total": 5362
+      },
+      "cost_usd": 0.024114,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012594000000000001,
+        "orchestrator": 0.011519999999999999
+      },
+      "time_seconds": 26.830675840377808,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 10,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "This analysis presents an exceptional case where all four specialist agents experienced technical failures and returned ERROR status, providing zero substantive security findings. In the absence of any actual malicious indicators from the specialist consensus, the Devil's Advocate analysis becomes the primary source of technical assessment. The DA provides a compelling case for benign activity: this is a standard SSH connection (port 22) from an AWS IP in us-east-2 to an internal server, lasting 365ms with balanced bidirectional data exchange (3340 bytes in, 3869 out). The packet size distribution (39 packets under 128 bytes with a few larger ones) and zero retransmissions are entirely consistent with normal SSH protocol negotiation and brief command execution. The connection characteristics match typical automated infrastructure management, monitoring checks, or routine administrative tasks common in cloud environments. Without any concrete malicious findings from specialists to weigh against this benign interpretation, and given the strong technical evidence supporting normal SSH administrative activity, the verdict is clearly benign.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "This is a standard SSH connection with normal protocol behavior, reasonable duration, and balanced data exchange - the most common form of legitimate remote administration traffic in modern networks"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4677,
+        "output": 726,
+        "total": 5403
+      },
+      "cost_usd": 0.024921000000000002,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012678000000000002,
+        "orchestrator": 0.012243
+      },
+      "time_seconds": 27.120585918426514,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 11,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "Due to system errors in all four specialist agents, this analysis relies entirely on the raw flow data and the Devil's Advocate assessment. The flow shows clear characteristics of legitimate SSH traffic: connection to standard SSH port 22, bidirectional data exchange (3064 bytes in, 3869 bytes out with balanced packet counts), proper TCP connection establishment/teardown (TCP flags 27), L7_PROTO 92 confirming SSH protocol, and packet size distribution typical of SSH sessions. The 423ms duration and throughput patterns are consistent with legitimate remote administration. Without any specialist analysis claiming malicious activity, and given the Devil's Advocate's strong technical argument (confidence 0.9) identifying this as standard SSH behavior, there is no evidence-based reason to classify this as suspicious or malicious.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.9,
+        "strongest_benign_indicator": "This is a standard SSH connection on port 22 with normal bidirectional data exchange, proper TCP connection handling, and packet patterns consistent with legitimate remote administration - SSH is a fundamental protocol for secure remote access in enterprise environments"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4652,
+        "output": 671,
+        "total": 5323
+      },
+      "cost_usd": 0.024021,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012276,
+        "orchestrator": 0.011745
+      },
+      "time_seconds": 24.830162048339844,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 12,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "Due to system errors, all four specialist agents failed to provide analyses, leaving only the Devil's Advocate assessment available. The DA presents a compelling case for benign classification based on clear technical evidence: this is a standard SSH connection (port 22) from AWS infrastructure (13.58.98.64) with all characteristics of legitimate administrative access. The 374ms duration with successful bidirectional data exchange (3324 bytes in, 3765 bytes out), zero retransmissions, stable TTL of 63, and typical SSH packet size distribution (52-1028 bytes) all support normal protocol behavior. Without any malicious indicators from the specialist agents and faced with strong technical evidence for legitimate SSH activity, the verdict defaults to benign. The high confidence reflects the clear SSH protocol signatures and absence of any suspicious characteristics in the available data.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "This is a standard SSH connection to port 22 with successful bidirectional data exchange, zero retransmissions, and all traffic patterns consistent with legitimate administrative access from AWS infrastructure"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4654,
+        "output": 669,
+        "total": 5323
+      },
+      "cost_usd": 0.023997000000000004,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012171000000000001,
+        "orchestrator": 0.011826000000000001
+      },
+      "time_seconds": 25.26364779472351,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 13,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "Due to system errors, all four specialist agents failed to provide analyses, leaving only the Devil's Advocate assessment available. However, this creates an unusual situation where the DA argument becomes the primary evidence source rather than a 30% counterweight. The DA presents compelling evidence for benignity: this is a standard SSH connection (port 22, L7_PROTO 92) from AWS infrastructure (13.58.98.64) to an internal server, showing balanced bidirectional traffic (3148/3869 bytes, 23/23 packets), proper TCP flags (27), reasonable duration (379ms), and no retransmissions. The packet size distribution and timing patterns are consistent with legitimate SSH administrative activity. The source IP belongs to Amazon's legitimate cloud infrastructure. Without any malicious findings from the specialists to contradict this assessment, and given the strong technical evidence supporting normal SSH behavior, the verdict is BENIGN with high confidence.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "This is a standard SSH connection from AWS infrastructure with balanced bidirectional traffic, proper protocol detection (L7_PROTO 92), and all characteristics matching legitimate administrative access patterns"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4701,
+        "output": 741,
+        "total": 5442
+      },
+      "cost_usd": 0.025218,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012849,
+        "orchestrator": 0.012369000000000002
+      },
+      "time_seconds": 27.386855840682983,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 14,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "Due to system errors, all four specialist agents failed to provide analysis, leaving only the Devil's Advocate assessment available. However, examining the flow data directly supports the benign classification: This is a standard SSH connection to port 22 from AWS infrastructure (13.58.98.64) showing normal administrative traffic patterns. The connection exhibits healthy bidirectional communication (3,148 bytes in, 3,765 bytes out) over 376ms with proper TCP flag sequences (27 indicating complete handshake). The packet size distribution is typical for SSH - predominantly small packets (33 under 128 bytes) for commands with occasional larger packets (up to 1,028 bytes) for data transfer. Zero retransmissions indicate clean network conditions. The inter-arrival times and throughput rates are consistent with legitimate interactive or scripted SSH usage. Without any malicious indicators from the specialist agents and strong evidence supporting normal SSH administrative traffic, the verdict is benign with high confidence.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "This is standard SSH traffic on port 22 with proper bidirectional communication patterns, normal packet sizes, and clean connection metrics - exactly what legitimate system administration looks like"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4715,
+        "output": 755,
+        "total": 5470
+      },
+      "cost_usd": 0.02547,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.013032,
+        "orchestrator": 0.012438000000000001
+      },
+      "time_seconds": 28.527756214141846,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 15,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "With all four specialist agents encountering system errors and providing no analysis, the decision relies entirely on the Devil's Advocate argument (which carries 30% weight) and direct flow analysis. The flow shows classic legitimate SSH administrative traffic: connection to port 22 from AWS infrastructure (13.58.98.64), balanced bidirectional data transfer (3112 bytes in, 3869 bytes out), proper TCP flag usage (27), no retransmissions, and brief 330ms duration indicating successful automated administration. The packet size distribution with mix of small control packets and larger data packets is consistent with SSH negotiation and brief command execution. Without any specialist evidence of malicious activity and strong indicators of legitimate administrative traffic, this is classified as benign.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The balanced bidirectional data transfer (3112 in, 3869 out) over a brief 330ms period to SSH port 22 from an AWS IP is textbook legitimate administrative traffic with successful connection establishment and task completion"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4668,
+        "output": 662,
+        "total": 5330
+      },
+      "cost_usd": 0.023934,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012543,
+        "orchestrator": 0.011391
+      },
+      "time_seconds": 24.41657304763794,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 16,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "Due to system errors, all four specialist agents failed to provide analyses, leaving only the Devil's Advocate assessment. However, manual examination of the flow data strongly supports the benign interpretation. This is an SSH connection (port 22, L7_PROTO 92) from an AWS EC2 instance (13.58.98.64 in us-east-2 region) to an internal server. Key benign indicators include: (1) balanced bidirectional traffic (23 packets each direction, ~3KB each way), (2) short 361ms duration consistent with successful SSH authentication and brief command execution, (3) normal TCP behavior with no retransmissions, (4) reasonable packet size distribution with largest packet at 1028 bytes typical for SSH, and (5) source from legitimate AWS infrastructure rather than suspicious origin. The Devil's Advocate provides compelling evidence with 95% confidence that this represents routine administrative access or DevOps automation between cloud and internal systems. Without any specialist findings to contradict this assessment, and given the strong technical evidence supporting legitimate SSH usage, the verdict is confidently benign.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The connection originates from a known AWS EC2 IP range connecting to SSH port with normal protocol behavior, balanced bidirectional data exchange, and duration consistent with successful authentication and brief command execution"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4654,
+        "output": 728,
+        "total": 5382
+      },
+      "cost_usd": 0.024882,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012164999999999999,
+        "orchestrator": 0.012717000000000001
+      },
+      "time_seconds": 27.40072989463806,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 17,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "All four specialist agents encountered technical errors and provided no malicious findings, leaving only the Devil's Advocate analysis available. The DA presents a compelling case for benignity: this is standard SSH traffic (port 22) from AWS infrastructure (13.58.98.64) to an internal server with normal bidirectional data exchange (3.2KB in, 3.8KB out), proper TCP connection lifecycle (flags 27 = FIN+ACK+PSH), and reasonable 399ms duration. The packet size distribution, throughput rates, and timing patterns all align with legitimate SSH terminal sessions. With no malicious evidence from specialists and strong benign indicators (legitimate protocol, proper AWS source, normal flow characteristics), the verdict is clearly BENIGN. The confidence is high (0.85) rather than maximum due to the specialist agent failures preventing full analysis coverage.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "This is standard SSH traffic on port 22 with normal bidirectional data exchange patterns, proper TCP connection lifecycle, and source from legitimate AWS infrastructure - no malicious characteristics are present in the flow data."
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4700,
+        "output": 714,
+        "total": 5414
+      },
+      "cost_usd": 0.02481,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012942,
+        "orchestrator": 0.011868
+      },
+      "time_seconds": 27.621992826461792,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 18,
+      "verdict": "BENIGN",
+      "confidence": 0.75,
+      "attack_type_predicted": null,
+      "reasoning": "Due to technical errors, all four specialist agents failed to provide analyses, leaving only the Devil's Advocate assessment. However, examining the flow data directly reveals strong indicators of legitimate SSH activity: connection to standard SSH port 22 from AWS infrastructure (13.58.98.64), balanced bidirectional traffic (3180 bytes in, 3869 bytes out with equal packet counts), normal TCP connection patterns (flags=27 indicating proper handshake), reasonable 394ms duration for a quick SSH operation, and clean network conditions with zero retransmissions. The packet size distribution (mix of small control packets and larger encrypted data up to 1028 bytes) aligns perfectly with SSH protocol behavior. The Devil's Advocate provides compelling evidence with 95% confidence that this represents standard remote administration activity. Without any malicious indicators from specialist analyses and given the clear SSH protocol patterns, the evidence strongly supports a benign verdict.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "This is a standard SSH connection with normal bidirectional traffic patterns, reasonable duration, and no network anomalies, operating exactly as expected for legitimate remote administration or automation tasks"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4687,
+        "output": 694,
+        "total": 5381
+      },
+      "cost_usd": 0.024471,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012504000000000001,
+        "orchestrator": 0.011967
+      },
+      "time_seconds": 26.398344039916992,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    },
+    {
+      "flow_idx": 19,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "All four specialist agents experienced system errors and could not analyze the flow, leaving no malicious indicators whatsoever. The Devil's Advocate provides compelling evidence for benign interpretation: This is a standard SSH connection to port 22 (the default SSH port) with characteristics typical of legitimate administrative access. The traffic shows balanced bidirectional communication (3056 bytes in, 3765 bytes out) over a brief 207ms duration, consistent with quick administrative commands. The packet distribution is normal for SSH - predominantly small packets (30 \u2264128 bytes) for terminal commands with some larger packets for data transfer. TCP flags value of 27 indicates proper connection establishment and teardown. Zero retransmissions suggest a clean, successful connection. The source IP from AWS infrastructure (13.x range) further supports legitimate cloud-based administration. With zero specialist concerns raised and strong benign indicators present, this flow represents normal SSH administrative traffic.",
+      "consensus_score": 0.0,
+      "specialist_results": {
+        "protocol": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "statistical": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "behavioural": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        },
+        "temporal": {
+          "verdict": "ERROR",
+          "confidence": 0.0,
+          "attack_type": null,
+          "key_findings": []
+        }
+      },
+      "devils_advocate": {
+        "confidence_benign": 0.95,
+        "strongest_benign_indicator": "The complete absence of any suspicious findings from all four specialist agents, combined with standard SSH connection characteristics including balanced bidirectional traffic, proper TCP flag usage, and typical packet size distribution for terminal sessions"
+      },
+      "mitre_techniques": [],
+      "tokens": {
+        "input": 4668,
+        "output": 684,
+        "total": 5352
+      },
+      "cost_usd": 0.024264,
+      "agent_costs": {
+        "protocol": 0.0,
+        "statistical": 0.0,
+        "behavioural": 0.0,
+        "temporal": 0.0,
+        "devils_advocate": 0.012312,
+        "orchestrator": 0.011952
+      },
+      "time_seconds": 25.262204885482788,
+      "tier": 0,
+      "attack_type_actual": "SSH-Bruteforce",
+      "label_actual": 1
+    }
+  ]
+}

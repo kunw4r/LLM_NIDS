@@ -403,6 +403,14 @@ export default function NIDSDashboard() {
   const [compCategory, setCompCategory] = useState("all");
   const [compSort, setCompSort] = useState({ key: "f1", dir: "desc" });
 
+  // ── Live experiment panel state ────────────────────────────────────────────
+  const [liveStatus, setLiveStatus] = useState(null);
+
+  // ── Thesis tab state ──────────────────────────────────────────────────────
+  const [thesisDrafts, setThesisDrafts] = useState([]);
+  const [selectedDraft, setSelectedDraft] = useState(null);
+  const [selectedDraftContent, setSelectedDraftContent] = useState(null);
+
   // ── Data fetch timestamp ────────────────────────────────────────────────────
   const [lastFetched, setLastFetched] = useState(null);
 
@@ -420,6 +428,64 @@ export default function NIDSDashboard() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [topTab, amatasTab, storyExpId]);
+
+  // ── Fetch thesis drafts when tab opens ──────────────────────────────────────
+  useEffect(() => {
+    if (topTab !== "thesis" || thesisDrafts.length > 0) return;
+    const fetchIndex = async () => {
+      try {
+        const resp = await fetch(`${RESULTS_BASE.replace("/results", "")}/results/thesis_drafts/INDEX.md?t=${Date.now()}`);
+        if (!resp.ok) return;
+        const text = await resp.text();
+        const rows = text.split("\n").filter(l => l.startsWith("|") && !l.includes("---") && !l.includes("Attack Type"));
+        const drafts = rows.map(row => {
+          const cols = row.split("|").map(c => c.trim()).filter(Boolean);
+          if (cols.length < 4) return null;
+          const fileMatch = cols[1].match(/\[(.+?)\]\((.+?)\)/);
+          return { attack_type: cols[0], file: fileMatch?.[2] || cols[1], words: parseInt(cols[2]) || 0, generated: cols[3] };
+        }).filter(Boolean);
+        if (drafts.length > 0) setThesisDrafts(drafts);
+      } catch (_) {}
+    };
+    fetchIndex();
+  }, [topTab, thesisDrafts.length]);
+
+  // ── Poll live experiment status ─────────────────────────────────────────────
+  useEffect(() => {
+    let timer;
+    const poll = async () => {
+      try {
+        // Try local Flask first (3s timeout)
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        let data;
+        try {
+          const resp = await fetch("http://localhost:5001/api/status", { signal: controller.signal });
+          clearTimeout(timeout);
+          if (resp.ok) {
+            const raw = await resp.json();
+            // Normalise Flask format → flat format
+            data = raw.status || raw;
+          }
+        } catch (_) {
+          clearTimeout(timeout);
+          // Fallback to GitHub raw
+          const resp2 = await fetch(`${RESULTS_BASE}/stage1/live_status.json?t=${Date.now()}`);
+          if (resp2.ok) data = await resp2.json();
+        }
+        if (data && (data.status === "running" || data.status === "paused")) {
+          setLiveStatus(data);
+        } else {
+          setLiveStatus(null);
+        }
+      } catch (_) {
+        setLiveStatus(null);
+      }
+    };
+    poll();
+    timer = setInterval(poll, 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   // ── Load flow inspector data ────────────────────────────────────────────────
   const loadInspectorData = useCallback(async (sourceId) => {
@@ -555,6 +621,58 @@ export default function NIDSDashboard() {
   return (
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: "#1a1a1a", background: "#fff", minHeight: "100vh" }}>
 
+      {/* ── LIVE EXPERIMENT BANNER ──────────────────────────────────────────── */}
+      {liveStatus && (
+        <div style={{ background: "#eff6ff", borderBottom: "1px solid #bfdbfe", padding: "10px 32px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, maxWidth: 1200, margin: "0 auto" }}>
+            {/* Pulsing dot */}
+            <div style={{ position: "relative", width: 10, height: 10, flexShrink: 0 }}>
+              <div style={{ position: "absolute", width: 10, height: 10, borderRadius: "50%", background: liveStatus.status === "paused" ? "#d97706" : "#2563eb", animation: liveStatus.status === "running" ? "pulse 2s ease-in-out infinite" : "none" }} />
+            </div>
+            {/* Experiment name + stage */}
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#1e40af", minWidth: 180 }}>
+              {liveStatus.current_experiment || "Experiment"}
+              {liveStatus.experiments_completed && liveStatus.experiments_queued && (
+                <span style={{ fontWeight: 400, color: "#3b82f6", marginLeft: 8 }}>
+                  ({(liveStatus.experiments_completed?.length || 0)}/{(liveStatus.experiments_completed?.length || 0) + (liveStatus.experiments_queued?.length || 0) + 1})
+                </span>
+              )}
+            </div>
+            {/* Progress bar */}
+            <div style={{ flex: 1, height: 6, background: "#dbeafe", borderRadius: 3, overflow: "hidden" }}>
+              <div style={{ width: `${liveStatus.pct_complete || 0}%`, height: "100%", background: "#2563eb", borderRadius: 3, transition: "width 0.5s ease" }} />
+            </div>
+            <span style={{ fontSize: 12, color: "#3b82f6", fontWeight: 500, minWidth: 40 }}>
+              {(liveStatus.pct_complete || 0).toFixed(0)}%
+            </span>
+            {/* Cost */}
+            <span style={{ fontSize: 12, color: "#6b7280", minWidth: 60 }}>
+              ${(liveStatus.cost_so_far || 0).toFixed(2)}
+            </span>
+            {/* Recent verdicts (last 8) */}
+            <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
+              {(liveStatus.recent_verdicts || []).slice(-8).map((v, i) => (
+                <div key={i} style={{
+                  width: 8, height: 8, borderRadius: "50%",
+                  background: v.correct ? "#16a34a" : v.tier1_filtered ? "#94a3b8" : "#dc2626",
+                  title: `${v.actual} → ${v.verdict}`,
+                }} />
+              ))}
+            </div>
+            {/* Status badge */}
+            <span style={{
+              padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 500,
+              background: liveStatus.status === "paused" ? "#fef3c7" : "#dbeafe",
+              color: liveStatus.status === "paused" ? "#92400e" : "#1e40af",
+            }}>
+              {liveStatus.status === "paused" ? "PAUSED" : "RUNNING"}
+            </span>
+          </div>
+          {/* Pulse animation */}
+          <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }`}</style>
+        </div>
+      )}
+
       {/* ── TOP HEADER ─────────────────────────────────────────────────────── */}
       <header style={{ borderBottom: "1px solid #e5e7eb", padding: "16px 32px", display: "flex", alignItems: "center", gap: 24 }}>
         <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>AMATAS</h1>
@@ -572,6 +690,7 @@ export default function NIDSDashboard() {
           ["clustering", "Clustering"],
           ["comparison", "Comparison"],
           ["architecture", "Architecture"],
+          ["thesis", "Thesis Drafts"],
           ["next", "What's Next"],
         ].map(([id, label]) => (
           <button key={id} onClick={() => setTopTab(id)} style={{
@@ -1580,6 +1699,111 @@ export default function NIDSDashboard() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* THESIS DRAFTS                                                      */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {topTab === "thesis" && (
+          <div>
+            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4, letterSpacing: "-0.02em" }}>Thesis Chapter Drafts</h2>
+            <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 24 }}>
+              Auto-generated academic prose from experiment results. Each draft covers one attack type evaluation.
+            </p>
+
+            {/* Trigger fetch on tab open — uses a hidden component */}
+
+            {thesisDrafts.length === 0 && !selectedDraftContent && (
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "48px", textAlign: "center", color: "#9ca3af" }}>
+                <p style={{ fontSize: 16, marginBottom: 8 }}>No thesis drafts generated yet</p>
+                <p style={{ fontSize: 13 }}>
+                  Run <code style={{ background: "#f3f4f6", padding: "2px 6px", borderRadius: 4 }}>python scripts/generate_chapter_draft.py results/stage1/FTP-BruteForce_results.json</code> to generate the first draft.
+                </p>
+              </div>
+            )}
+
+            {thesisDrafts.length > 0 && !selectedDraftContent && (
+              <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ background: "#f9fafb" }}>
+                      {["Attack Type", "Words", "Generated", ""].map(h => (
+                        <th key={h} style={{ textAlign: h === "" ? "right" : "left", padding: "12px 16px", fontWeight: 600, color: "#6b7280", fontSize: 12, borderBottom: "1px solid #e5e7eb" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {thesisDrafts.map(d => (
+                      <tr key={d.file} style={{ borderBottom: "1px solid #f3f4f6", cursor: "pointer" }}
+                        onClick={async () => {
+                          setSelectedDraft(d);
+                          try {
+                            const resp = await fetch(`${RESULTS_BASE.replace("/results", "")}/results/thesis_drafts/${d.file}?t=${Date.now()}`);
+                            if (resp.ok) setSelectedDraftContent(await resp.text());
+                            else setSelectedDraftContent("Failed to load draft.");
+                          } catch (_) { setSelectedDraftContent("Failed to load draft."); }
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.background = "#f9fafb"}
+                        onMouseLeave={e => e.currentTarget.style.background = ""}
+                      >
+                        <td style={{ padding: "12px 16px", fontWeight: 500, color: "#2563eb" }}>{d.attack_type}</td>
+                        <td style={{ padding: "12px 16px", color: "#6b7280" }}>{d.words}</td>
+                        <td style={{ padding: "12px 16px", color: "#6b7280" }}>{d.generated}</td>
+                        <td style={{ padding: "12px 16px", textAlign: "right", color: "#2563eb", fontSize: 12 }}>View &#8594;</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {selectedDraftContent && (
+              <div>
+                {/* Back + actions bar */}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <button onClick={() => { setSelectedDraftContent(null); setSelectedDraft(null); }} style={{
+                    padding: "6px 14px", border: "1px solid #e5e7eb", borderRadius: 6,
+                    background: "none", cursor: "pointer", fontSize: 13, color: "#374151",
+                  }}>
+                    &#8592; Back to list
+                  </button>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <span style={{ fontSize: 12, color: "#9ca3af" }}>
+                      {selectedDraftContent.split(/\s+/).length} words
+                    </span>
+                    <button onClick={() => navigator.clipboard.writeText(selectedDraftContent)} style={{
+                      padding: "6px 14px", border: "1px solid #e5e7eb", borderRadius: 6,
+                      background: "none", cursor: "pointer", fontSize: 12, color: "#374151",
+                    }}>
+                      Copy
+                    </button>
+                    <button onClick={() => {
+                      const blob = new Blob([selectedDraftContent], { type: "text/markdown" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url; a.download = selectedDraft?.file || "draft.md"; a.click();
+                      URL.revokeObjectURL(url);
+                    }} style={{
+                      padding: "6px 14px", border: "1px solid #2563eb", borderRadius: 6,
+                      background: "#2563eb", cursor: "pointer", fontSize: 12, color: "#fff", fontWeight: 500,
+                    }}>
+                      Download .md
+                    </button>
+                  </div>
+                </div>
+
+                {/* Rendered markdown */}
+                <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "32px", background: "#fafafa", lineHeight: 1.8, fontSize: 14, color: "#374151" }}>
+                  {selectedDraftContent.split("\n").map((line, i) => {
+                    if (line.startsWith("#### ")) return <h4 key={i} style={{ fontSize: 15, fontWeight: 600, color: "#1a1a1a", marginTop: 24, marginBottom: 8 }}>{line.replace("#### ", "")}</h4>;
+                    if (line.startsWith("### ")) return <h3 key={i} style={{ fontSize: 18, fontWeight: 700, color: "#1a1a1a", marginBottom: 12, letterSpacing: "-0.02em" }}>{line.replace("### ", "")}</h3>;
+                    if (line.trim() === "") return <div key={i} style={{ height: 8 }} />;
+                    return <p key={i} style={{ margin: "0 0 12px", textAlign: "justify" }}>{line}</p>;
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
