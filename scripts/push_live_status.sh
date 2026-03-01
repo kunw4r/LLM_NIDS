@@ -18,7 +18,7 @@ while true; do
     # Only push if file changed
     CURRENT_HASH=$(md5 -q "$STATUS_FILE" 2>/dev/null || md5sum "$STATUS_FILE" | cut -d' ' -f1)
     if [ "$CURRENT_HASH" != "$LAST_HASH" ]; then
-        git add "$STATUS_FILE" "$SUMMARY_FILE" 2>/dev/null
+        git add -f "$STATUS_FILE" "$SUMMARY_FILE" results/thesis_drafts/ results/stage1/*_results.json 2>/dev/null
         git commit -m "live: status update" --quiet 2>/dev/null
         git push --quiet 2>/dev/null
         LAST_HASH="$CURRENT_HASH"
@@ -27,7 +27,7 @@ while true; do
     # Stop if pipeline is done
     if grep -q '"all_done"' "$STATUS_FILE" 2>/dev/null; then
         # One final push
-        git add results/stage1/ 2>/dev/null
+        git add -f results/stage1/ results/thesis_drafts/ 2>/dev/null
         git commit -m "live: final status" --quiet 2>/dev/null
         git push --quiet 2>/dev/null
         echo "Pipeline complete — watcher exiting."

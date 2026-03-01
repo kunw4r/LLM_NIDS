@@ -407,6 +407,7 @@ export default function NIDSDashboard() {
   const [liveStatus, setLiveStatus] = useState(null);
   const [livePanelOpen, setLivePanelOpen] = useState(false);
   const [liveSummary, setLiveSummary] = useState(null);
+  const [newResultNotif, setNewResultNotif] = useState(null);
 
   // ── Thesis tab state ──────────────────────────────────────────────────────
   const [thesisDrafts, setThesisDrafts] = useState([]);
@@ -481,7 +482,23 @@ export default function NIDSDashboard() {
         // Also fetch running_summary.json for detailed experiment metrics
         try {
           const summResp = await fetch(`${RESULTS_BASE}/stage1/running_summary.json?t=${Date.now()}`);
-          if (summResp.ok) setLiveSummary(await summResp.json());
+          if (summResp.ok) {
+            const newSumm = await summResp.json();
+            setLiveSummary(prev => {
+              // Detect newly completed experiments
+              if (prev && newSumm.experiments && prev.experiments) {
+                const prevTypes = new Set(prev.experiments.map(e => e.attack_type));
+                const added = newSumm.experiments.filter(e => !prevTypes.has(e.attack_type));
+                if (added.length > 0) {
+                  const name = added[added.length - 1].attack_type;
+                  const recall = added[added.length - 1].recall;
+                  setNewResultNotif(`New result: ${name} — ${recall}% recall`);
+                  setTimeout(() => setNewResultNotif(null), 5000);
+                }
+              }
+              return newSumm;
+            });
+          }
         } catch (_) {}
       } catch (_) {
         setLiveStatus(null);
@@ -552,9 +569,32 @@ export default function NIDSDashboard() {
   const storyExp = EXPERIMENTS.find(x => x.id === storyExpId) || EXPERIMENTS[0];
   const storyIdx = EXPERIMENTS.findIndex(x => x.id === storyExpId);
 
+  // Merge hardcoded STAGE1_SUMMARY with live data from running_summary.json
+  const s1 = (() => {
+    const base = STAGE1_SUMMARY;
+    if (!liveSummary?.experiments?.length) return base;
+    // Use liveSummary if it has more experiments (it's the live source of truth)
+    const merged = liveSummary.experiments.length >= base.experiments.length ? liveSummary : base;
+    const exps = merged.experiments || [];
+    const totalFlows = exps.length * 1000;
+    const totalCost = exps.reduce((s, e) => s + (e.cost || 0), 0);
+    const bestExp = exps.reduce((best, e) => (e.f1 || 0) > (best.f1 || 0) ? e : best, exps[0] || {});
+    const avgFpr = exps.length > 0 ? exps.reduce((s, e) => s + (e.fpr || 0), 0) / exps.length : 0;
+    return {
+      experiments: exps,
+      overall: {
+        best_f1: bestExp?.f1 || 0,
+        best_detected: bestExp?.attack_type || "",
+        total_flows: totalFlows,
+        total_cost: totalCost,
+        avg_fpr: avgFpr,
+      },
+    };
+  })();
+
   const bestF1 = Math.max(...EXPERIMENTS.map(e => e.f1));
-  const totalFlows = EXPERIMENTS.reduce((s, e) => s + e.flows, 0) + STAGE1_SUMMARY.overall.total_flows;
-  const totalCost = EXPERIMENTS.reduce((s, e) => s + e.cost, 0) + STAGE1_SUMMARY.overall.total_cost;
+  const totalFlows = EXPERIMENTS.reduce((s, e) => s + e.flows, 0) + s1.overall.total_flows;
+  const totalCost = EXPERIMENTS.reduce((s, e) => s + e.cost, 0) + s1.overall.total_cost;
 
   // Inspector derived
   const inspectorFlows = inspectorData?.results || [];
@@ -624,7 +664,21 @@ export default function NIDSDashboard() {
   // ═══════════════════════════════════════════════════════════════════════════
 
   return (
-    <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: "#1a1a1a", background: "#fff", minHeight: "100vh" }}>
+    <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: "#1a1a1a", background: "#fff", minHeight: "100vh", position: "relative" }}>
+
+      {/* ── NEW RESULT NOTIFICATION TOAST ───────────────────────────────────── */}
+      {newResultNotif && (
+        <div style={{
+          position: "fixed", top: 16, right: 16, zIndex: 1000,
+          background: "#166534", color: "#fff", padding: "10px 20px",
+          borderRadius: 8, fontSize: 13, fontWeight: 500,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+          animation: "slideIn 0.3s ease-out",
+        }}>
+          {newResultNotif}
+        </div>
+      )}
+      <style>{`@keyframes slideIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }`}</style>
 
       {/* ── LIVE EXPERIMENT BANNER ──────────────────────────────────────────── */}
       {liveStatus && (() => {
@@ -1122,10 +1176,10 @@ export default function NIDSDashboard() {
             {/* Summary cards */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
               {[
-                { label: "Best F1", value: `${STAGE1_SUMMARY.overall.best_f1}%`, sub: "SSH-Bruteforce" },
-                { label: "Total Flows", value: STAGE1_SUMMARY.overall.total_flows.toLocaleString(), sub: `${STAGE1_SUMMARY.experiments.length} attack types tested` },
-                { label: "Avg FPR", value: `${STAGE1_SUMMARY.overall.avg_fpr.toFixed(1)}%`, sub: "False positive rate" },
-                { label: "Total Cost", value: dollar(STAGE1_SUMMARY.overall.total_cost), sub: `$${(STAGE1_SUMMARY.overall.total_cost / STAGE1_SUMMARY.overall.total_flows).toFixed(4)}/flow` },
+                { label: "Best F1", value: `${s1.overall.best_f1}%`, sub: s1.overall.best_detected || "—" },
+                { label: "Total Flows", value: s1.overall.total_flows.toLocaleString(), sub: `${s1.experiments.length} attack types tested` },
+                { label: "Avg FPR", value: `${s1.overall.avg_fpr.toFixed(1)}%`, sub: "False positive rate" },
+                { label: "Total Cost", value: dollar(s1.overall.total_cost), sub: `$${(s1.overall.total_cost / (s1.overall.total_flows || 1)).toFixed(4)}/flow` },
               ].map(c => (
                 <div key={c.label} style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "20px" }}>
                   <div style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em" }}>{c.value}</div>
@@ -1146,7 +1200,7 @@ export default function NIDSDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {STAGE1_SUMMARY.experiments.map(exp => {
+                  {s1.experiments.map(exp => {
                     const stage1IdMap = { "FTP-BruteForce": "stage1_ftp", "SSH-Bruteforce": "stage1_ssh", "DoS-SlowHTTPTest": "stage1_slowhttp" };
                     const expId = stage1IdMap[exp.attack_type];
                     return (
@@ -1171,11 +1225,13 @@ export default function NIDSDashboard() {
               </table>
             </div>
 
-            {/* Remaining attack types placeholder */}
+            {/* Remaining attack types — only show if pipeline still running */}
+            {liveStatus && liveStatus.experiments_queued?.length > 0 && (
             <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "24px", marginTop: 16, textAlign: "center", color: "#9ca3af" }}>
-              <p style={{ fontSize: 14, marginBottom: 8 }}>11 more attack types queued for evaluation</p>
-              <p style={{ fontSize: 12 }}>DoS-GoldenEye, DoS-Slowloris, DoS-Hulk, DDoS-HOIC, DDoS-LOIC-HTTP, DDoS-LOIC-UDP, SQL Injection, XSS, Infiltration, Bot, Brute Force Web</p>
+              <p style={{ fontSize: 14, marginBottom: 8 }}>{liveStatus.experiments_queued.length} more attack type{liveStatus.experiments_queued.length !== 1 ? "s" : ""} queued for evaluation</p>
+              <p style={{ fontSize: 12 }}>{liveStatus.experiments_queued.join(", ")}</p>
             </div>
+            )}
           </div>
         )}
 
