@@ -179,12 +179,27 @@
         "tn": 950,
         "fn": 0
       }
+    },
+    {
+      "attack_type": "DoS_attacks-GoldenEye",
+      "status": "complete",
+      "recall": 92,
+      "fpr": 0,
+      "f1": 96,
+      "cost": 2.15,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 46,
+        "fp": 0,
+        "tn": 950,
+        "fn": 4
+      }
     }
   ],
   "overall": {
     "best_f1": 100,
-    "total_flows": 12000,
-    "total_cost": 23.04,
+    "total_flows": 13000,
+    "total_cost": 25.19,
     "best_detected": "FTP-BruteForce",
     "best_recall": 100,
     "hardest": "Infilteration",
