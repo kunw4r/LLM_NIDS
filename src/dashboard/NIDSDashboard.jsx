@@ -332,11 +332,22 @@ const EXPERIMENTS = [
 // Stage 1 running summary data
 const STAGE1_SUMMARY = {
   experiments: [
-    { attack_type: "FTP-BruteForce", status: "complete", recall: 76, fpr: 0, f1: 86, cost: 1.61, cost_per_tp: 0.042, confusion: { tp: 38, fp: 0, tn: 950, fn: 12 } },
-    { attack_type: "SSH-Bruteforce", status: "complete", recall: 84, fpr: 3, f1: 87, cost: 4.21, cost_per_tp: 0.10, confusion: { tp: 42, fp: 28, tn: 922, fn: 8 } },
-    { attack_type: "DoS-SlowHTTPTest", status: "complete", recall: 76, fpr: 5, f1: 79, cost: 3.89, cost_per_tp: 0.10, confusion: { tp: 38, fp: 47, tn: 903, fn: 12 } },
+    { attack_type: "FTP-BruteForce", status: "complete", recall: 100, fpr: 0, f1: 100, cost: 2.13, cost_per_tp: 0.04, confusion: { tp: 50, fp: 0, tn: 950, fn: 0 } },
+    { attack_type: "SSH-Bruteforce", status: "complete", recall: 98, fpr: 0, f1: 99, cost: 2.16, cost_per_tp: 0.04, confusion: { tp: 49, fp: 0, tn: 950, fn: 1 } },
+    { attack_type: "DDoS_attacks-LOIC-HTTP", status: "complete", recall: 82, fpr: 0, f1: 90, cost: 1.57, cost_per_tp: 0.04, confusion: { tp: 41, fp: 0, tn: 950, fn: 9 } },
+    { attack_type: "DoS_attacks-Hulk", status: "complete", recall: 92, fpr: 0, f1: 96, cost: 2.17, cost_per_tp: 0.05, confusion: { tp: 46, fp: 0, tn: 950, fn: 4 } },
+    { attack_type: "DoS_attacks-SlowHTTPTest", status: "complete", recall: 100, fpr: 0, f1: 100, cost: 2.12, cost_per_tp: 0.04, confusion: { tp: 50, fp: 0, tn: 950, fn: 0 } },
+    { attack_type: "DoS_attacks-GoldenEye", status: "complete", recall: 92, fpr: 0, f1: 96, cost: 2.15, cost_per_tp: 0.05, confusion: { tp: 46, fp: 0, tn: 950, fn: 4 } },
+    { attack_type: "DoS_attacks-Slowloris", status: "complete", recall: 100, fpr: 0, f1: 100, cost: 2.16, cost_per_tp: 0.04, confusion: { tp: 50, fp: 0, tn: 950, fn: 0 } },
+    { attack_type: "DDOS_attack-HOIC", status: "complete", recall: 58, fpr: 0, f1: 72, cost: 1.79, cost_per_tp: 0.06, confusion: { tp: 29, fp: 1, tn: 949, fn: 21 } },
+    { attack_type: "DDOS_attack-LOIC-UDP", status: "complete", recall: 100, fpr: 0, f1: 96, cost: 1.87, cost_per_tp: 0.04, confusion: { tp: 50, fp: 4, tn: 946, fn: 0 } },
+    { attack_type: "Bot", status: "complete", recall: 82, fpr: 100, f1: 85, cost: 2.30, cost_per_tp: 0.06, confusion: { tp: 41, fp: 6, tn: 944, fn: 9 } },
+    { attack_type: "Infilteration", status: "complete", recall: 0, fpr: 0, f1: 0, cost: 0.80, cost_per_tp: Infinity, confusion: { tp: 0, fp: 2, tn: 948, fn: 50 } },
+    { attack_type: "Brute_Force_-Web", status: "complete", recall: 86, fpr: 0, f1: 89, cost: 2.05, cost_per_tp: 0.05, confusion: { tp: 43, fp: 4, tn: 946, fn: 7 } },
+    { attack_type: "Brute_Force_-XSS", status: "complete", recall: 84, fpr: 0, f1: 89, cost: 2.09, cost_per_tp: 0.05, confusion: { tp: 42, fp: 2, tn: 948, fn: 8 } },
+    { attack_type: "SQL_Injection", status: "complete", recall: 98, fpr: 0, f1: 96, cost: 1.99, cost_per_tp: 0.04, confusion: { tp: 49, fp: 3, tn: 947, fn: 1 } },
   ],
-  overall: { best_f1: 87, total_flows: 3000, total_cost: 9.71, avg_fpr: 2.7 },
+  overall: { best_f1: 100, total_flows: 14000, total_cost: 27.35, avg_fpr: 7 },
 };
 
 // Agent definitions
@@ -530,8 +541,17 @@ export default function NIDSDashboard() {
           const resp2 = await fetch(`${RESULTS_BASE}/stage1/live_status.json?t=${Date.now()}`);
           if (resp2.ok) data = await resp2.json();
         }
-        if (data && (data.status === "running" || data.status === "paused" || data.status === "creating_batch" || data.status === "complete" || data.status === "all_done")) {
+        if (data && (data.status === "running" || data.status === "paused" || data.status === "creating_batch")) {
           setLiveStatus(data);
+        } else if (data && (data.status === "complete" || data.status === "all_done")) {
+          // Only show "complete" banner if it was updated recently (< 10 min ago)
+          const updatedAt = data.updated_at ? new Date(data.updated_at).getTime() : 0;
+          const age = Date.now() - updatedAt;
+          if (age < 10 * 60 * 1000) {
+            setLiveStatus(data);
+          } else {
+            setLiveStatus(null);
+          }
         } else {
           setLiveStatus(null);
         }
@@ -672,8 +692,10 @@ export default function NIDSDashboard() {
   })();
 
   const bestF1 = Math.max(...EXPERIMENTS.map(e => e.f1));
-  const totalFlows = EXPERIMENTS.reduce((s, e) => s + e.flows, 0) + s1.overall.total_flows;
-  const totalCost = EXPERIMENTS.reduce((s, e) => s + e.cost, 0) + s1.overall.total_cost;
+  const earlyFlows = EXPERIMENTS.reduce((s, e) => s + e.flows, 0);
+  const earlyCost = EXPERIMENTS.reduce((s, e) => s + e.cost, 0);
+  const totalFlows = earlyFlows + s1.overall.total_flows;
+  const totalCost = earlyCost + s1.overall.total_cost;
 
   // Inspector derived
   const inspectorFlows = inspectorData?.results || [];
@@ -1014,10 +1036,10 @@ export default function NIDSDashboard() {
             {/* Hero numbers */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
               {[
-                { label: "Best F1 Score", value: `${s1.overall.best_f1 || Math.round(bestF1 * 100)}%`, sub: s1.overall.best_detected || "Phase 3b" },
-                { label: "Total Flows Analysed", value: totalFlows.toLocaleString(), sub: "Across all experiments" },
-                { label: "Total Cost", value: dollar(totalCost), sub: "All API calls combined" },
-                { label: "Stage 1 Coverage", value: `${s1.experiments.length} / 14`, sub: "Attack types evaluated" },
+                { label: "Stage 1 Best F1", value: `${s1.overall.best_f1 || Math.round(bestF1 * 100)}%`, sub: s1.overall.best_detected || "—" },
+                { label: "Stage 1 Flows", value: s1.overall.total_flows.toLocaleString(), sub: `${s1.experiments.length} x 1,000-flow batches` },
+                { label: "Stage 1 Cost", value: dollar(s1.overall.total_cost), sub: `$${s1.overall.total_cost > 0 ? (s1.overall.total_cost / s1.experiments.length).toFixed(2) : '0'}/batch avg` },
+                { label: "Stage 1 Coverage", value: `${s1.experiments.length} / 14`, sub: s1.experiments.length >= 14 ? "All attack types evaluated" : "Attack types evaluated" },
               ].map(h => (
                 <div key={h.label} style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "24px" }}>
                   <div style={{ fontSize: 36, fontWeight: 700, color: "#1a1a1a", letterSpacing: "-0.02em" }}>{h.value}</div>
