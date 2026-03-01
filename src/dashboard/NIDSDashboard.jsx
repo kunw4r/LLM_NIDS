@@ -396,6 +396,8 @@ export default function NIDSDashboard() {
   const [inspectorError, setInspectorError] = useState(null);
   const [inspectorFilter, setInspectorFilter] = useState("all");
   const [selectedFlowIdx, setSelectedFlowIdx] = useState(null);
+  const [inspectorPage, setInspectorPage] = useState(0);
+  const FLOWS_PER_PAGE = 50;
   const [inspectorSource, setInspectorSource] = useState("stage1_ftp");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -1344,7 +1346,7 @@ export default function NIDSDashboard() {
                     { label: "Benign", count: pieCounts.benign, color: "#16a34a", filter: "benign" },
                     { label: "Tier-1 Filtered", count: pieCounts.filtered, color: "#9ca3af", filter: "filtered" },
                   ].map(s => (
-                    <button key={s.label} onClick={() => setInspectorFilter(inspectorFilter === s.filter ? "all" : s.filter)} style={{
+                    <button key={s.label} onClick={() => { setInspectorFilter(inspectorFilter === s.filter ? "all" : s.filter); setInspectorPage(0); }} style={{
                       border: inspectorFilter === s.filter ? `2px solid ${s.color}` : "1px solid #e5e7eb",
                       borderRadius: 8, padding: "16px", textAlign: "center", cursor: "pointer", background: "#fff",
                     }}>
@@ -1374,7 +1376,7 @@ export default function NIDSDashboard() {
                     ["benign_actual", "Benign"],
                     ["filtered", "Filtered"],
                   ].map(([id, label]) => (
-                    <button key={id} onClick={() => setInspectorFilter(id)} style={{
+                    <button key={id} onClick={() => { setInspectorFilter(id); setInspectorPage(0); }} style={{
                       padding: "8px 12px", borderRadius: 6, fontSize: 12, cursor: "pointer",
                       border: inspectorFilter === id ? "1px solid #2563eb" : "1px solid #e5e7eb",
                       background: inspectorFilter === id ? "#eff6ff" : "#fff",
@@ -1398,38 +1400,54 @@ export default function NIDSDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {filteredInspectorFlows.slice(0, 200).map(f => {
+                        {filteredInspectorFlows.slice(inspectorPage * FLOWS_PER_PAGE, (inspectorPage + 1) * FLOWS_PER_PAGE).map(f => {
                           const isAttack = f.label_actual === 1;
                           const predictedAttack = f.verdict?.toUpperCase() !== "BENIGN";
                           const correct = (isAttack && predictedAttack) || (!isAttack && !predictedAttack);
                           const isSelected = selectedFlowIdx === f.flow_idx;
+                          const vUpper = (f.verdict || "").toUpperCase();
+                          const displayVerdict = f.tier1_filtered ? "FILTERED" : vUpper;
                           return (
                             <tr key={f.flow_idx} onClick={() => setSelectedFlowIdx(isSelected ? null : f.flow_idx)} style={{
                               borderBottom: "1px solid #f3f4f6", cursor: "pointer",
-                              background: isSelected ? "#eff6ff" : correct ? "#fafff9" : "#fff5f5",
+                              background: isSelected ? "#eff6ff" : f.tier1_filtered ? "#f8fafc" : correct ? "#fafff9" : "#fff5f5",
                             }}>
                               <td style={{ padding: "8px 12px", color: "#9ca3af" }}>{f.flow_idx}</td>
                               <td style={{ padding: "8px 12px", fontSize: 11 }}>{f.attack_type_actual || "Benign"}</td>
                               <td style={{ padding: "8px 12px" }}>
                                 <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600,
-                                  color: verdictColor(f.verdict), background: verdictBg(f.verdict) }}>
-                                  {f.verdict}
+                                  color: f.tier1_filtered ? "#94a3b8" : verdictColor(f.verdict),
+                                  background: f.tier1_filtered ? "#f1f5f9" : verdictBg(f.verdict) }}>
+                                  {displayVerdict}
                                 </span>
                               </td>
-                              <td style={{ padding: "8px 12px", color: correctColor(correct), fontWeight: 600, fontSize: 11 }}>
-                                {correct ? "Yes" : "No"}
+                              <td style={{ padding: "8px 12px", color: f.tier1_filtered ? "#94a3b8" : correctColor(correct), fontWeight: 600, fontSize: 11 }}>
+                                {f.tier1_filtered ? "—" : correct ? "Yes" : "No"}
                               </td>
-                              <td style={{ padding: "8px 12px", color: "#6b7280" }}>{(f.confidence * 100).toFixed(0)}%</td>
+                              <td style={{ padding: "8px 12px", color: "#6b7280" }}>{f.confidence != null ? `${(f.confidence * 100).toFixed(0)}%` : "—"}</td>
                             </tr>
                           );
                         })}
                       </tbody>
                     </table>
-                    {filteredInspectorFlows.length > 200 && (
-                      <div style={{ padding: "12px", textAlign: "center", color: "#9ca3af", fontSize: 12 }}>
-                        Showing first 200 of {filteredInspectorFlows.length} flows. Use search to narrow results.
-                      </div>
-                    )}
+                    {/* Pagination controls */}
+                    {(() => {
+                      const totalPages = Math.ceil(filteredInspectorFlows.length / FLOWS_PER_PAGE);
+                      const start = inspectorPage * FLOWS_PER_PAGE + 1;
+                      const end = Math.min((inspectorPage + 1) * FLOWS_PER_PAGE, filteredInspectorFlows.length);
+                      return (
+                        <div style={{ padding: "10px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid #e5e7eb", fontSize: 12, color: "#6b7280" }}>
+                          <span>Showing {start}–{end} of {filteredInspectorFlows.length} flows</span>
+                          <div style={{ display: "flex", gap: 4 }}>
+                            <button onClick={() => setInspectorPage(0)} disabled={inspectorPage === 0} style={{ padding: "4px 8px", borderRadius: 4, border: "1px solid #e5e7eb", background: "#fff", cursor: inspectorPage === 0 ? "default" : "pointer", opacity: inspectorPage === 0 ? 0.4 : 1 }}>&laquo;</button>
+                            <button onClick={() => setInspectorPage(p => Math.max(0, p - 1))} disabled={inspectorPage === 0} style={{ padding: "4px 8px", borderRadius: 4, border: "1px solid #e5e7eb", background: "#fff", cursor: inspectorPage === 0 ? "default" : "pointer", opacity: inspectorPage === 0 ? 0.4 : 1 }}>&lsaquo; Prev</button>
+                            <span style={{ padding: "4px 8px", fontWeight: 500 }}>Page {inspectorPage + 1} / {totalPages}</span>
+                            <button onClick={() => setInspectorPage(p => Math.min(totalPages - 1, p + 1))} disabled={inspectorPage >= totalPages - 1} style={{ padding: "4px 8px", borderRadius: 4, border: "1px solid #e5e7eb", background: "#fff", cursor: inspectorPage >= totalPages - 1 ? "default" : "pointer", opacity: inspectorPage >= totalPages - 1 ? 0.4 : 1 }}>Next &rsaquo;</button>
+                            <button onClick={() => setInspectorPage(totalPages - 1)} disabled={inspectorPage >= totalPages - 1} style={{ padding: "4px 8px", borderRadius: 4, border: "1px solid #e5e7eb", background: "#fff", cursor: inspectorPage >= totalPages - 1 ? "default" : "pointer", opacity: inspectorPage >= totalPages - 1 ? 0.4 : 1 }}>&raquo;</button>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Flow detail panel */}
