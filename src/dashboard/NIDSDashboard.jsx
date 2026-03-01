@@ -652,11 +652,11 @@ export default function NIDSDashboard() {
     phaseGroups[phaseGroups.length - 1].experiments.push(exp);
   });
 
-  // Pie counts for inspector
+  // Pie counts for inspector — count by verdict (including filtered as BENIGN)
   const pieCounts = {
     malicious: inspectorFlows.filter(f => f.verdict?.toUpperCase() === "MALICIOUS").length,
     suspicious: inspectorFlows.filter(f => f.verdict?.toUpperCase() === "SUSPICIOUS").length,
-    benign: inspectorFlows.filter(f => !f.tier1_filtered && f.verdict?.toUpperCase() === "BENIGN").length,
+    benign: inspectorFlows.filter(f => f.verdict?.toUpperCase() === "BENIGN").length,
     filtered: inspectorFlows.filter(f => f.tier1_filtered).length,
   };
   const pieTotal = inspectorFlows.length || 1;
