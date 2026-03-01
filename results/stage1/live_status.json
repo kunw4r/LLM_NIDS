@@ -1,7 +1,7 @@
 {
-  "current_experiment": "Bot",
+  "current_experiment": "Infilteration",
   "stage": "Stage 1",
-  "status": "complete",
+  "status": "running",
   "experiments_completed": [
     "SSH-Bruteforce",
     "DoS-SlowHTTPTest",
@@ -15,18 +15,10 @@
     "Bot"
   ],
   "experiments_queued": [
-    "Infilteration",
     "Brute_Force_-Web",
     "Brute_Force_-XSS",
     "SQL_Injection"
   ],
-  "total_cost_so_far": 25.62,
-  "updated_at": "2026-03-01T11:42:19Z",
-  "last_result": {
-    "attack_type": "Bot",
-    "recall": 82,
-    "f1": 85,
-    "fpr": 1,
-    "cost": 2.3
-  }
+  "total_cost_so_far": 25.61,
+  "updated_at": "2026-03-01T11:42:42Z"
 }
