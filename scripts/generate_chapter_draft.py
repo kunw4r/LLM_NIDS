@@ -27,7 +27,7 @@ RF_TRAINED_TYPES = {
     "DoS_attacks-Slowloris",
 }
 RF_CAUGHT_UNSEEN = {"DDOS_attack-HOIC", "DDOS_attack-LOIC-UDP"}
-LEAKY_ATTACK_TYPES = {
+CLEAN_ATTACK_TYPES = {
     "Bot", "Infilteration", "SQL_Injection", "Brute_Force_-Web", "Brute_Force_-XSS",
 }
 
@@ -311,31 +311,32 @@ def generate_data_integrity_section(m: dict, leaky_m: dict | None = None) -> str
     if at in RF_TRAINED_TYPES:
         lines.append(
             f"The {at} attack type is present in the development split on which the "
-            f"Tier-1 Random Forest was trained. Consequently, the data leakage identified "
-            f"in the initial RF training (which inadvertently included all 20 million flows "
-            f"rather than the 7.04 million development split) does not affect the results "
-            f"for this attack type. The RF's filtering behaviour for {at} flows is identical "
-            f"under both the leaky and correctly trained models, as the relevant attack "
-            f"signatures were present in the intended training data.\n"
+            f"Tier-1 Random Forest was trained (7.04 million flows, confirmed via bootstrap "
+            f"sample analysis). Evaluation batches for this attack type were also sourced from "
+            f"development.csv, creating within-split overlap: the RF has seen these exact flows "
+            f"during training, meaning Tier-1 filtering statistics (filter rate, routing decisions) "
+            f"are optimistic for this attack type. However, the LLM pipeline metrics (recall, F1, "
+            f"false positive rate) are unaffected, as the six-agent system makes independent "
+            f"analytical judgments regardless of how flows were routed to it.\n"
         )
     elif at in RF_CAUGHT_UNSEEN:
         lines.append(
             f"The {at} attack type is not present in the development split; it appears "
-            f"exclusively in the validation partition. However, the DDoS traffic patterns "
-            f"produced by this attack type are sufficiently distinctive that the Random Forest "
-            f"identifies them regardless of training data composition. Empirical verification "
-            f"confirms that the clean RF (trained only on development data) produces identical "
-            f"filtering decisions for {at} flows, rendering the leakage immaterial for this "
-            f"attack type.\n"
+            f"exclusively in the validation partition. The RF was trained on development.csv "
+            f"only (confirmed via bootstrap analysis), so it never saw {at} flows during training. "
+            f"However, the DDoS traffic patterns produced by this attack type are sufficiently "
+            f"distinctive that the Random Forest identifies them regardless. This evaluation "
+            f"is clean with respect to both RF filtering and LLM analysis.\n"
         )
-    elif at in LEAKY_ATTACK_TYPES:
+    elif at in CLEAN_ATTACK_TYPES:
         split = "test" if at in ("Bot", "Infilteration") else "validation"
         lines.append(
             f"The {at} attack type appears exclusively in the {split} partition and was "
-            f"not present in the intended RF training data (development split). The initial "
-            f"RF, trained on all 20 million flows, had exposure to {at} flows during training, "
-            f"potentially learning to filter them — an instance of data leakage. This experiment "
-            f"was therefore rerun with a clean RF trained only on the 7.04 million development flows. "
+            f"not present in the RF training data (development split, 7.04 million flows — "
+            f"confirmed via bootstrap sample analysis). The RF never saw {at} flows during "
+            f"training, making this a fully clean evaluation with no within-split overlap. "
+            f"The RF's filtering decisions for these attack flows are unbiased, and the LLM "
+            f"pipeline metrics reflect genuine detection performance. "
         )
         if leaky_m:
             recall_delta = m["recall"] - leaky_m["recall"]
