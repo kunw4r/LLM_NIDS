@@ -1,12 +1,13 @@
 {
   "current_experiment": "DoS_attacks-Hulk",
   "stage": "Stage 1",
-  "status": "running",
+  "status": "complete",
   "experiments_completed": [
     "SSH-Bruteforce",
     "DoS-SlowHTTPTest",
     "FTP-BruteForce",
-    "DDoS_attacks-LOIC-HTTP"
+    "DDoS_attacks-LOIC-HTTP",
+    "DoS_attacks-Hulk"
   ],
   "experiments_queued": [
     "DoS_attacks-GoldenEye",
@@ -19,6 +20,13 @@
     "Brute_Force_-XSS",
     "SQL_Injection"
   ],
-  "total_cost_so_far": 11.78,
-  "updated_at": "2026-03-01T09:48:59Z"
+  "total_cost_so_far": 14.43,
+  "updated_at": "2026-03-01T10:02:05Z",
+  "last_result": {
+    "attack_type": "DoS_attacks-Hulk",
+    "recall": 88,
+    "f1": 91,
+    "fpr": 0,
+    "cost": 2.65
+  }
 }
