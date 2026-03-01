@@ -194,16 +194,31 @@
         "tn": 948,
         "fn": 8
       }
+    },
+    {
+      "attack_type": "SQL_Injection",
+      "status": "complete",
+      "recall": 98,
+      "fpr": 0,
+      "f1": 96,
+      "cost": 1.99,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 49,
+        "fp": 3,
+        "tn": 947,
+        "fn": 1
+      }
     }
   ],
   "overall": {
     "best_f1": 96,
-    "total_flows": 13000,
-    "total_cost": 30.55,
-    "best_detected": "DoS_attacks-Slowloris",
+    "total_flows": 14000,
+    "total_cost": 32.54,
+    "best_detected": "SQL_Injection",
     "best_recall": 98,
     "hardest": "Infilteration",
     "hardest_recall": 0,
-    "avg_fpr": 16
+    "avg_fpr": 15
   }
 }

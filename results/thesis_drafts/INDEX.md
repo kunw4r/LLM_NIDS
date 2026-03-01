@@ -1,6 +1,6 @@
 # Thesis Chapter Drafts — Index
 
-Generated: 2026-03-01 12:14 UTC
+Generated: 2026-03-01 12:26 UTC
 
 | Attack Type | File | Words | Generated |
 |---|---|---|---|
@@ -15,3 +15,4 @@ Generated: 2026-03-01 12:14 UTC
 | DoS_attacks-Slowloris | [DoS_attacks-Slowloris_draft.md](DoS_attacks-Slowloris_draft.md) | 538 | 2026-03-01 11:08 |
 | FTP-BruteForce | [FTP-BruteForce_draft.md](FTP-BruteForce_draft.md) | 532 | 2026-03-01 06:42 |
 | Infilteration | [Infilteration_draft.md](Infilteration_draft.md) | 547 | 2026-03-01 11:47 |
+| SQL_Injection | [SQL_Injection_draft.md](SQL_Injection_draft.md) | 538 | 2026-03-01 12:26 |
