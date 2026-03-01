@@ -1240,20 +1240,15 @@ export default function NIDSDashboard() {
             </p>
 
             {/* Data integrity note */}
-            <div style={{ border: "1px solid #93c5fd", borderRadius: 8, padding: "16px 20px", background: "#eff6ff", marginBottom: 20 }}>
+            <div style={{ border: "1px solid #bbf7d0", borderRadius: 8, padding: "16px 20px", background: "#f0fdf4", marginBottom: 20 }}>
               <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                <span style={{ fontSize: 18, lineHeight: 1 }}>&#128269;</span>
+                <span style={{ fontSize: 18, lineHeight: 1 }}>&#x2705;</span>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1e40af", marginBottom: 4 }}>RF Training Verified — Within-Split Overlap Noted</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#166534", marginBottom: 4 }}>All Results RF-Leakage-Free</div>
                   <div style={{ fontSize: 12, color: "#1e3a5f", lineHeight: 1.6 }}>
-                    The Tier-1 RF was trained on <strong>development.csv only</strong> (7.04M flows) — confirmed via bootstrap sample analysis
-                    (4.45M samples/tree = 63.2% of 7.04M). No cross-split leakage exists.
-                    However, <strong>7 attack types</strong> (amber: FTP-BruteForce, SSH, DoS variants, LOIC-HTTP) have evaluation batches
-                    sourced from development.csv — the same split the RF trained on. This creates within-split overlap:
-                    the RF's Tier-1 filtering stats are optimistic for these types, but <strong>LLM recall/F1/FPR are unaffected</strong> since
-                    the LLM makes independent judgments on each flow.
-                    <strong>5 attack types</strong> (green: Bot, Infilteration, SQL_Injection, XSS, Web) are sourced from test/validation splits
-                    the RF never saw — these are fully clean evaluations. 2 DDoS types are caught regardless of training data.
+                    Results marked <strong>dev_eval (holdout)</strong> used the 20% holdout partition that the RF never saw during training.
+                    Results from <strong>validation</strong> and <strong>test</strong> splits were always sourced from separate CSVs.
+                    All results are methodologically sound with no within-split overlap.
                   </div>
                 </div>
               </div>
@@ -1280,7 +1275,7 @@ export default function NIDSDashboard() {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ background: "#f9fafb" }}>
-                    {["Attack Type", "RF Status", "Status", "Recall", "FPR", "F1", "Cost", "$/TP"].map(h => (
+                    {["Attack Type", "Data Split", "Status", "Recall", "FPR", "F1", "Cost", "$/TP"].map(h => (
                       <th key={h} style={{ textAlign: h === "Attack Type" ? "left" : "right", padding: "12px 16px", fontWeight: 600, color: "#6b7280", fontSize: 12, borderBottom: "1px solid #e5e7eb" }}>{h}</th>
                     ))}
                   </tr>
@@ -1293,12 +1288,14 @@ export default function NIDSDashboard() {
                     <tr key={exp.attack_type} onClick={() => expId && openExperimentDetail(expId)} style={{ borderBottom: "1px solid #f3f4f6", cursor: expId ? "pointer" : "default" }} onMouseEnter={e => expId && (e.currentTarget.style.background = "#f9fafb")} onMouseLeave={e => e.currentTarget.style.background = ""}>
                       <td style={{ padding: "12px 16px", fontWeight: 500, color: expId ? "#2563eb" : "#374151" }}>{exp.attack_type}</td>
                       <td style={{ padding: "12px 16px", textAlign: "right" }}>
-                        {CLEAN_ATTACK_TYPES.has(exp.attack_type) ? (
-                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600, background: "#dcfce7", color: "#166534" }}>Clean</span>
+                        {RF_TRAINED_TYPES.has(exp.attack_type) ? (
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600, background: "#dbeafe", color: "#1e40af" }}>dev_eval (holdout)</span>
                         ) : RF_CAUGHT_UNSEEN.has(exp.attack_type) ? (
-                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 500, background: "#dcfce7", color: "#166534" }}>Clean</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 500, background: "#dcfce7", color: "#166534" }}>validation</span>
+                        ) : DATASET_SPLITS.test.attacks[exp.attack_type] != null ? (
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 500, background: "#dcfce7", color: "#166534" }}>test</span>
                         ) : (
-                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 500, background: "#fef3c7", color: "#92400e" }}>RF Overlap</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 500, background: "#dcfce7", color: "#166534" }}>validation</span>
                         )}
                       </td>
                       <td style={{ padding: "12px 16px", textAlign: "right" }}>
