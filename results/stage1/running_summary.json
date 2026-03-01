@@ -134,12 +134,27 @@
         "tn": 946,
         "fn": 0
       }
+    },
+    {
+      "attack_type": "Bot",
+      "status": "complete",
+      "recall": 82,
+      "fpr": 1,
+      "f1": 85,
+      "cost": 2.3,
+      "cost_per_tp": 0.06,
+      "confusion": {
+        "tp": 41,
+        "fp": 6,
+        "tn": 944,
+        "fn": 9
+      }
     }
   ],
   "overall": {
     "best_f1": 96,
-    "total_flows": 9000,
-    "total_cost": 23.32,
+    "total_flows": 10000,
+    "total_cost": 25.62,
     "best_detected": "DDOS_attack-LOIC-UDP",
     "best_recall": 100,
     "hardest": "DDOS_attack-HOIC",

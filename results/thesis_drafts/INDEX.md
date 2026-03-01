@@ -1,9 +1,10 @@
 # Thesis Chapter Drafts — Index
 
-Generated: 2026-03-01 11:29 UTC
+Generated: 2026-03-01 11:42 UTC
 
 | Attack Type | File | Words | Generated |
 |---|---|---|---|
+| Bot | [Bot_draft.md](Bot_draft.md) | 538 | 2026-03-01 11:42 |
 | DDOS_attack-HOIC | [DDOS_attack-HOIC_draft.md](DDOS_attack-HOIC_draft.md) | 547 | 2026-03-01 11:18 |
 | DDOS_attack-LOIC-UDP | [DDOS_attack-LOIC-UDP_draft.md](DDOS_attack-LOIC-UDP_draft.md) | 495 | 2026-03-01 11:29 |
 | DDoS_attacks-LOIC-HTTP | [DDoS_attacks-LOIC-HTTP_draft.md](DDoS_attacks-LOIC-HTTP_draft.md) | 538 | 2026-03-01 09:48 |
