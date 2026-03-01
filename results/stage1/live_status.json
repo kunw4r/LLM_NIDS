@@ -1,7 +1,7 @@
 {
-  "current_experiment": "Brute_Force_-Web",
+  "current_experiment": "Brute_Force_-XSS",
   "stage": "Stage 1",
-  "status": "complete",
+  "status": "running",
   "experiments_completed": [
     "SSH-Bruteforce",
     "DoS-SlowHTTPTest",
@@ -17,16 +17,8 @@
     "Brute_Force_-Web"
   ],
   "experiments_queued": [
-    "Brute_Force_-XSS",
     "SQL_Injection"
   ],
   "total_cost_so_far": 28.46,
-  "updated_at": "2026-03-01T11:59:20Z",
-  "last_result": {
-    "attack_type": "Brute_Force_-Web",
-    "recall": 86,
-    "f1": 89,
-    "fpr": 0,
-    "cost": 2.05
-  }
+  "updated_at": "2026-03-01T11:59:21Z"
 }
