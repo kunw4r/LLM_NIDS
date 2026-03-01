@@ -1,0 +1,1922 @@
+{
+  "metrics": {
+    "config": "A",
+    "model": "gpt-4o-mini",
+    "model_switched": false,
+    "total_flows": 100,
+    "total_cost": 0.0084,
+    "recall": 90.0,
+    "precision": 48.2,
+    "f1": 62.8,
+    "fpr": 41.4,
+    "confusion": {
+      "tp": 27,
+      "fp": 29,
+      "tn": 41,
+      "fn": 3
+    },
+    "cost_per_flow": 0.0001
+  },
+  "results": [
+    {
+      "flow_idx": 0,
+      "flow_id": 0,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow originates from a public cloud service IP address targeting an internal server over SSH (port 22). The relatively short duration and pattern suggest it might be an unauthorized access attempt but lacks definitive proof of malicious intent.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 8.73e-05,
+      "time_seconds": 2.428744077682495,
+      "tokens": {
+        "input": 270,
+        "output": 78
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 1,
+      "flow_id": 1,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is targeting port 22 (SSH), which can be a common vector for attacks. The byte and packet counts suggest substantial data transfer, which may indicate an unusual or unauthorized access attempt, but more context is needed to classify it definitively as malicious.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 9.269999999999999e-05,
+      "time_seconds": 1.6052000522613525,
+      "tokens": {
+        "input": 270,
+        "output": 87
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 2,
+      "flow_id": 2,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The connection is made to port 22, which is commonly used for SSH. The relatively high volume of bytes transferred and the short flow duration could indicate potential scanning or brute-force attempts, making the traffic suspicious.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 8.669999999999999e-05,
+      "time_seconds": 1.6005959510803223,
+      "tokens": {
+        "input": 270,
+        "output": 77
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 3,
+      "flow_id": 3,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves an external IP on port 22 (commonly used for SSH), with a relatively high volume of data transfer. This may indicate potential unauthorized access attempts or data exfiltration, warranting further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 8.79e-05,
+      "time_seconds": 2.2053933143615723,
+      "tokens": {
+        "input": 270,
+        "output": 79
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 4,
+      "flow_id": 4,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The record shows a connection to a common SSH port (22) from an external IP, which could indicate unauthorized access attempts or scanning activity, warranting further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 8.13e-05,
+      "time_seconds": 1.841623067855835,
+      "tokens": {
+        "input": 270,
+        "output": 68
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 5,
+      "flow_id": 5,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow initiates a connection on port 22 (SSH), which is commonly targeted for brute force attacks. The short duration and increased byte counts could indicate potential scanning or unauthorized access attempts.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 8.429999999999999e-05,
+      "time_seconds": 1.6392178535461426,
+      "tokens": {
+        "input": 270,
+        "output": 73
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 6,
+      "flow_id": 6,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves an external IP communicating over SSH (port 22), which may raise suspicion, especially given the brief duration and the nature of the connection. Further analysis is needed to confirm legitimacy.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 8.489999999999999e-05,
+      "time_seconds": 2.0600311756134033,
+      "tokens": {
+        "input": 270,
+        "output": 74
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 7,
+      "flow_id": 7,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": null,
+      "reasoning": "Connection to port 22 (SSH) suggests potential for unauthorized access; combined with the relatively high volume of data exchanged, this could indicate an attempted breach.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 8.01e-05,
+      "time_seconds": 1.917433738708496,
+      "tokens": {
+        "input": 270,
+        "output": 66
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 8,
+      "flow_id": 8,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.6,
+      "attack_type_predicted": null,
+      "reasoning": "The connection is attempting to reach a high-risk port (22) used for SSH, which is sensitive to brute-force attacks. The flow duration is relatively short, indicating it might be a connection test or an enumeration attempt.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 8.79e-05,
+      "time_seconds": 2.06327223777771,
+      "tokens": {
+        "input": 270,
+        "output": 79
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 9,
+      "flow_id": 9,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The record shows a connection to port 22 (SSH), which is commonly targeted by attackers. The volume of data and use of TCP flags indicate activity that could be associated with a potential scan or brute force attempt, warranting further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 9.03e-05,
+      "time_seconds": 1.9510951042175293,
+      "tokens": {
+        "input": 270,
+        "output": 83
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 10,
+      "flow_id": 10,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The connection is to a well-known SMB port (445), which is often targeted by malicious activities. The volume of traffic and use of specific TCP flags may indicate potential scanning or probing behavior, but there is insufficient evidence to classify it as definitively malicious.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 9.195e-05,
+      "time_seconds": 2.05179500579834,
+      "tokens": {
+        "input": 269,
+        "output": 86
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 11,
+      "flow_id": 11,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves a connection to port 3389, which is commonly used for Remote Desktop Protocol (RDP). The source IP is not recognized as part of the internal network and the flow duration along with the TCP flags raises some suspicion, indicating potential reconnaissance or unauthorized access attempts.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 9.57e-05,
+      "time_seconds": 1.7282330989837646,
+      "tokens": {
+        "input": 274,
+        "output": 91
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 12,
+      "flow_id": 12,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is a standard HTTP connection with reasonable traffic patterns and no signs of malicious behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.155e-05,
+      "time_seconds": 1.4348111152648926,
+      "tokens": {
+        "input": 273,
+        "output": 51
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 13,
+      "flow_id": 13,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a DNS query from a private IP address to a DNS server, with minimal data transferred and a short duration, which is typical for legitimate DNS resolution.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.994999999999999e-05,
+      "time_seconds": 1.976578712463379,
+      "tokens": {
+        "input": 269,
+        "output": 66
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 14,
+      "flow_id": 14,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves multicast traffic to a reserved address (224.0.0.22) and has no source or destination ports specified, which is unusual and may indicate probing or unexpected behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.385e-05,
+      "time_seconds": 1.8255023956298828,
+      "tokens": {
+        "input": 267,
+        "output": 73
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 15,
+      "flow_id": 15,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a typical DNS query from one internal IP to another, with no signs of unusual behavior or volume.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.395e-05,
+      "time_seconds": 1.5239489078521729,
+      "tokens": {
+        "input": 269,
+        "output": 56
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 16,
+      "flow_id": 16,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The source IP is accessing a link-local address (169.254.169.254), which is often associated with metadata services in cloud infrastructures. The traffic volume and short duration suggest potential misconfiguration or scanning attempts.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.7e-05,
+      "time_seconds": 2.415837049484253,
+      "tokens": {
+        "input": 268,
+        "output": 78
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 17,
+      "flow_id": 17,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is a brief DNS query, indicated by the destination port 53 and low byte count. There is no indication of malicious activity.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.695e-05,
+      "time_seconds": 1.780959129333496,
+      "tokens": {
+        "input": 269,
+        "output": 61
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 18,
+      "flow_id": 18,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a standard DNS query from a private IP to a DNS server, with minimal data transfer and no unusual patterns.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.515e-05,
+      "time_seconds": 1.535308599472046,
+      "tokens": {
+        "input": 269,
+        "output": 58
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 19,
+      "flow_id": 19,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a typical DNS query from the source address to the DNS server, which is identified by port 53. The minimal data transfer suggests it's a legitimate query and response.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.175e-05,
+      "time_seconds": 1.438612937927246,
+      "tokens": {
+        "input": 269,
+        "output": 69
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 20,
+      "flow_id": 20,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow captures a single DNS request with typical small packet sizes and no unusual flags or behaviors, indicating normal network activity.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.455e-05,
+      "time_seconds": 1.4057400226593018,
+      "tokens": {
+        "input": 269,
+        "output": 57
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 21,
+      "flow_id": 21,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow features a connection to a well-known port (443 for HTTPS), has a short duration, and shows normal behavior for a secure web transaction with a reasonable amount of bytes transferred.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.25e-05,
+      "time_seconds": 1.662658929824829,
+      "tokens": {
+        "input": 270,
+        "output": 70
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 22,
+      "flow_id": 22,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow records indicate a single DNS query from a private IP address to a local DNS server. The low traffic volume and quick duration suggest normal behavior for a DNS request.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.055e-05,
+      "time_seconds": 1.8278822898864746,
+      "tokens": {
+        "input": 269,
+        "output": 67
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 23,
+      "flow_id": 23,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a DNS query from a private IP address to a DNS server, typical behavior. The minimal duration, low data volume, and use of the DNS protocol support a benign classification.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.295e-05,
+      "time_seconds": 1.6503386497497559,
+      "tokens": {
+        "input": 269,
+        "output": 71
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 24,
+      "flow_id": 24,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The traffic is a short TCP session over port 443 (HTTPS), which is typical for secure web browsing. The data amounts and packet counts are consistent with legitimate usage.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.07e-05,
+      "time_seconds": 1.74344801902771,
+      "tokens": {
+        "input": 270,
+        "output": 67
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 25,
+      "flow_id": 25,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow appears to be a legitimate DNS query from a private IP address to a DNS server, evidenced by the destination port 53 and the low byte/packet counts.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.055e-05,
+      "time_seconds": 1.4866433143615723,
+      "tokens": {
+        "input": 269,
+        "output": 67
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 26,
+      "flow_id": 26,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow appears to be a standard HTTPS session with a typical flow duration, no unusual packet sizes, and normal byte counts for a secure connection.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.785e-05,
+      "time_seconds": 1.7488410472869873,
+      "tokens": {
+        "input": 271,
+        "output": 62
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 27,
+      "flow_id": 27,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The record shows a single DNS query from one private IP to another, with normal byte counts and a brief flow duration, indicating typical DNS traffic.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.754999999999999e-05,
+      "time_seconds": 0.9740321636199951,
+      "tokens": {
+        "input": 269,
+        "output": 62
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 28,
+      "flow_id": 28,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow originates from a source IP making a DNS query to the destination IP, which is a typical benign behavior observed in network traffic.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.635e-05,
+      "time_seconds": 1.6324868202209473,
+      "tokens": {
+        "input": 269,
+        "output": 60
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 29,
+      "flow_id": 29,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is a DNS query with a very short duration and minimal byte transfer, which is typical for legitimate DNS resolution activities.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.515e-05,
+      "time_seconds": 1.8614468574523926,
+      "tokens": {
+        "input": 269,
+        "output": 58
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 30,
+      "flow_id": 30,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The record shows a communication to a known external IP over HTTPS with significant outbound traffic relative to inbound, which could indicate data exfiltration activity or unusual behavior in a typical environment.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.355e-05,
+      "time_seconds": 1.7155449390411377,
+      "tokens": {
+        "input": 273,
+        "output": 71
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 31,
+      "flow_id": 31,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows normal TCP traffic on port 80 (HTTP), with low byte and packet counts, indicating a typical web request-response interaction.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.725e-05,
+      "time_seconds": 2.0342462062835693,
+      "tokens": {
+        "input": 271,
+        "output": 61
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 32,
+      "flow_id": 32,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates a typical HTTPS connection to a well-known destination (216.58.211.162, likely a Google service), with normal byte and packet counts. TCP flags and inter-arrival times suggest legitimate traffic.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.759999999999999e-05,
+      "time_seconds": 1.6947941780090332,
+      "tokens": {
+        "input": 272,
+        "output": 78
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 33,
+      "flow_id": 33,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a single DNS request with quick response time and small packet sizes, typical of normal DNS resolution traffic.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.395e-05,
+      "time_seconds": 1.363781213760376,
+      "tokens": {
+        "input": 269,
+        "output": 56
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 34,
+      "flow_id": 34,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is a DNS query from a private IP to a local DNS server, which is typical behavior in a network. Low byte and packet counts suggest normal activity.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.994999999999999e-05,
+      "time_seconds": 1.6044952869415283,
+      "tokens": {
+        "input": 269,
+        "output": 66
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 35,
+      "flow_id": 35,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is a typical HTTP request-response pattern with legitimate source and destination addresses. The byte and packet counts are consistent with normal web traffic.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.754999999999999e-05,
+      "time_seconds": 1.4996800422668457,
+      "tokens": {
+        "input": 273,
+        "output": 61
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 36,
+      "flow_id": 36,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a single DNS query from a private IP address with standard DNS port usage, which is typical behavior for domain name resolution.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.635e-05,
+      "time_seconds": 1.5661680698394775,
+      "tokens": {
+        "input": 269,
+        "output": 60
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 37,
+      "flow_id": 37,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a single DNS query from a private IP address, with brief duration and low byte count, indicating a normal DNS lookup.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.635e-05,
+      "time_seconds": 1.5031318664550781,
+      "tokens": {
+        "input": 269,
+        "output": 60
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 38,
+      "flow_id": 38,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow records indicate a DNS request (port 53) with minimal data transfer, which is typical behavior for DNS querying and does not exhibit any suspicious characteristics.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.935e-05,
+      "time_seconds": 1.2248589992523193,
+      "tokens": {
+        "input": 269,
+        "output": 65
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 39,
+      "flow_id": 39,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is a legitimate DNS query from a private IP address to a DNS server, indicative of normal network behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.395e-05,
+      "time_seconds": 1.9459397792816162,
+      "tokens": {
+        "input": 269,
+        "output": 56
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 40,
+      "flow_id": 40,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves a DNS request to port 53, which is a standard service for domain name resolution, with minimal data transfer and no signs of exploitation or malicious behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.055e-05,
+      "time_seconds": 1.8488011360168457,
+      "tokens": {
+        "input": 269,
+        "output": 67
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 41,
+      "flow_id": 41,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The traffic is directed to port 443, which is typically used for HTTPS traffic, and shows normal packet and byte counts with no unusual flags indicating malicious behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.994999999999999e-05,
+      "time_seconds": 1.5300018787384033,
+      "tokens": {
+        "input": 273,
+        "output": 65
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 42,
+      "flow_id": 42,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is going to a common port (443) used for HTTPS, but the traffic pattern shows a higher outbound byte count compared to inbound. This could indicate unusual activity, potentially warranting further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.654999999999999e-05,
+      "time_seconds": 1.9438951015472412,
+      "tokens": {
+        "input": 273,
+        "output": 76
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 43,
+      "flow_id": 43,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The record shows a DNS query from a private IP to a DNS server, with normal traffic characteristics and no signs of malicious behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.575e-05,
+      "time_seconds": 1.8434100151062012,
+      "tokens": {
+        "input": 269,
+        "output": 59
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 44,
+      "flow_id": 44,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a multicast DNS service (mDNS) communication, typical for local network discovery purposes. Communication to the multicast address 224.0.0.252 on port 5355 with minimal traffic is consistent with normal behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.85e-05,
+      "time_seconds": 1.6410472393035889,
+      "tokens": {
+        "input": 270,
+        "output": 80
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 45,
+      "flow_id": 45,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a DNS query made from the source IP to the destination IP on port 53, which is typical behavior. The minimal number of packets and bytes exchanged also suggests a legitimate DNS request/response.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.534999999999999e-05,
+      "time_seconds": 1.643503189086914,
+      "tokens": {
+        "input": 269,
+        "output": 75
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 46,
+      "flow_id": 46,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is a DNS query to port 53, which is a normal operation for resolving domain names. The flow duration is very short, and packet statistics indicate typical DNS traffic.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.175e-05,
+      "time_seconds": 1.7360408306121826,
+      "tokens": {
+        "input": 269,
+        "output": 69
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 47,
+      "flow_id": 47,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The traffic shows a considerable amount of outbound data (6033 bytes) compared to inbound (865 bytes) over a relatively short flow duration, which could indicate unusual patterns or potential data exfiltration.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.58e-05,
+      "time_seconds": 1.577143669128418,
+      "tokens": {
+        "input": 272,
+        "output": 75
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 48,
+      "flow_id": 48,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a DNS query from a private IP to a DNS server with low traffic and normal packet sizes, which is typical for legitimate DNS lookups.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.874999999999999e-05,
+      "time_seconds": 1.8031716346740723,
+      "tokens": {
+        "input": 269,
+        "output": 64
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 49,
+      "flow_id": 49,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow appears to be a simple DNS query/response transaction with normal byte and packet counts, no unusual flags, and no signs of suspicious activity.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.815e-05,
+      "time_seconds": 1.4305150508880615,
+      "tokens": {
+        "input": 269,
+        "output": 63
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 50,
+      "flow_id": 50,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow duration is relatively long with a significant amount of outbound bytes and packets. The high IAT values could indicate a potential delay in communication typical of scanning or probing behavior, which raises suspicion.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.534999999999999e-05,
+      "time_seconds": 1.6375722885131836,
+      "tokens": {
+        "input": 273,
+        "output": 74
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 51,
+      "flow_id": 51,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The destination address 169.254.169.254 is a link-local address typically used for service discovery in cloud environments. The flow's duration and inter-arrival times, along with the low amount of data transferred, suggest it could be part of a routine service check, but the connection is unusual and warrants further inspection.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.00010065,
+      "time_seconds": 2.53540301322937,
+      "tokens": {
+        "input": 271,
+        "output": 100
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 52,
+      "flow_id": 52,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "The communication is between a private source IP and a destination IP commonly associated with a well-known service (HTTPS). The traffic appears to be normal web activity with a reasonable duration and data exchange.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.355e-05,
+      "time_seconds": 1.5604679584503174,
+      "tokens": {
+        "input": 273,
+        "output": 71
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 53,
+      "flow_id": 53,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a DNS query from a private network source to a private DNS server with low volume. The duration and byte count are typical for a benign DNS request.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.994999999999999e-05,
+      "time_seconds": 2.460763931274414,
+      "tokens": {
+        "input": 269,
+        "output": 66
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 54,
+      "flow_id": 54,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The traffic is a DNS query from a source to a destination, which is common and does not exhibit malicious behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.395e-05,
+      "time_seconds": 1.6345489025115967,
+      "tokens": {
+        "input": 269,
+        "output": 56
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 55,
+      "flow_id": 55,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The traffic is directed towards a common HTTPS port (443) with an unusual flow duration and inter-arrival times between packets suggestive of potential scanning or probing activities.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.145e-05,
+      "time_seconds": 1.6389141082763672,
+      "tokens": {
+        "input": 271,
+        "output": 68
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 56,
+      "flow_id": 56,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The record shows typical web traffic with a source IP making a connection to a destination IP on port 80, which is commonly used for HTTP. The volume of data and packets is low, suggesting normal activity.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.58e-05,
+      "time_seconds": 2.252565860748291,
+      "tokens": {
+        "input": 272,
+        "output": 75
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 57,
+      "flow_id": 57,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a DNS query from a private IP address to the DNS port (53) and there are no signs of malicious activity given the low data volume and normal protocol use.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.175e-05,
+      "time_seconds": 1.965569019317627,
+      "tokens": {
+        "input": 269,
+        "output": 69
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 58,
+      "flow_id": 58,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record shows a brief DNS query from a private IP address to a DNS server, with low packet and byte counts, indicating normal DNS resolution activity.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.935e-05,
+      "time_seconds": 1.4125909805297852,
+      "tokens": {
+        "input": 269,
+        "output": 65
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 59,
+      "flow_id": 59,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a typical DNS query from a private IP to a DNS server, with minimal data transfer and no signs of malicious activity.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.635e-05,
+      "time_seconds": 1.3185288906097412,
+      "tokens": {
+        "input": 269,
+        "output": 60
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 60,
+      "flow_id": 60,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The record indicates normal DNS query traffic, with low byte and packet sizes, and a short duration, typical of legitimate DNS operations.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 7.575e-05,
+      "time_seconds": 1.6555047035217285,
+      "tokens": {
+        "input": 269,
+        "output": 59
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 61,
+      "flow_id": 61,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates communication to a multicast address (224.0.0.22) using a protocol typically associated with multicast, which is unusual for a direct source to destination flow. The lack of outgoing packets and the low flow duration might suggest it is part of a larger suspicious pattern.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 9.525e-05,
+      "time_seconds": 2.042179822921753,
+      "tokens": {
+        "input": 267,
+        "output": 92
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 62,
+      "flow_id": 62,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is directed to port 445, which is commonly associated with SMB (Server Message Block) traffic. However, the short duration and equal incoming/outgoing bytes suggest it may be a reconnaissance attempt or a probe, warranting a SUSPICIOUS classification.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 9.3e-05,
+      "time_seconds": 2.4638097286224365,
+      "tokens": {
+        "input": 268,
+        "output": 88
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 63,
+      "flow_id": 63,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The source address (18.219.193.20) belongs to a cloud service provider, which could indicate normal web traffic. However, the TCP flags indicate a possible unusual behavior for standard web traffic. The connection duration and data transfer seem elevated, which may warrant further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 9.554999999999999e-05,
+      "time_seconds": 2.0490000247955322,
+      "tokens": {
+        "input": 273,
+        "output": 91
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 64,
+      "flow_id": 64,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.6,
+      "attack_type_predicted": null,
+      "reasoning": "The flow duration and significant data transfer, along with non-standard TCP flags, raise suspicion, but there's insufficient evidence to classify it as malicious.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 7.874999999999999e-05,
+      "time_seconds": 1.7454569339752197,
+      "tokens": {
+        "input": 273,
+        "output": 63
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 65,
+      "flow_id": 65,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a significant amount of data transfer over HTTP from a public IP to a private IP. The use of a high non-standard source port and the relatively long flow duration raises concerns about possible data exfiltration or scanning activities.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 9.015e-05,
+      "time_seconds": 2.1045680046081543,
+      "tokens": {
+        "input": 273,
+        "output": 82
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 66,
+      "flow_id": 66,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The source IP is a public IP, and while the traffic is over HTTP with a standard destination port, the unusual amount of data exchanged (OUT_BYTES) and the presence of TCP flags suggest potential abnormal behavior warranting further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 8.955e-05,
+      "time_seconds": 1.8788559436798096,
+      "tokens": {
+        "input": 273,
+        "output": 81
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 67,
+      "flow_id": 67,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves normal web traffic with communication over HTTP, indicated by the destination port 80, and no signs of malicious patterns such as unusual packet sizes or high connection rates.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 8.175e-05,
+      "time_seconds": 1.349491834640503,
+      "tokens": {
+        "input": 273,
+        "output": 68
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 68,
+      "flow_id": 68,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow consists of a typical web traffic pattern to a private IP address with normal byte and packet sizes. No signs of malicious behavior were detected.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 7.815e-05,
+      "time_seconds": 1.4140889644622803,
+      "tokens": {
+        "input": 273,
+        "output": 62
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 69,
+      "flow_id": 69,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves traffic from a public IP address to a private IP address on port 80, which can raise suspicion. The traffic is relatively low volume but has unusual characteristics given its duration and the source's public nature.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 8.835e-05,
+      "time_seconds": 1.22878098487854,
+      "tokens": {
+        "input": 273,
+        "output": 79
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 70,
+      "flow_id": 70,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a connection from a public IP to a private IP on port 80, which is common for web traffic. However, the duration is unusually long, and the TCP flags indicate a possible anomalous state, which raises suspicion.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 9.075e-05,
+      "time_seconds": 1.6542770862579346,
+      "tokens": {
+        "input": 273,
+        "output": 83
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 71,
+      "flow_id": 71,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.65,
+      "attack_type_predicted": null,
+      "reasoning": "The source IP is a public address and traffic on port 80 is typical, but the relatively high amount of outgoing bytes compared to incoming bytes could suggest data exfiltration or other suspicious behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 8.534999999999999e-05,
+      "time_seconds": 1.5226190090179443,
+      "tokens": {
+        "input": 273,
+        "output": 74
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 72,
+      "flow_id": 72,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows typical web traffic behavior with a source address from a cloud provider, benign port usage (HTTP), and reasonable byte and packet counts.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 7.815e-05,
+      "time_seconds": 1.5451200008392334,
+      "tokens": {
+        "input": 273,
+        "output": 62
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 73,
+      "flow_id": 73,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is using port 21, which is associated with FTP and the short duration along with a single packet in each direction may indicate an anomalous or unexpected connection attempt.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 8.219999999999999e-05,
+      "time_seconds": 1.6256682872772217,
+      "tokens": {
+        "input": 268,
+        "output": 70
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 74,
+      "flow_id": 74,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The record shows a single packet transfer to port 21, which is typically used for FTP. The low traffic volume and duration may indicate unauthorized access attempts or a reconnaissance probe, warranting further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 8.52e-05,
+      "time_seconds": 1.6340301036834717,
+      "tokens": {
+        "input": 268,
+        "output": 75
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 75,
+      "flow_id": 75,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "Unusual traffic observed on port 21 (FTP) with very low data transfer amount and single packet flow. This could indicate a malformed request or an unauthorized connection attempt.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 8.16e-05,
+      "time_seconds": 1.8478071689605713,
+      "tokens": {
+        "input": 268,
+        "output": 69
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 76,
+      "flow_id": 76,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a brief transmission over FTP (port 21) from a cloud IP to a private address, which could indicate a data transfer scenario but lacks further context to determine if it is malicious.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 8.52e-05,
+      "time_seconds": 1.6406769752502441,
+      "tokens": {
+        "input": 268,
+        "output": 75
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 77,
+      "flow_id": 77,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a connection to port 21 (FTP), which can be a sign of file transfer, but the very short duration and minimal byte transfer may indicate an anomalous behavior or scanning for open ports, requiring further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 8.879999999999999e-05,
+      "time_seconds": 2.048175096511841,
+      "tokens": {
+        "input": 268,
+        "output": 81
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 78,
+      "flow_id": 78,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The short flow duration and TCP flags indicative of a connection setup suggest potential unusual activity, especially since it involves FTP protocol (port 21), which is often abused in connection attempts.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 8.280000000000001e-05,
+      "time_seconds": 1.56640625,
+      "tokens": {
+        "input": 268,
+        "output": 71
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 79,
+      "flow_id": 79,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves a connection to port 21 (FTP), which is commonly targeted for unauthorized access but no malicious activity is directly observed in a single packet exchange. Further monitoring is warranted.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 8.34e-05,
+      "time_seconds": 1.6061608791351318,
+      "tokens": {
+        "input": 268,
+        "output": 72
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 80,
+      "flow_id": 80,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow indicates a connection to port 21 (FTP), which is typically used for file transfer. The extremely short duration and low byte count suggest either a legitimate brief connection or potential port scanning activity. The source IP is a known cloud provider, which can sometimes be associated with suspicious behavior, hence the classification as suspicious.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 9.960000000000001e-05,
+      "time_seconds": 2.0476150512695312,
+      "tokens": {
+        "input": 268,
+        "output": 99
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 81,
+      "flow_id": 81,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow exhibits unusually short duration and minimal data transfer which could indicate a potential connection used for an illicit or reconnaissance purpose, notably with port 21 typically associated with FTP. The TCP_FLAGS value indicates a potential control packet, making this behavior suspicious.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 9.06e-05,
+      "time_seconds": 2.457570791244507,
+      "tokens": {
+        "input": 268,
+        "output": 84
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 82,
+      "flow_id": 82,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is directed towards port 21, which is commonly used for FTP, and it shows minimal traffic (1 packet in and out). Additionally, the TCP flags indicate an unusual state, raising suspicion despite the lack of definitive malicious behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 8.999999999999999e-05,
+      "time_seconds": 1.9514691829681396,
+      "tokens": {
+        "input": 268,
+        "output": 83
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 83,
+      "flow_id": 83,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is directed towards port 3389, which is commonly associated with Remote Desktop Protocol (RDP). The external source IP may indicate potential unauthorized access attempts, warranting further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.475e-05,
+      "time_seconds": 1.9623081684112549,
+      "tokens": {
+        "input": 273,
+        "output": 73
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 84,
+      "flow_id": 84,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow duration is short and involves communication to a common Windows port (445), which is known for exploitation by malware. While there isn't enough evidence to classify this as malicious, the characteristics warrant further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.58e-05,
+      "time_seconds": 1.920192003250122,
+      "tokens": {
+        "input": 268,
+        "output": 76
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 85,
+      "flow_id": 85,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows communication to port 445 which is commonly associated with Windows file sharing and known to be targeted by malware, but the low volume of data and short duration leaves it uncertain.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.34e-05,
+      "time_seconds": 1.638537883758545,
+      "tokens": {
+        "input": 268,
+        "output": 72
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 86,
+      "flow_id": 86,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The source IP is external and the destination port 445 is commonly associated with SMB services, which can be targeted for exploits. The flow's characteristics suggest potentially unusual behavior.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.16e-05,
+      "time_seconds": 3.0727102756500244,
+      "tokens": {
+        "input": 268,
+        "output": 69
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 87,
+      "flow_id": 87,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is directed towards port 3389, which is commonly used for Remote Desktop Protocol (RDP). The source IP is from a public address which may indicate a remote connection attempt. Although this traffic could be benign, the unusual source and the context suggest further monitoring is warranted.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 9.615e-05,
+      "time_seconds": 1.8525700569152832,
+      "tokens": {
+        "input": 273,
+        "output": 92
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 88,
+      "flow_id": 88,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The connection is to the RDP port (3389) from an external IP, which is unusual for most internal networks, suggesting potential unauthorized access attempts.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.055e-05,
+      "time_seconds": 1.6285970211029053,
+      "tokens": {
+        "input": 273,
+        "output": 66
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 89,
+      "flow_id": 89,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is using RDP (port 3389) from an external IP, which is typical for remote access, but the source IP is not from a known trusted network, raising suspicion.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.534999999999999e-05,
+      "time_seconds": 1.8435509204864502,
+      "tokens": {
+        "input": 273,
+        "output": 74
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 90,
+      "flow_id": 90,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The source IP is from a region known for malicious activity and the destination port 445 is often associated with exploitation of vulnerabilities such as SMB. The combination of these factors raises suspicion.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.280000000000001e-05,
+      "time_seconds": 1.7457258701324463,
+      "tokens": {
+        "input": 268,
+        "output": 71
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 91,
+      "flow_id": 91,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The connection is to port 445, which is commonly associated with SMB, a protocol often targeted by attackers. The short flow duration and low byte count may indicate either benign behavior or an initial probe. Further investigation is warranted.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.82e-05,
+      "time_seconds": 1.9411258697509766,
+      "tokens": {
+        "input": 268,
+        "output": 80
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 92,
+      "flow_id": 92,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow originates from an atypical IP address and targets port 3389, commonly used for RDP, suggesting a potential remote access attempt. The unusually high amount of TCP flags set may indicate attempts to probe or exploit vulnerabilities.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.955e-05,
+      "time_seconds": 1.9947528839111328,
+      "tokens": {
+        "input": 273,
+        "output": 81
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 93,
+      "flow_id": 93,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The source IP address is from a known region associated with the command and control servers, communicating over RDP (port 3389), which is often targeted for unauthorized access. The relatively low packet count but significant duration raises suspicion of an illicit activity attempt.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 9.27e-05,
+      "time_seconds": 1.7936031818389893,
+      "tokens": {
+        "input": 274,
+        "output": 86
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 94,
+      "flow_id": 94,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": null,
+      "reasoning": "The flow has a very short duration and consists of a single packet with incoming data, potentially indicating a handshake or probing attempt. The fact that no response packets are sent back raises suspicion, especially coming from a less commonly seen IP.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.895e-05,
+      "time_seconds": 2.1445279121398926,
+      "tokens": {
+        "input": 269,
+        "output": 81
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 95,
+      "flow_id": 95,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow has a very short duration and shows a single packet with data from an external IP to a private IP, which may indicate a probing attempt or unusual communication pattern.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.175e-05,
+      "time_seconds": 1.682939052581787,
+      "tokens": {
+        "input": 269,
+        "output": 69
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 96,
+      "flow_id": 96,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The record indicates a connection to port 3389, commonly used for Remote Desktop Protocol (RDP). This could be a benign remote access attempt, but the source IP is not recognized as a typical source for such traffic, raising suspicion of potential unauthorized access attempts.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 9.375e-05,
+      "time_seconds": 1.9885540008544922,
+      "tokens": {
+        "input": 273,
+        "output": 88
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 97,
+      "flow_id": 97,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.75,
+      "attack_type_predicted": null,
+      "reasoning": "The flow has a source port and destination port of 0, which is unusual and could indicate a malformed packet or an oversight in data collection. The traffic appears to be one-directional (all inbound) and has a low byte count suggesting it might not be fully legitimate, warranting further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 9.749999999999998e-05,
+      "time_seconds": 2.2723069190979004,
+      "tokens": {
+        "input": 270,
+        "output": 95
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 98,
+      "flow_id": 98,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves an incoming connection to port 3389 (RDP) from an external IP, which is often targeted for unauthorized access. The traffic pattern and use of a potentially vulnerable port warrant further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.73e-05,
+      "time_seconds": 1.7069792747497559,
+      "tokens": {
+        "input": 274,
+        "output": 77
+      },
+      "model_used": "gpt-4o-mini"
+    },
+    {
+      "flow_idx": 99,
+      "flow_id": 99,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is directed to port 445, which is commonly associated with SMB services. The unusual source IP and minimal traffic volume could indicate a scan or probing activity, meriting further investigation.",
+      "key_findings": [],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 8.444999999999999e-05,
+      "time_seconds": 1.8773589134216309,
+      "tokens": {
+        "input": 271,
+        "output": 73
+      },
+      "model_used": "gpt-4o-mini"
+    }
+  ]
+}

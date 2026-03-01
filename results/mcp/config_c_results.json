@@ -1,0 +1,2446 @@
+{
+  "metrics": {
+    "config": "C",
+    "model": "gpt-4o",
+    "model_switched": false,
+    "total_flows": 100,
+    "total_cost": 0.4537,
+    "recall": 70.0,
+    "precision": 50.0,
+    "f1": 58.3,
+    "fpr": 30.0,
+    "confusion": {
+      "tp": 21,
+      "fp": 21,
+      "tn": 49,
+      "fn": 9
+    },
+    "cost_per_flow": 0.0045
+  },
+  "results": [
+    {
+      "flow_idx": 0,
+      "flow_id": 0,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows a rapid connection attempt to port 22, which is indicative of SSH. The flow duration is extremely short (343 milliseconds), and the TCP flags show a value of 27, which often involves TCP RST/FIN flags suggesting a failed or rejected connection. However, the byte and packet counts do not match a classic brute force pattern as the data transferred is higher than usual for credentials. The combination of these factors, especially the port being targeted and the short flow duration, raises suspicion of a potential brute force attempt but lacks definitive evidence.",
+      "key_findings": [
+        "Targeted port 22 (SSH) which is often used in brute force attacks.",
+        "Short flow duration and TCP flags indicate possible rejected attempts.",
+        "Data transfer is relatively high compared to classic short credential attempts."
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.00464,
+      "time_seconds": 3.5737032890319824,
+      "tokens": {
+        "input": 980,
+        "output": 219
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 1,
+      "flow_id": 1,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": "Brute Force",
+      "reasoning": "The NetFlow record shows traffic to port 22, indicating SSH usage, with a short flow duration of 379 milliseconds and evidence of TCP RST/FIN flags (as shown by TCP_FLAGS value), which could indicate failed login attempts. The packet sizes are relatively small, in line with attempted credential guess attempts. Although byte counts are moderate, the presence of these patterns on SSH port raises suspicion of a brute force attack.",
+      "key_findings": [
+        "Destination port is 22, indicating SSH usage.",
+        "Short flow duration of 379 milliseconds suggests rapid connection attempts.",
+        "TCP flags value of 27 shows potential RST/FIN flags indicative of rejected SSH attempts.",
+        "Moderate in/out byte counts but small packet sizes align with brute force behavior."
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.0046,
+      "time_seconds": 3.2834041118621826,
+      "tokens": {
+        "input": 980,
+        "output": 215
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 2,
+      "flow_id": 2,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow shows characteristics of a potential SSH brute force attack pattern. The traffic to port 22 over a short duration with multiple packets and unusual TCP FLAGS (indicating SYN, FIN, and possibly RST) suggest repeated attempts at connecting or probing. However, the byte volumes (both inbound and outbound) are relatively higher than typical for brute force attacks. No definitive indicators of a successful brute force attack are confirmed, but the flow's attributes make it suspicious for further investigation.",
+      "key_findings": [
+        "Traffic to SSH port (22) with short flow duration (387 ms)",
+        "Multiple packets exchanged (25 in, 21 out) within a short timeframe",
+        "TCP flags indicating a mix of SYN, FIN, or possible RST",
+        "Flow to non-standard private IP space without DNS queries"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.0046700000000000005,
+      "time_seconds": 3.77946400642395,
+      "tokens": {
+        "input": 980,
+        "output": 222
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 3,
+      "flow_id": 3,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": "Brute Force SSH",
+      "reasoning": "The NetFlow record indicates multiple indicators of a potential brute force attack on SSH port 22. The flow has a short duration of 402 milliseconds, which is indicative of rapid login attempts. The TCP Flags value of 27 suggests connection attempts that include SYN, RST (reset), and FIN (finish) flags, often seen in brute force attacks where connections are repeatedly initiated and reset. The equal packet count (23 IN_PKTS and 23 OUT_PKTS) with moderate byte amounts suggests multiple attempts rather than a sustained session with significant data transfer.",
+      "key_findings": [
+        "Repeated connections to SSH port 22",
+        "Short flow duration of 402 milliseconds",
+        "TCP Flags indicate connection resets indicating failed attempts"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.004530000000000001,
+      "time_seconds": 2.8709168434143066,
+      "tokens": {
+        "input": 980,
+        "output": 208
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 4,
+      "flow_id": 4,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a connection to port 22, which is commonly used for SSH. The flow duration is short, and the TCP flags include RST/FIN flags, indicating possible rejected or unsuccessful connection attempts. The packet counts and byte transfers are relatively small, which can be indicative of a brute force attack attempt on an SSH server, although there is no definitive evidence due to lack of repetitiveness in the flow data.",
+      "key_findings": [
+        "Connection to port 22 (SSH)",
+        "Short flow duration (364 ms)",
+        "Presence of TCP RST/FIN flags",
+        "Small packet sizes and data transfer"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.0043300000000000005,
+      "time_seconds": 2.4058401584625244,
+      "tokens": {
+        "input": 980,
+        "output": 188
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 5,
+      "flow_id": 5,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": "BRUTE FORCE",
+      "reasoning": "The flow is on port 22 which is commonly targeted for SSH brute force attacks. The flow duration is quite short at 389 milliseconds and the SYN/ACK flag pattern (TCP_FLAGS: 27) suggests multiple connection attempts. The traffic packet size patterns indicate small payloads, typical of credential attempts. The source IP is external, connecting to an internal IP, which matches the pattern of external threat actors attempting to brute force SSH.",
+      "key_findings": [
+        "Port 22 targeted",
+        "Short flow duration",
+        "SYN/ACK flags observed",
+        "Multiple connection attempts",
+        "Small packet sizes indicating likely credential brute force"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.004360000000000001,
+      "time_seconds": 4.35939621925354,
+      "tokens": {
+        "input": 980,
+        "output": 191
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 6,
+      "flow_id": 6,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record shows an SSH (port 22) connection from an external IP to an internal IP, with very short duration and TCP flags indicating potential connection resets or terminations. The combination of short flow duration, presence of reset/fin flags, and multiple packets in such a short time frame suggests suspicious behavior often associated with brute force attempts. However, the bytes transferred are moderate, and there's no direct evidence of successfully malicious activities.",
+      "key_findings": [
+        "Connection to SSH port (22) from external IP",
+        "Short flow duration (393 ms)",
+        "TCP flags indicate potential connection interruptions",
+        "Moderate amount of data transferred"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.0043100000000000005,
+      "time_seconds": 3.5818240642547607,
+      "tokens": {
+        "input": 980,
+        "output": 186
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 7,
+      "flow_id": 7,
+      "verdict": "MALICIOUS",
+      "confidence": 0.9,
+      "attack_type_predicted": "BRUTE FORCE (SSH)",
+      "reasoning": "The NetFlow record shows characteristics consistent with an SSH brute force attack pattern: the connection is to port 22 (SSH), the flow duration is short (378 milliseconds), and there is a high SYN rate indicated by TCP flags suggesting SYN/FIN/RST are set. Although there are both incoming and outgoing bytes and packets, suggesting some data exchange, the connection is suspicious due to the repeated, short-duration nature of the flow. This aligns with rapid login attempts typical of brute force attacks.",
+      "key_findings": [
+        "Connection to port 22 (SSH)",
+        "Short flow duration (378 ms)",
+        "TCP flags indicate SYN/FIN/RST",
+        "Unusual packet sizes and counts for SSH",
+        "High frequency of connection attempts"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.00459,
+      "time_seconds": 3.374431848526001,
+      "tokens": {
+        "input": 980,
+        "output": 214
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 8,
+      "flow_id": 8,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.8,
+      "attack_type_predicted": "BRUTE FORCE",
+      "reasoning": "The NetFlow record indicates connections to port 22, which is associated with SSH. The flow duration is short (369 milliseconds), suggesting rapid connection attempts. The TCP flags value 27 implies SYN/FIN/RST activity, indicative of connection attempts rather than sustained connections, which is consistent with potential brute force attempts. The packet sizes are relatively small and numerous, aligning with characteristics of a brute force pattern.",
+      "key_findings": [
+        "Connection to SSH port (22)",
+        "Short flow duration",
+        "SYN/FIN/RST flags present",
+        "Small packet sizes",
+        "Rapid connection attempts"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.00429,
+      "time_seconds": 3.383760929107666,
+      "tokens": {
+        "input": 980,
+        "output": 184
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 9,
+      "flow_id": 9,
+      "verdict": "MALICIOUS",
+      "confidence": 0.85,
+      "attack_type_predicted": "BRUTE FORCE",
+      "reasoning": "The NetFlow record exhibits characteristics typical of an SSH brute force attack. The flow is directed to port 22 with short-duration connection attempts, which include TCP RST/FIN flags indicating possible login failures or rapid disconnections. The packet count and data volume suggest repeated credential attempt patterns.",
+      "key_findings": [
+        "Destination port 22 matches SSH service",
+        "Short flow duration typical for brute force attempts",
+        "TCP flags indicating RST/FIN suggest rapid disconnects",
+        "Low data transfer consistent with credential guessing"
+      ],
+      "mitre_techniques": [
+        "T1110.001"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "SSH-Bruteforce",
+      "cost_usd": 0.0118025,
+      "time_seconds": 11.168022871017456,
+      "tokens": {
+        "input": 2509,
+        "output": 553
+      },
+      "model_used": "gpt-4o",
+      "tool_calls": [
+        {
+          "tool": "search_mitre_techniques",
+          "args": {
+            "query": "brute force"
+          },
+          "result_preview": "{'success': True, 'query': 'brute force', 'result_count': 5, 'results': [{'technique_id': 'T1021.005', 'name': 'VNC', 'tactics': ['lateral-movement'], 'description': 'Adversaries may use [Valid Accoun"
+        }
+      ]
+    },
+    {
+      "flow_idx": 10,
+      "flow_id": 10,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.8,
+      "attack_type_predicted": "INFILTRATION",
+      "reasoning": "The NetFlow record indicates TCP traffic on port 445, which is typically used for SMB (Server Message Block) services. This traffic is characterized by a short flow duration and a low amount of data exchanged. The internal-to-internal communication on an unusual port, small data transfer, and private destination IP can be indicative of lateral movement or exploitation attempts, which aligns with infiltration patterns.",
+      "key_findings": [
+        "Traffic on port 445 (SMB), common in lateral movement attempts",
+        "Short duration with small data transfer",
+        "Internal private network destination address"
+      ],
+      "mitre_techniques": [
+        "T1076"
+      ],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042175,
+      "time_seconds": 2.6242141723632812,
+      "tokens": {
+        "input": 979,
+        "output": 177
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 11,
+      "flow_id": 11,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a connection to port 3389, which is typically used for RDP (Remote Desktop Protocol) connections. However, the source IP address is not within the common private ranges and the flow exhibits some unusual characteristics for benign RDP traffic, such as short flow duration and relatively low packet and byte counts. The TCP flags value of 222 suggests the presence of abnormal flags, which may indicate an anomalous connection attempt or probing activity.",
+      "key_findings": [
+        "Connection to RDP port (3389)",
+        "Unusual TCP flags (value: 222)",
+        "Short flow duration and low data volume"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.00429,
+      "time_seconds": 4.016964673995972,
+      "tokens": {
+        "input": 984,
+        "output": 183
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 12,
+      "flow_id": 12,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The traffic involves a connection from a source IP to a destination IP on port 80, which is a standard HTTP port used for web browsing. The flow duration is reasonable, suggesting normal web browsing activity. The packet and byte counts are not excessively high, and TCP flag analysis does not show unusual reset or fragmented packet patterns typically associated with attacks. There are no indications of repeated small packets or rapid fire nature that would suggest brute force or denial of service attacks.",
+      "key_findings": [
+        "Connection to port 80 indicates likely web traffic.",
+        "Normal flow duration and packet size consistent with standard browsing.",
+        "No indications of brute force or DoS attack patterns."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0043175,
+      "time_seconds": 4.206446886062622,
+      "tokens": {
+        "input": 983,
+        "output": 186
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 13,
+      "flow_id": 13,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates a DNS query as it involves a connection to port 53 using UDP protocol. The packet sizes are typical for DNS requests and responses, and the flow duration is exceptionally short, which is characteristic of DNS traffic. The presence of a DNS query ID further confirms this as standard DNS query behavior.",
+      "key_findings": [
+        "Connection to port 53, matching standard DNS query patterns",
+        "Use of UDP protocol with typical packet size for DNS queries",
+        "Presence of DNS query ID confirms DNS activity"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0040175,
+      "time_seconds": 2.6544058322906494,
+      "tokens": {
+        "input": 979,
+        "output": 157
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 14,
+      "flow_id": 14,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates traffic from a source private IP (172.31.64.41) to a multicast group address (224.0.0.22). The protocol used is 2, which signifies IGMP (Internet Group Management Protocol) traffic. This protocol is typically used for managing multicast group memberships. The small packet volume and absence of TCP flags or data exchanges are consistent with IGMP's purpose. There is no evidence of malicious behavior or known attack patterns.",
+      "key_findings": [
+        "Protocol 2 is IGMP, commonly used for multicast.",
+        "Destination IP 224.0.0.22 is a multicast address.",
+        "No unusual packet or byte pattern observed."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0043625,
+      "time_seconds": 3.081570863723755,
+      "tokens": {
+        "input": 977,
+        "output": 192
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 15,
+      "flow_id": 15,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a single flow from source IP 172.31.64.52 to destination IP 172.31.0.2 on port 53 using protocol 17 (UDP), which is characteristic of a DNS query. The flow duration is very short (1 millisecond), aligning with typical DNS query behavior. The byte count (88 inbound, 165 outbound) and packet count (1 inbound, 1 outbound) are also typical for DNS exchanges. There are no anomalous features indicating malicious activity such as high packet counts or unusual ports.",
+      "key_findings": [
+        "Flow to port 53 suggests DNS traffic",
+        "UDP protocol (17) is typical for DNS",
+        "Short duration and small packet/byte size typical for DNS queries"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0045275,
+      "time_seconds": 3.6481900215148926,
+      "tokens": {
+        "input": 979,
+        "output": 208
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 16,
+      "flow_id": 16,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.6,
+      "attack_type_predicted": null,
+      "reasoning": "Traffic is directed to a link-local address (169.254.169.254) on port 80, which is unusual for typical web traffic but may be indicative of local service or metadata server access common in cloud environments. The presence of varied TCP flags including RST potentially suggests probing or abnormal connection termination.",
+      "key_findings": [
+        "HTTP traffic to link-local address",
+        "Presence of RST flag in TCP flow"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.013562500000000002,
+      "time_seconds": 14.673107862472534,
+      "tokens": {
+        "input": 2433,
+        "output": 748
+      },
+      "model_used": "gpt-4o",
+      "tool_calls": [
+        {
+          "tool": "search_mitre_techniques",
+          "args": {
+            "query": "unauthorized internal HTTP communication"
+          },
+          "result_preview": "{'success': True, 'query': 'unauthorized internal http communication', 'result_count': 0, 'results': []}"
+        },
+        {
+          "tool": "search_mitre_techniques",
+          "args": {
+            "query": "link-local address probing"
+          },
+          "result_preview": "{'success': True, 'query': 'link-local address probing', 'result_count': 0, 'results': []}"
+        },
+        {
+          "tool": "search_mitre_techniques",
+          "args": {
+            "query": "RST flag and HTTP flow"
+          },
+          "result_preview": "{'success': True, 'query': 'rst flag and http flow', 'result_count': 0, 'results': []}"
+        }
+      ]
+    },
+    {
+      "flow_idx": 17,
+      "flow_id": 17,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a DNS query due to protocol 17 (UDP) and destination port 53. The flow characteristics such as small packet sizes, short duration, and low byte count are typical for DNS traffic. There are no signs of malicious activity like high packet counts, unusual packet sizes, or long durations that would indicate an attack.",
+      "key_findings": [
+        "Protocol 17 (UDP), typical for DNS traffic.",
+        "Destination port 53, indicating a DNS query.",
+        "Small packet sizes and short duration typical of DNS queries."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0040775,
+      "time_seconds": 3.069485902786255,
+      "tokens": {
+        "input": 979,
+        "output": 163
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 18,
+      "flow_id": 18,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a single communication from source IP 172.31.64.8 to destination IP 172.31.0.2 over UDP port 53, which is used for DNS queries. The flow has very small packet sizes and is short in duration, typical of DNS queries that involve minimal data transfer. There are no features indicating any known attack patterns such as brute force or denial of service. This behavior is consistent with normal DNS operations.",
+      "key_findings": [
+        "Single packet exchange typical of DNS query",
+        "UDP protocol with destination port 53",
+        "Small packet sizes and short duration"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042275,
+      "time_seconds": 2.1501660346984863,
+      "tokens": {
+        "input": 979,
+        "output": 178
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 19,
+      "flow_id": 19,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates DNS query traffic from a source to a DNS server. The traffic is over UDP (protocol 17) on port 53, which is typical for DNS queries. The packet sizes and flow duration are consistent with normal DNS query and response patterns. There are no signs of anomalous behavior, such as high packet counts, unusual ports, or characteristics of known attack patterns.",
+      "key_findings": [
+        "Traffic is on port 53, typical for DNS queries.",
+        "Single packet in both directions with typical byte sizes for a DNS query and response.",
+        "Short flow duration of 11 milliseconds, expected for DNS transactions.",
+        "No TCP flags present, consistent with UDP protocol usage."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0043975,
+      "time_seconds": 4.647694826126099,
+      "tokens": {
+        "input": 979,
+        "output": 195
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 20,
+      "flow_id": 20,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record shows a connection on UDP port 53, which is commonly used for DNS queries. The flow duration is very short, and the packet sizes are small, which is typical for DNS query and response. There is nothing suspicious or malicious in the described flow attributes.",
+      "key_findings": [
+        "UDP protocol on port 53 indicates DNS activity",
+        "Short duration and small packet size typical of DNS query"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0037675,
+      "time_seconds": 2.218682050704956,
+      "tokens": {
+        "input": 979,
+        "output": 132
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 21,
+      "flow_id": 21,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a connection from a source IP in the private IP range to a public IP over port 443, which is typical for HTTPS traffic. The flow duration is short, but such durations can be common in rapid web page loading or API calls. The byte transfer sizes are moderate and typical of encrypted HTTPS flows. The TCP flags include SYN and FIN, which can indicate a normal connection setup and teardown. There is no evidence of repeated failed login attempts, anomalies in packet sizes or IAT patterns that would suggest brute force, DDoS, or botnet behavior.",
+      "key_findings": [
+        "HTTPS traffic on port 443",
+        "Moderate byte transfer typical of encrypted communications",
+        "Normal TCP flag pattern for a complete HTTP flow"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.00444,
+      "time_seconds": 3.7362918853759766,
+      "tokens": {
+        "input": 980,
+        "output": 199
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 22,
+      "flow_id": 22,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates a connection to port 53, which is standard for DNS queries. The flow is characterized by small packet sizes and a very short duration, typical of DNS requests and responses. There are no TCP flags or characteristics indicative of an attack. The flow originates and terminates on a private IP range, suggesting internal network activity.",
+      "key_findings": [
+        "DNS query on port 53",
+        "Small packet sizes typical of DNS traffic",
+        "Short flow duration typical of quick DNS lookups"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0039975,
+      "time_seconds": 2.196171998977661,
+      "tokens": {
+        "input": 979,
+        "output": 155
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 23,
+      "flow_id": 23,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "This NetFlow record describes a UDP flow to port 53, which is commonly used for DNS queries. The query is short in duration (1ms) with a small amount of data transferred (70 bytes in, 130 bytes out), typical of a DNS query response. The flow appears to be a legitimate DNS query without characteristics of malicious activity.",
+      "key_findings": [
+        "UDP protocol detected with port 53 involved, typical of DNS queries.",
+        "Short duration and small packet sizes indicative of a non-suspicious DNS request.",
+        "No anomalous flags or behavior detected in this flow."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004177500000000001,
+      "time_seconds": 2.975861072540283,
+      "tokens": {
+        "input": 979,
+        "output": 173
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 24,
+      "flow_id": 24,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record involves traffic directly aligned with typical secure web browsing behavior on port 443 (HTTPS). The flow duration is short, and the input and output packet counts maintain a balanced ratio alongside proportional byte usage, indicative of typical encrypted web traffic. The TCP flags, despite having a high value, are expected in scenarios where multiple connections or session terminations are accounted for (e.g., ACK, PSH, FIN). Importantly, there are no known attack pattern features present, such as excessively small packet sizes, repeated connection attempts, or anomalous data transfer ratios.",
+      "key_findings": [
+        "Traffic on standard HTTPS port 443",
+        "Balanced bidirectional packet and byte counts",
+        "Short flow consistent with typical secure web browsing"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.00447,
+      "time_seconds": 3.3789570331573486,
+      "tokens": {
+        "input": 980,
+        "output": 202
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 25,
+      "flow_id": 25,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a DNS query, which is typical for port 53 (used for DNS). The flow duration is very short (1 ms), consistent with a normal DNS query process that resolves rapidly. The packet and byte sizes are small, aligning with standard DNS query and response behavior. No evidence of DNS-related attack patterns are present in this flow.",
+      "key_findings": [
+        "Uses port 53 (DNS)",
+        "Normal DNS query byte sizes and packet counts",
+        "Very short flow duration typical for DNS",
+        "No suspicious flags or patterns"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0041075,
+      "time_seconds": 3.6369709968566895,
+      "tokens": {
+        "input": 979,
+        "output": 166
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 26,
+      "flow_id": 26,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The analyzed NetFlow record shows typical characteristics of a secure web browsing session over HTTPS, as indicated by the destination port 443. The packet sizes and flow duration are within ranges expected for a brief web interaction. The used TCP flags suggest normal connection setup and tear-down. There is no evidence of attack patterns such as brute force, denial of service, or other malicious activity.",
+      "key_findings": [
+        "Destination port 443 indicates secure web browsing",
+        "Moderate and symmetrical in/out packet sizes and counts",
+        "Normal TCP flags for connection management"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004092500000000001,
+      "time_seconds": 2.3829240798950195,
+      "tokens": {
+        "input": 981,
+        "output": 164
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 27,
+      "flow_id": 27,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a DNS query. The destination port is 53, which is standard for DNS traffic. The packet sizes and flow duration are consistent with a typical DNS lookup. There are no signs of malicious behavior such as repeated connection attempts, large data transfers, or use of unauthorized ports.",
+      "key_findings": [
+        "Port 53 indicates DNS traffic.",
+        "Short flow duration of 1 millisecond is typical for DNS.",
+        "Packet sizes (79 bytes in, 95 bytes out) are normal for DNS queries and responses."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0040675,
+      "time_seconds": 2.6786961555480957,
+      "tokens": {
+        "input": 979,
+        "output": 162
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 28,
+      "flow_id": 28,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a short-duration UDP transaction on port 53, which is characteristic of a DNS query. The packet sizes are small (60 bytes in, 182 bytes out), the flow duration is very short (1 ms), and the protocol is UDP (17), all aligning with normal DNS query/response behavior.",
+      "key_findings": [
+        "UDP traffic on port 53",
+        "Typical DNS query pattern with small data size",
+        "Very short flow duration indicative of typical DNS response time"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0039975,
+      "time_seconds": 2.9858310222625732,
+      "tokens": {
+        "input": 979,
+        "output": 155
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 29,
+      "flow_id": 29,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record shows a UDP protocol communication on port 53, which is typically used for DNS queries. The flow has very small byte and packet counts with a short duration, consistent with a standard DNS lookup. No anomalous features are present.",
+      "key_findings": [
+        "UDP protocol on port 53, typical for DNS",
+        "Small packet and byte counts",
+        "Short flow duration"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0037675,
+      "time_seconds": 2.1335690021514893,
+      "tokens": {
+        "input": 979,
+        "output": 132
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 30,
+      "flow_id": 30,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a secure web (HTTPS) connection. The use of port 443 is typical for HTTPS traffic, which suggests legitimate web browsing or data transfer. The flow duration of approximately 116 seconds and the IN and OUT byte pattern align with a typical browsing session or file transfer over HTTPS. The symmetric packet count (40 IN, 61 OUT) and data transfer sizes further support a standard client-server interaction rather than an anomaly. The TCP flags present connect to proper TCP session establishment and termination.",
+      "key_findings": [
+        "Use of destination port 443 (HTTPS)",
+        "Flow duration and byte patterns consistent with HTTPS traffic",
+        "No indicators of attack patterns like high SYN rate, low data transfer, or unusual ports"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0044675,
+      "time_seconds": 3.067262887954712,
+      "tokens": {
+        "input": 983,
+        "output": 201
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 31,
+      "flow_id": 31,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a brief connection to a web server on port 80. The flow duration is a bit over 5 seconds, and the packet counts are low, with small byte transfers (172 bytes in, 92 bytes out). TCP flags combination (211) suggests normal TCP communication with SYN, ACK, and FIN flags. No repeated patterns or anomalous small requests that would indicate brute force. The flow matches benign browsing behavior to port 80 with moderate packet sizes and reasonable duration. No evidence of Denial of Service or unusual Web Application Attack patterns.",
+      "key_findings": [
+        "Connection to port 80 suggests web browsing.",
+        "Normal TCP flags for the duration of the flow.",
+        "Low packet and byte counts typical of a brief web request."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0045225000000000005,
+      "time_seconds": 3.8653430938720703,
+      "tokens": {
+        "input": 981,
+        "output": 207
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 32,
+      "flow_id": 32,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The traffic is a TCP connection over port 443, which is typical of HTTPS traffic. The flow duration, packet sizes, and byte counts are consistent with a secure web browsing session. The TCP flag value 218 indicates a mixture of flags, but in the context of HTTPS and the flow characteristics, it does not suggest malicious activity. The maximum inter-arrival times (IAT) between packets are not indicative of a DoS attack pattern.",
+      "key_findings": [
+        "Connection to standard HTTPS port 443",
+        "Flow characteristics consistent with benign HTTPS traffic",
+        "TCP flags not indicative of a known attack pattern"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042250000000000005,
+      "time_seconds": 2.2970101833343506,
+      "tokens": {
+        "input": 982,
+        "output": 177
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 33,
+      "flow_id": 33,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a UDP flow with a source port of 50250 going to destination port 53, which is typical for DNS queries. The packet and byte counts (in and out) are low and consistent with typical DNS query and response sizes. The flow duration is very short, which is common for DNS traffic. There's no evidence of a flood or any anomaly in packet sizes or frequencies.",
+      "key_findings": [
+        "Port 53 indicates DNS traffic",
+        "Low byte and packet counts typical of DNS queries",
+        "Short flow duration"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0040275,
+      "time_seconds": 3.4749701023101807,
+      "tokens": {
+        "input": 979,
+        "output": 158
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 34,
+      "flow_id": 34,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates UDP traffic on port 53, which is consistent with DNS query activity. The packet sizes are small, and the flow duration is very short, matching typical DNS behavior. The bi-directional nature of packets (requests and responses) also aligns with expected DNS query patterns.",
+      "key_findings": [
+        "Traffic on port 53 indicating DNS protocol usage",
+        "Small packet sizes and short flow duration typical of DNS queries",
+        "UDP protocol consistent with DNS traffic"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0039375,
+      "time_seconds": 2.1429359912872314,
+      "tokens": {
+        "input": 979,
+        "output": 149
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 35,
+      "flow_id": 35,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The observed NetFlow record represents typical web browsing traffic. It involves a TCP connection to port 80, which is standard for HTTP traffic. The flow duration of 62.415 seconds is reasonable for a web session. The amount of data transferred, with 1880 bytes in and 2722 bytes out, as well as the packet counts of 14 incoming and 13 outgoing packets, align with standard web browsing behavior. The TCP flags and inter-arrival times do not exhibit patterns associated with known attack techniques.",
+      "key_findings": [
+        "Connection to port 80, standard for web browsing",
+        "Reasonable duration and packet sizes indicating typical HTTP session",
+        "No anomalous TCP flag patterns"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0044075,
+      "time_seconds": 3.0386219024658203,
+      "tokens": {
+        "input": 983,
+        "output": 195
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 36,
+      "flow_id": 36,
+      "verdict": "BENIGN",
+      "confidence": 0.99,
+      "attack_type_predicted": null,
+      "reasoning": "This NetFlow record indicates a DNS query based on the destination port 53, which is standard for DNS. The protocol is UDP (protocol number 17), typical for DNS traffic. The flow duration is minimal, with a very small number of packets and bytes, which aligns with the behavior of DNS query responses. There are no signs of anomaly such as high packet counts, unusual durations, or port usages that would indicate suspicious or malicious activity.",
+      "key_findings": [
+        "DNS query to port 53",
+        "Standard UDP traffic pattern for DNS"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0040275,
+      "time_seconds": 2.3915669918060303,
+      "tokens": {
+        "input": 979,
+        "output": 158
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 37,
+      "flow_id": 37,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The traffic in the NetFlow record is a DNS query based on the destination port 53, which is typical for DNS services. The traffic characteristics, such as the small packet size (typical for DNS requests), single inbound and outbound packet, and minimal flow duration, are consistent with normal DNS query behavior. There are no indications of any known attack patterns such as brute force, denial of service, or infiltration based on this single DNS query.",
+      "key_findings": [
+        "Destination port is 53, indicating DNS traffic",
+        "Single request and response packet aligns with typical DNS query behavior",
+        "No TCP flags set, consistent with UDP DNS traffic"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042875,
+      "time_seconds": 2.6627111434936523,
+      "tokens": {
+        "input": 979,
+        "output": 184
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 38,
+      "flow_id": 38,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record shows a flow from a source IP 172.31.67.116 to a destination IP 172.31.0.2 using destination port 53, which is standard for DNS queries. The protocol used is UDP (protocol 17), typical for DNS traffic. The flow has a short duration of 247 milliseconds, consistent with a quick DNS query. The byte and packet counts are small, which match typical DNS request and response sizes. There are no TCP flags because this is UDP traffic. No signs of anomalous behavior such as high packet counts, unusual duration, or repeated small requests that would indicate malicious activity.",
+      "key_findings": [
+        "DNS query (port 53) with small packet and byte count",
+        "Short flow duration consistent with DNS traffic"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0045675,
+      "time_seconds": 13.412858963012695,
+      "tokens": {
+        "input": 979,
+        "output": 212
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 39,
+      "flow_id": 39,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The analyzed NetFlow record represents a typical pattern of a DNS query. It involves UDP protocol on port 53, which is standard for DNS traffic. The data contains only one packet in each direction with minimal byte size typically observed in DNS requests and responses. There are no signs of anomalous behavior or known attack patterns.",
+      "key_findings": [
+        "Use of UDP protocol on port 53 indicates DNS traffic.",
+        "1 packet per direction with typical DNS request/response size.",
+        "Very short duration, characteristic of DNS queries."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0040375,
+      "time_seconds": 3.2416751384735107,
+      "tokens": {
+        "input": 979,
+        "output": 159
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 40,
+      "flow_id": 40,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The analyzed NetFlow record indicates a DNS query over UDP protocol. The source port is a high ephemeral port (51071), and the destination port is 53, which is typical for DNS requests. The packet count and size are typical of a singular DNS query and response, with a flow duration of only 1 millisecond. There are no anomalies such as high data volume, suspicious durations, or repeated behavior that would suggest malicious activity. DNS traffic generally aligns with normal network patterns, and there is no evidence of known attack structures or techniques present in this record.",
+      "key_findings": [
+        "DNS query on port 53",
+        "Appropriate packet sizes for DNS",
+        "Short flow duration and IATs as expected for DNS"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0044575,
+      "time_seconds": 4.331076145172119,
+      "tokens": {
+        "input": 979,
+        "output": 201
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 41,
+      "flow_id": 41,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The analyzed flow represents a connection over port 443, which is typically used for HTTPS web browsing. The flow duration is reasonable and the byte count is proportional with a moderate amount of data exchanged (1454 bytes in, 3446 bytes out). In addition, the packet count is balanced, and there are no signs of sporadic transfer characteristics that are typical in attacks. Although the TCP flags value of 27 suggests that SYN, FIN, and PSH flags were set, which is slightly unusual, it can occur during normal TCP connection finalization and various client-server interactions in legitimate use. Since this flow does not exhibit any specific known attack pattern, it is considered benign.",
+      "key_findings": [
+        "Port 443 used, typical for HTTPS traffic",
+        "Balanced packet sizes with appropriate byte transfer",
+        "TCP flags indicate connection closure"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0046775,
+      "time_seconds": 4.29148530960083,
+      "tokens": {
+        "input": 983,
+        "output": 222
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 42,
+      "flow_id": 42,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is primarily characterized by its use of port 443, which is typical for secure web traffic (HTTPS). The volume of in/out packets and bytes, as well as the flow duration, suggests a standard interaction without any known patterns of attack such as high SYN rate, large packet counts, or consistent small packet sizes. The usage of TCP flags is also not indicative of malicious activity, as it lacks repeated resets or terminations.",
+      "key_findings": [
+        "Traffic directed to port 443, typical for HTTPS",
+        "Normal flow duration and packet sizes",
+        "No unusual TCP flags or reset attempts"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042075,
+      "time_seconds": 3.187704086303711,
+      "tokens": {
+        "input": 983,
+        "output": 175
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 43,
+      "flow_id": 43,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record shows a DNS query from source IP 172.31.67.31 to destination IP 172.31.0.2, which uses port 53, typical of DNS traffic. The packet sizes and the duration being very short (1 ms) match the characteristics of a normal DNS query and response. There's no indication of high packet count, volume, or unusual patterns that would trigger suspicion based on known attack profiles.",
+      "key_findings": [
+        "Port 53 traffic indicates DNS query",
+        "Short duration and small packets typical of DNS",
+        "One packet in each direction indicating request and response"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042175,
+      "time_seconds": 2.863588809967041,
+      "tokens": {
+        "input": 979,
+        "output": 177
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 44,
+      "flow_id": 44,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates a communication from a source IP within a private address range to a multicast address with a DNS service (LLMNR) query over UDP, which is typical behavior for local network name resolution. The destination address is a well-known multicast address used for LLMNR on port 5355, which is common in local network environments. The flow features, including the short duration, low byte count, and the use of protocol 17 (UDP), align with benign LLMNR traffic.",
+      "key_findings": [
+        "Traffic to multicast address 224.0.0.252 on port 5355 (LLMNR)",
+        "Typical DNS query pattern with low byte count and duration",
+        "No anomalous packet or flag behavior"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004490000000000001,
+      "time_seconds": 3.7775039672851562,
+      "tokens": {
+        "input": 980,
+        "output": 204
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 45,
+      "flow_id": 45,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The analyzed flow represents a typical DNS query transaction. It uses UDP on port 53, which is normal for DNS. The packet and byte sizes are small, indicating regular query and response. The flow duration is very short, typical for a DNS request. There is no evidence of repeated or anomalous patterns typically associated with attacks.",
+      "key_findings": [
+        "Use of port 53 with UDP protocol is consistent with DNS traffic",
+        "Small packet sizes and short duration indicative of DNS queries",
+        "Single packet to and from suggests standard DNS query/response cycle"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0041075,
+      "time_seconds": 2.468514919281006,
+      "tokens": {
+        "input": 979,
+        "output": 166
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 46,
+      "flow_id": 46,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The flow represents a DNS query with destination port 53, which is typical for DNS traffic. The flow duration is very short (1 ms), which is consistent with DNS request-response patterns. The packet and byte sizes are small, confirming typical DNS query behavior, and there are no abnormal flags or unusual ports involved.",
+      "key_findings": [
+        "Destination port is 53, suggesting DNS traffic.",
+        "Short flow duration and small packet sizes are consistent with DNS operations.",
+        "No evidence of patterns typical of known attack techniques."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0040275,
+      "time_seconds": 2.5672688484191895,
+      "tokens": {
+        "input": 979,
+        "output": 158
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 47,
+      "flow_id": 47,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record represents a TCP connection to port 443, which is commonly used for HTTPS traffic, indicating standard web browsing or secure communication. The flow duration and packet sizes seem reasonable for a short interaction over HTTPS. There are more outgoing bytes than incoming, typical of downloading a webpage or data over a secure connection. The TCP flags indicate a normal session completion with FIN and ACK bits set. The absence of anomalies such as repeated connections, small packet sizes, or rapid succession further supports the conclusion that this flow is benign.",
+      "key_findings": [
+        "Connection to port 443 (HTTPS)",
+        "Reasonable flow duration and data transfer for secure web traffic",
+        "Typical TCP session completion flags"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004375,
+      "time_seconds": 3.9917030334472656,
+      "tokens": {
+        "input": 982,
+        "output": 192
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 48,
+      "flow_id": 48,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The flow details indicate a typical DNS query. It uses protocol 17 (UDP) directed to port 53, which is expected for DNS traffic. The packet sizes are small and the flow duration is extremely short, consistent with typical DNS request and response behavior.",
+      "key_findings": [
+        "Use of port 53, typical for DNS queries",
+        "Small packet sizes and short flow duration are characteristic of DNS traffic",
+        "PROTOCOL 17 is UDP, commonly used for DNS"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0039475,
+      "time_seconds": 2.5085299015045166,
+      "tokens": {
+        "input": 979,
+        "output": 150
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 49,
+      "flow_id": 49,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record shows traffic from a source IP to a destination IP over port 53 with protocol 17, indicating a DNS query. The small packet sizes, brief duration, and use of port 53 are consistent with normal DNS query behavior. There are no signs of anomaly such as high packet rates, irregular port usage, or patterns indicative of attacks.",
+      "key_findings": [
+        "Traffic uses port 53, which is typical for DNS queries.",
+        "Flow duration is very short, common for DNS lookups.",
+        "Packet sizes (IN_BYTES: 71, OUT_BYTES: 87) fall within expected range for DNS traffic."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042675000000000005,
+      "time_seconds": 2.61198091506958,
+      "tokens": {
+        "input": 979,
+        "output": 182
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 50,
+      "flow_id": 50,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates standard HTTPS traffic (port 443) with moderate packet sizes (15 incoming and 17 outgoing). The flow duration of approximately 118 seconds and byte counts (1863 bytes in and 6808 bytes out) align with typical encrypted web browsing sessions. There is no evidence of attack patterns such as repeated rapid connections, excessive data transfers, or anomalies in packet timing consistent with known attack methodologies.",
+      "key_findings": [
+        "Communication on TCP port 443 consistent with HTTPS traffic",
+        "Moderate flow duration and byte count typical of web browsing",
+        "No anomalous packet patterns or signs of attack"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042475,
+      "time_seconds": 2.6688501834869385,
+      "tokens": {
+        "input": 983,
+        "output": 179
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 51,
+      "flow_id": 51,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "This NetFlow record shows HTTP traffic to a special IP address (169.254.169.254), commonly associated with AWS metadata services, which can be a target for unauthorized access in a cloud environment. The flow duration is relatively long for HTTP traffic with minimal data, which is unusual. This traffic pattern can potentially indicate an attempt to access sensitive data improperly.",
+      "key_findings": [
+        "Traffic directed to 169.254.169.254",
+        "Long duration flow with minimal data exchange",
+        "Potential unauthorized metadata service access attempt"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0040825,
+      "time_seconds": 2.6477959156036377,
+      "tokens": {
+        "input": 981,
+        "output": 163
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 52,
+      "flow_id": 52,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The analyzed flow appears to be a typical HTTPS session. It involves traffic from an internal IP to an external IP over port 443, which is standard for secure web communications. The flow has a common duration and includes a balanced exchange of bytes and packets between source and destination, typical for web browsing or secure data exchange. Additionally, there is no indication of any attack patterns such as brute force, denial of service, exploitation attempts, or command and control communications.",
+      "key_findings": [
+        "Standard HTTPS traffic on port 443.",
+        "Flow duration and packet counts indicate normal web browsing behavior."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0041675,
+      "time_seconds": 2.271333932876587,
+      "tokens": {
+        "input": 983,
+        "output": 171
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 53,
+      "flow_id": 53,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record shows a single flow from a source to a destination on port 53, which is typically DNS traffic. The protocol used is UDP (protocol 17), and both the packet sizes and counts are consistent with a basic DNS query and response interaction. The flow duration is extremely short (1 millisecond), which is common for DNS queries as they typically have quick request-response exchanges. There are no flags indicating malicious intent like high packet counts or large byte transfers. Furthermore, the DNS query ID is present, aligning with expected DNS traffic behavior.",
+      "key_findings": [
+        "Traffic on DNS port 53",
+        "Short flow duration typical of DNS traffic",
+        "Single packet exchange indicative of DNS query and response"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0044275,
+      "time_seconds": 3.526060104370117,
+      "tokens": {
+        "input": 979,
+        "output": 198
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 54,
+      "flow_id": 54,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The record shows a UDP flow from port 55597 to port 53, which is typical for a DNS query. The flow duration is very short (11 milliseconds), consistent with DNS resolution. The packet size and byte counts (1 IN and 1 OUT packet with 61 and 122 bytes respectively) are typical of a DNS query and response. There are no anomalous patterns such as unusual ports, repeated connections, or high data volumes that would suggest malicious activity.",
+      "key_findings": [
+        "Flow to port 53 indicates DNS query",
+        "Short duration and small packet size typical of DNS queries",
+        "No evidence of attack patterns present"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042875,
+      "time_seconds": 2.259381055831909,
+      "tokens": {
+        "input": 979,
+        "output": 184
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 55,
+      "flow_id": 55,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record represents traffic on port 443, which is commonly used for HTTPS traffic. The flow duration is reasonable for a single session, and the byte and packet count indicate a small data transfer, which can be typical for short browsing sessions or secure API calls. The TCP flags are typical for an established TCP connection, not failed attempts as would be expected in certain attack patterns. There is no positive evidence suggesting anomalous or malicious behavior according to the known attack patterns.",
+      "key_findings": [
+        "Connection on port 443 indicating secure web traffic",
+        "Reasonable packet sizes and duration for benign traffic",
+        "Typical TCP flags for a connection rather than failed attempts"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0043325,
+      "time_seconds": 3.5164096355438232,
+      "tokens": {
+        "input": 981,
+        "output": 188
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 56,
+      "flow_id": 56,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates HTTP traffic on port 80, which is typical for web browsing. The flow duration, packet sizes, and bi-directional packet counts suggest normal web activity. There is no evidence of repeated small packets, high SYN rate, large data transfers, or typical DoS attack patterns. The large inter-arrival times and TCP flags do not match known attack vectors.",
+      "key_findings": [
+        "Standard port 80 HTTP communication",
+        "Balanced packet and byte exchange",
+        "Flow duration and inter-arrival times are reasonable"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0040750000000000005,
+      "time_seconds": 2.2613558769226074,
+      "tokens": {
+        "input": 982,
+        "output": 162
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 57,
+      "flow_id": 57,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The analyzed NetFlow record shows typical characteristics of a DNS query, which is generally benign. The flow involves protocol 17 (UDP) and port 53, which is standard for DNS traffic. The packet and byte counts (1 packet each way), along with small sizes of 67 and 95 bytes, are consistent with a normal DNS query and response pattern. The flow duration of 1 millisecond and the presence of a DNS query ID further suggest standard DNS behavior, as opposed to any attack signatures.",
+      "key_findings": [
+        "Protocol 17 and destination port 53 indicating DNS traffic",
+        "Byte and packet counts consistent with typical DNS request/response",
+        "1 millisecond duration typical of DNS transactions",
+        "DNS query ID present, aligning with normal DNS query activity"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004557500000000001,
+      "time_seconds": 3.7791333198547363,
+      "tokens": {
+        "input": 979,
+        "output": 211
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 58,
+      "flow_id": 58,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a connection between two private IP addresses with destination port 53, which is the DNS service port. The characteristics of the flow, such as a short duration, minimal data transfer, and the use of the DNS protocol (protocol 17 refers to UDP in this context), align with typical DNS query traffic. This suggests normal DNS resolution activity. There are no indicators or patterns suggesting malicious activity, such as repeated attempts, unusual data patterns, or communication on unexpected ports.",
+      "key_findings": [
+        "Flow to destination port 53 (DNS service)",
+        "UDP protocol used, typical for DNS",
+        "Very low byte count typical for DNS queries",
+        "Short flow duration consistent with DNS requests"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0044174999999999996,
+      "time_seconds": 2.561202049255371,
+      "tokens": {
+        "input": 979,
+        "output": 197
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 59,
+      "flow_id": 59,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record represents a typical DNS query and response, characterized by small packet sizes and a short duration. The flow involves UDP protocol on port 53, which is standard for DNS traffic. This pattern is consistent with benign activity, such as domain name resolution requests.",
+      "key_findings": [
+        "DNS query with standard characteristics",
+        "Short flow duration typical of DNS"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0036675,
+      "time_seconds": 1.944011926651001,
+      "tokens": {
+        "input": 979,
+        "output": 122
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 60,
+      "flow_id": 60,
+      "verdict": "BENIGN",
+      "confidence": 1.0,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates standard DNS query activity. The source port suggests a high, ephemeral port often used for outgoing DNS requests. The destination port 53 is the well-known DNS service port. Protocol 17 corresponds to UDP, commonly used for DNS traffic. The small packet size, short duration, and minimal byte transfer are characteristic of a DNS query and response, which are typically small and rapid.",
+      "key_findings": [
+        "Destination port 53 indicates DNS traffic",
+        "Small packet size and short duration consistent with DNS query",
+        "Protocol 17 (UDP) is standard for DNS"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0041675,
+      "time_seconds": 2.7737479209899902,
+      "tokens": {
+        "input": 979,
+        "output": 172
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 61,
+      "flow_id": 61,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates a multicast address (224.0.0.22) as the destination, which is commonly used for network control traffic, particularly related to IGMP protocol (indicated by protocol 2). The flow has a small number of packets and bytes, characteristic of control or management traffic. No suspicious patterns of repeated connections, small packet sizes for brute force attempts, or high volume patterns characteristic of DDoS attacks are present.",
+      "key_findings": [
+        "Destination IP is a multicast address.",
+        "Protocol 2 suggests IGMP traffic.",
+        "No outgoing packets and minimal data transfer.",
+        "Short flow duration consistent with control traffic."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042925,
+      "time_seconds": 2.9648048877716064,
+      "tokens": {
+        "input": 977,
+        "output": 185
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 62,
+      "flow_id": 62,
+      "verdict": "MALICIOUS",
+      "confidence": 0.9,
+      "attack_type_predicted": "INFILTRATION",
+      "reasoning": "The NetFlow record involves communication to port 445, commonly used by SMB (Server Message Block) protocol, which is often targeted in infiltration attacks. The flow exhibits short duration, equal inbound and outbound byte counts, and a balance of packets, suggesting a potential reconnaissance or exploitation attempt between hosts. The IP addresses indicate internal communication, and the consistent data and time values resemble patterns used in lateral movement.",
+      "key_findings": [
+        "Communication on port 445, commonly associated with SMB",
+        "Short flow duration with balanced inbound and outbound packets",
+        "Internal address space indicative of lateral movement",
+        "TCP flags suggest possible session establishment or termination"
+      ],
+      "mitre_techniques": [
+        "T1021"
+      ],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004365000000000001,
+      "time_seconds": 2.4418139457702637,
+      "tokens": {
+        "input": 978,
+        "output": 192
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 63,
+      "flow_id": 63,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates a standard HTTP connection given that the destination port is 80, which is typical for web traffic. The byte and packet sizes (IN_BYTES: 9264, OUT_BYTES: 15639, IN_PKTS: 72, OUT_PKTS: 65) are consistent with normal web data transfers. The flow duration is moderate and doesn't suggest an overly prolonged session as seen in some HTTP-based DoS attacks. While the TCP flags indicate a mix of SYN, FIN, and possibly RST flags, the pattern does not clearly match known malicious activity such as brute force or denial of service attacks. There is no evidence of repeated rapid connections typical of brute force, and the traffic characteristics do not match known denial of service patterns.",
+      "key_findings": [
+        "Destination port 80 indicates HTTP traffic.",
+        "Packet and byte counts consistent with standard web session.",
+        "No evidence of high SYN rate or other brute force indicators.",
+        "TCP flags suggest normal connection lifecycle."
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0049775,
+      "time_seconds": 3.0883641242980957,
+      "tokens": {
+        "input": 983,
+        "output": 252
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 64,
+      "flow_id": 64,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The traffic involves a connection from a public IP to a private IP on port 80, typical for web browsing. The flow duration and packet size are moderate, suggesting standard web traffic. No anomaly patterns like high SYN rate, unusual packet sizes, or repeated short-lived connections were observed. The data volume is proportional, with only slightly more bytes transferred from the source to the destination, typical in HTTP transactions.",
+      "key_findings": [
+        "Traffic to port 80 indicating HTTP web traffic",
+        "Flow duration of 118020 milliseconds indicating standard web session",
+        "Proportional IN and OUT bytes suggesting normal HTTP data transfer",
+        "Absence of high SYN rate or repeated connections, ruling out brute force or DoS"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0044375000000000005,
+      "time_seconds": 3.0733699798583984,
+      "tokens": {
+        "input": 983,
+        "output": 198
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 65,
+      "flow_id": 65,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record describes a flow on port 80, which is commonly used for web traffic. The flow has a moderate amount of data transferred (11804 bytes in and 18097 bytes out) and a reasonable duration (62212 milliseconds). The TCP flags (27) suggesting a normal TCP connection process, typically indicating SYN, ACK, and FIN flags, align with expected behavior for browsing activity. There is no evidence of repeated small packet sizes, high SYN rates, or abnormal packet patterns that would suggest brute force, denial of service, or web application attacks.",
+      "key_findings": [
+        "Port 80 traffic indicating standard web browsing",
+        "Moderate data transfer volume",
+        "Reasonable duration for web traffic"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0044375000000000005,
+      "time_seconds": 2.8062551021575928,
+      "tokens": {
+        "input": 983,
+        "output": 198
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 66,
+      "flow_id": 66,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates HTTP traffic on port 80, which is characteristic of standard web browsing. The packet and byte counts are proportional and not excessively high, suggesting normal data exchange rather than a denial of service attack. The flow duration and inter-arrival times also seem reasonable for typical web traffic. Despite the presence of TCP flags indicating potential connection closures (FIN), this is normal for TCP connection terminations.",
+      "key_findings": [
+        "Traffic on port 80 typical of HTTP web browsing",
+        "Proportional byte and packet counts indicating balanced data transfer",
+        "Reasonable flow duration and inter-arrival times"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0042175,
+      "time_seconds": 2.5244390964508057,
+      "tokens": {
+        "input": 983,
+        "output": 176
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 67,
+      "flow_id": 67,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates an HTTP connection (destination port 80) with a moderate amount of data transferred (2525 bytes in, 4812 bytes out) and a reasonable flow duration of 13.55 seconds. There are similar numbers of packets sent and received, suggesting normal request-response communication. TCP flags indicate normal connection termination (includes FIN/ACK), and there is no evidence of the known attack patterns such as an HTTP flood or brute-force attempts. The Inter Arrival Times (IATs) are not indicative of a flood or slow attack.",
+      "key_findings": [
+        "Port 80 (HTTP) - common benign traffic",
+        "Moderate byte count consistent with normal web browsing",
+        "Normal connection termination with FIN/ACK flags"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0044975,
+      "time_seconds": 2.959312677383423,
+      "tokens": {
+        "input": 983,
+        "output": 204
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 68,
+      "flow_id": 68,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates communication over HTTP (port 80) between the source IP 18.219.193.20 and destination IP 172.31.69.25, which is common for web browsing. The packet sizes and duration are within normal ranges for a typical HTTP session. The TCP flags include value 31, which shows a combination of ACK, SYN, FIN, and RST flags that can occur in regular web sessions. Neither the data volume nor the flow duration suggests excessive or unusual traffic patterns. The flow does not match any known attack or malicious patterns such as high SYN rate with low data transfer, irregular packet size, frequent connection attempts, long session times indicative of slow attacks, or irregular inter-arrival times.",
+      "key_findings": [
+        "Normal HTTP traffic on port 80",
+        "Reasonable flow duration and data volume",
+        "No indication of known attack patterns"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0047975,
+      "time_seconds": 2.968026876449585,
+      "tokens": {
+        "input": 983,
+        "output": 234
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 69,
+      "flow_id": 69,
+      "verdict": "BENIGN",
+      "confidence": 0.85,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record shows a flow directed towards port 80, which is generally used for standard web traffic. The flow duration, byte counts, and packet numbers are consistent with normal web browsing or legitimate HTTP communication. The TCP flags do not indicate repeated failed connection attempts or signs of classic HTTP flood attacks. The packet counts and duration are moderate and do not match known flood or brute force indicators.",
+      "key_findings": [
+        "Traffic on port 80 (standard for HTTP)",
+        "Moderate packet and byte count consistent with browsing",
+        "Flow duration typical for normal web traffic"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0041475,
+      "time_seconds": 2.5093419551849365,
+      "tokens": {
+        "input": 983,
+        "output": 169
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 70,
+      "flow_id": 70,
+      "verdict": "MALICIOUS",
+      "confidence": 0.9,
+      "attack_type_predicted": "Denial of Service",
+      "reasoning": "The flow shows characteristics of a denial of service attack on port 80 (HTTP). The combination of a high number of packets to and from the target, along with the involvement of TCP flags that suggest a possible flood type attack (RST, FIN), implies malicious intent. The traffic pattern and data volume are anomalous for typical web traffic and match patterns associated with HTTP flood attacks.",
+      "key_findings": [
+        "High packet volume targeting HTTP port (80)",
+        "TCP FIN and RST flags indicating possible flood attack",
+        "Unusually high data transfer for standard HTTP interaction"
+      ],
+      "mitre_techniques": [
+        "T1498"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0042875000000000005,
+      "time_seconds": 2.6282451152801514,
+      "tokens": {
+        "input": 983,
+        "output": 183
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 71,
+      "flow_id": 71,
+      "verdict": "BENIGN",
+      "confidence": 0.95,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record shows standard web traffic characteristics for a session to port 80 (HTTP). The connection duration is reasonable (22.269 seconds), and the in/out byte ratio (3548 IN_BYTES and 7218 OUT_BYTES) is typical for downloading resources from a web server. The number of packets is balanced between IN and OUT directions (31 IN_PKTS and 30 OUT_PKTS). The TCP flags value of 27 indicates ACK/PSH/FIN, which is common in HTTP traffic termination. No anomalous features or known attack patterns identified.",
+      "key_findings": [
+        "Connection to port 80 indicates HTTP traffic",
+        "Duration and data transfer consistent with HTTP usage",
+        "Balanced packet and byte count suggest normal web activity"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0044375000000000005,
+      "time_seconds": 2.64560604095459,
+      "tokens": {
+        "input": 983,
+        "output": 198
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 72,
+      "flow_id": 72,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record represents typical web browsing traffic. The destination port is 80, indicating HTTP traffic, which is consistent with standard web usage. The packet and byte counts, flow duration, and interaction patterns are normal for benign HTTP traffic. There are no indications of an attack pattern, such as those seen in Denial of Service or brute force attempts.",
+      "key_findings": [
+        "Destination port 80 indicating HTTP traffic",
+        "Normal packet and byte counts for web browsing",
+        "No anomalous patterns observed in flow duration or TCP flags"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 1,
+      "attack_type_actual": "DoS_attacks-Hulk",
+      "cost_usd": 0.0040775,
+      "time_seconds": 2.4552292823791504,
+      "tokens": {
+        "input": 983,
+        "output": 162
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 73,
+      "flow_id": 73,
+      "verdict": "MALICIOUS",
+      "confidence": 0.95,
+      "attack_type_predicted": "BRUTE FORCE (FTP)",
+      "reasoning": "The flow record indicates traffic directed towards port 21 (FTP) with characteristics typical of a brute force attack: very short flow duration, small packet sizes, and TCP RST/FIN flags indicating failed login attempts. The high rate of connection attempts coupled with minimal data transfer and a reset flag suggest an automated process attempting to gain unauthorized access.",
+      "key_findings": [
+        "Traffic directed to FTP port (21)",
+        "Very short flow duration (1 ms)",
+        "Small packet sizes (60 bytes in, 40 bytes out)",
+        "TCP flags indicate connection reset",
+        "Minimal data transfer"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.004285000000000001,
+      "time_seconds": 3.378152847290039,
+      "tokens": {
+        "input": 978,
+        "output": 184
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 74,
+      "flow_id": 74,
+      "verdict": "MALICIOUS",
+      "confidence": 0.9,
+      "attack_type_predicted": "BRUTE FORCE (FTP)",
+      "reasoning": "The NetFlow record shows a connection attempt to port 21 (FTP), which is characteristic of a brute force attack pattern. The flow has a very short duration of 1 millisecond, small packet sizes, and the TCP flags indicate a connection reset or closure (RST/FIN), which aligns with login attempt rejection. The high SYN rate with minimal data transfer is typical of brute force attempts where credentials are being repeatedly guessed.",
+      "key_findings": [
+        "Connection to FTP port (21) with short duration",
+        "Small packet sizes and minimal data transfer",
+        "TCP flags indicating reset/closure (likely failed login attempt)"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.004335,
+      "time_seconds": 2.767667293548584,
+      "tokens": {
+        "input": 978,
+        "output": 189
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 75,
+      "flow_id": 75,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.8,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates a very short duration connection to port 21 (FTP), with a small number of packets and byte size, along with TCP RST/FIN flags. These characteristics are indicative of a potential brute force attempt targeting an FTP service.",
+      "key_findings": [
+        "Connection to FTP port 21",
+        "Short flow duration",
+        "Small packet sizes (60 bytes in, 40 bytes out)",
+        "RST/FIN TCP flags"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.003945000000000001,
+      "time_seconds": 2.0452771186828613,
+      "tokens": {
+        "input": 978,
+        "output": 150
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 76,
+      "flow_id": 76,
+      "verdict": "MALICIOUS",
+      "confidence": 0.95,
+      "attack_type_predicted": "BRUTE FORCE (FTP)",
+      "reasoning": "The given NetFlow record shows a flow that matches the known attack pattern for a brute force attack on FTP. The flow has the following characteristics: it targets port 21 (FTP), has a very short duration of 1 millisecond, and involves small packet sizes. The presence of TCP flags indicating a reset (RST) or finish (FIN) further supports the likelihood of unsuccessful connection attempts typical in brute force scenarios.",
+      "key_findings": [
+        "Connection to port 21 (FTP)",
+        "Very short flow duration (1 ms)",
+        "Small packet sizes (60 bytes in, 40 bytes out)",
+        "TCP flags indicating connection termination (RST/FIN)"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.004425,
+      "time_seconds": 2.8700339794158936,
+      "tokens": {
+        "input": 978,
+        "output": 198
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 77,
+      "flow_id": 77,
+      "verdict": "MALICIOUS",
+      "confidence": 0.9,
+      "attack_type_predicted": "BRUTE FORCE (FTP)",
+      "reasoning": "The NetFlow record indicates a connection attempt to port 21 (FTP), which is indicative of FTP usage. The flow has a very short duration of 1 millisecond, a small number of packets transferred (1 in each direction), and a small byte count (60 bytes in and 40 bytes out). The TCP flags value of 22 indicates the use of RST/FIN, common in rejected connection attempts. These characteristics match known brute force attack patterns, where there are repeated, rapid connection attempts with low packet and byte counts, aimed at guessing credentials.",
+      "key_findings": [
+        "Connection to FTP port 21",
+        "Short flow duration (1 ms)",
+        "TCP RST/FIN flags present",
+        "Low byte counts and packet numbers"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.004575000000000001,
+      "time_seconds": 2.6212961673736572,
+      "tokens": {
+        "input": 978,
+        "output": 213
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 78,
+      "flow_id": 78,
+      "verdict": "MALICIOUS",
+      "confidence": 0.9,
+      "attack_type_predicted": "FTP Brute Force",
+      "reasoning": "The flow is characterized by a very short duration with a SYN and FIN flag combination, low byte count, and connection to the FTP port (21). These match the profile of a brute force attack, specifically targeting FTP services.",
+      "key_findings": [
+        "Connection to port 21 indicating possible FTP service attack.",
+        "Very short flow duration (1 ms) with minimal data transferred.",
+        "SYN followed by FIN flags typically used in brute force attempts."
+      ],
+      "mitre_techniques": [
+        "T1110.001"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.011317500000000001,
+      "time_seconds": 7.8258209228515625,
+      "tokens": {
+        "input": 2451,
+        "output": 519
+      },
+      "model_used": "gpt-4o",
+      "tool_calls": [
+        {
+          "tool": "search_mitre_techniques",
+          "args": {
+            "query": "brute force"
+          },
+          "result_preview": "{'success': True, 'query': 'brute force', 'result_count': 5, 'results': [{'technique_id': 'T1021.005', 'name': 'VNC', 'tactics': ['lateral-movement'], 'description': 'Adversaries may use [Valid Accoun"
+        }
+      ]
+    },
+    {
+      "flow_idx": 79,
+      "flow_id": 79,
+      "verdict": "MALICIOUS",
+      "confidence": 0.95,
+      "attack_type_predicted": "BRUTE FORCE (FTP)",
+      "reasoning": "The flow shows a connection attempt to port 21 (FTP) with very short duration and minimal packet exchange, consistent with brute force login attempts. The TCP flags (22) indicating possible connection drops (RST, FIN) further support this. Additionally, the packet and byte sizes are small, which aligns with typical credential-based brute force attacks.",
+      "key_findings": [
+        "Connection to FTP port (21)",
+        "Very short flow duration (1 ms)",
+        "Minimal data transfer (60 bytes in, 40 bytes out)",
+        "TCP flags suggest rejected or closed connection"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.004235,
+      "time_seconds": 2.862466812133789,
+      "tokens": {
+        "input": 978,
+        "output": 179
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 80,
+      "flow_id": 80,
+      "verdict": "MALICIOUS",
+      "confidence": 0.9,
+      "attack_type_predicted": "BRUTE FORCE (FTP)",
+      "reasoning": "The flow shows a connection to port 21 (FTP), which is commonly targeted in brute force attacks. It features a flow duration of only 1 millisecond, indicating very short and rapid connection attempts typical of brute force credential guessing. The flow consists of a single inbound and outbound packet, carrying very minimal data bytes. The TCP flags value of 22 suggests the presence of RST (reset) or FIN (finish) flags, indicating unsuccessful connection attempts. These characteristics fit the profile of a brute force FTP attack.",
+      "key_findings": [
+        "Connection to FTP port 21",
+        "Very short flow duration (1 ms)",
+        "Minimal data transfer (60 bytes in, 40 bytes out)",
+        "Presence of TCP RST/FIN flags"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.004605,
+      "time_seconds": 3.3802311420440674,
+      "tokens": {
+        "input": 978,
+        "output": 216
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 81,
+      "flow_id": 81,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.8,
+      "attack_type_predicted": "Potential FTP Brute Force",
+      "reasoning": "The record indicates a flow involving port 21 (FTP), with a very short duration (1 ms), minimal data exchanged (60 bytes IN, 40 bytes OUT), and TCP flags set to 22 (potential indication of RST/FIN flag). The combination of these features is aligned with known brute force attack indicators where repeated and rapid attempts are made to port 21 with small packet sizes.",
+      "key_findings": [
+        "Connection to FTP port (21) with very short duration.",
+        "Minimal data transfer indicative of a possible login attempt.",
+        "TCP RST/FIN flag suggests a connection attempt that might have been rejected."
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.0043950000000000005,
+      "time_seconds": 3.4951670169830322,
+      "tokens": {
+        "input": 978,
+        "output": 195
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 82,
+      "flow_id": 82,
+      "verdict": "MALICIOUS",
+      "confidence": 0.95,
+      "attack_type_predicted": "BRUTE FORCE",
+      "reasoning": "The NetFlow record shows multiple indicators consistent with a brute force attack on an FTP server, such as repeated connection attempts to port 21 (FTP), small packet sizes indicative of credential attempts, short flow duration suggesting rapid login trials, and TCP RST/FIN flags signaling connection resets or rejected attempts.",
+      "key_findings": [
+        "Repeated connections to port 21",
+        "Small packet sizes (60 IN_BYTES, 40 OUT_BYTES)",
+        "Short flow duration (1 millisecond)",
+        "TCP flags indicate connection resets (TCP_FLAGS: 22)"
+      ],
+      "mitre_techniques": [
+        "T1110"
+      ],
+      "label_actual": 1,
+      "attack_type_actual": "FTP-BruteForce",
+      "cost_usd": 0.004175,
+      "time_seconds": 3.87768292427063,
+      "tokens": {
+        "input": 978,
+        "output": 173
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 83,
+      "flow_id": 83,
+      "verdict": "MALICIOUS",
+      "confidence": 0.9,
+      "attack_type_predicted": "INFILTRATION",
+      "reasoning": "The flow record indicates traffic to port 3389, commonly associated with RDP, from an external source IP to an internal IP. The presence of non-standard abnormal port communications, notably RDP from an unusual external IP, points to potential infiltration. This is combined with small packet counts and small data transfer, suggestive of command and control (C2) or initial access attempts. Given these attributes, the flow is suggestive of infiltration tactics.",
+      "key_findings": [
+        "Traffic to port 3389 (RDP) from an external IP",
+        "Small data transfer and packet count",
+        "Possible indication of lateral movement or C2 activity"
+      ],
+      "mitre_techniques": [
+        "T1190",
+        "T1071"
+      ],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0044475,
+      "time_seconds": 3.6893129348754883,
+      "tokens": {
+        "input": 983,
+        "output": 199
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 84,
+      "flow_id": 84,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The analyzed NetFlow represents a connection attempt from an external IP address to an internal private IP, specifically to port 445, which is commonly associated with Microsoft file sharing and often targeted for lateral movement or exploitation (e.g., SMB vulnerabilities). The flow has a small packet number and moderate byte count, which could suggest reconnaissance or a setup for exploitation.",
+      "key_findings": [
+        "Connection to port 445, often targeted for SMB vulnerabilities",
+        "External to internal network communication",
+        "Moderate byte transfer with low packet count suggesting non-standard communication"
+      ],
+      "mitre_techniques": [
+        "T1021"
+      ],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004135,
+      "time_seconds": 2.4796128273010254,
+      "tokens": {
+        "input": 978,
+        "output": 169
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 85,
+      "flow_id": 85,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates network traffic over port 445, commonly associated with SMB protocol. The flow has symmetrical byte and packet counts, suggesting negligible data transfer which could imply connection attempts rather than established sessions. The short flow duration and specific TCP flags set suggest SYN and ACK exchanges, typical of probing or scanning behavior.",
+      "key_findings": [
+        "Connection to port 445 (SMB)",
+        "Short flow duration",
+        "Symmetrical byte and packet counts",
+        "TCP flags indicating possible SYN/ACK exchanges"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004025,
+      "time_seconds": 2.330885887145996,
+      "tokens": {
+        "input": 978,
+        "output": 158
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 86,
+      "flow_id": 86,
+      "verdict": "MALICIOUS",
+      "confidence": 0.85,
+      "attack_type_predicted": "INFILTRATION",
+      "reasoning": "The NetFlow record shows traffic from an external IP (201.62.56.18) to an internal IP (172.31.66.42) on port 445, which is typically used for SMB/CIFS. This is a common vector for lateral movement in infiltration scenarios. The flow duration is relatively short but notable, and both in and out packets have symmetrical counts, which may suggest unauthorized communication. The TCP flags value of 31 indicates a variety of control flags set during the session, possibly indicating probing or exploitation attempts.",
+      "key_findings": [
+        "Traffic to port 445, often used in lateral movement attacks",
+        "Short duration suggesting possible reconnaissance or probing",
+        "TCP flags value indicates complex behavior outside normal bounds"
+      ],
+      "mitre_techniques": [
+        "T1046",
+        "T1082"
+      ],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004605,
+      "time_seconds": 2.8655102252960205,
+      "tokens": {
+        "input": 978,
+        "output": 216
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 87,
+      "flow_id": 87,
+      "verdict": "BENIGN",
+      "confidence": 0.9,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is a short-duration TCP connection from an external IP address to an internal IP address on port 3389, which is commonly used for Remote Desktop Protocol (RDP). The byte count and packet count are low but proportionate, and there are no indicators of brute force or denial of service attack patterns such as repeated connections, high packet rates, or irregular data transfers. The TCP flags and the flow pattern do not suggest any attack behaviors such as partial requests or resets associated with intrusion attempts.",
+      "key_findings": [
+        "Connection to port 3389 indicating potential RDP usage",
+        "Low and proportionate byte and packet counts",
+        "No repeated connections or anomalous pattern"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0043675,
+      "time_seconds": 2.867704153060913,
+      "tokens": {
+        "input": 983,
+        "output": 191
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 88,
+      "flow_id": 88,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The netflow record exhibits a connection to port 3389, which is commonly used for Remote Desktop Protocol (RDP). The small amount of data transferred, the moderate flow duration, and the TCP flags, which indicate a combination of flags including RST/FIN, may suggest an attempt to probe or exploit the RDP service. However, the evidence is not conclusive enough to classify it definitively as an attack.",
+      "key_findings": [
+        "Connection to port 3389 (RDP)",
+        "Moderate data transfer with combined TCP flags",
+        "Suspected probing activity due to connection characteristics"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042275,
+      "time_seconds": 2.562506914138794,
+      "tokens": {
+        "input": 983,
+        "output": 177
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 89,
+      "flow_id": 89,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow is directed towards port 3389, which is commonly used for RDP (Remote Desktop Protocol). While the flow durations and data volumes do not indicate an active RDP session (which generally involves larger data transfer and longer duration), it is unusual for an external IP (212.92.115.177) to directly connect to an internal IP (172.31.64.76) on this port. Additionally, the TCP flags value of 222 indicates potential irregularities in the TCP session. Normally, benign RDP traffic would show different flow characteristics in terms of duration and data transferred.",
+      "key_findings": [
+        "External to internal connection on RDP port 3389",
+        "Unusual TCP flags value of 222",
+        "Short duration and small data transfer inconsistent with typical RDP usage"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004647500000000001,
+      "time_seconds": 3.4763200283050537,
+      "tokens": {
+        "input": 983,
+        "output": 219
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 90,
+      "flow_id": 90,
+      "verdict": "MALICIOUS",
+      "confidence": 0.9,
+      "attack_type_predicted": "INFILTRATION",
+      "reasoning": "The traffic matches patterns of lateral movement, which is a common infiltration technique. The flow involves communication over TCP port 445, which is typically associated with SMB services. External to internal communication on this port is unusual and can indicate lateral movement or attempts to exploit SMB vulnerabilities (e.g., EternalBlue). The flow has short duration and specific packet and data size exchange patterns, which align with techniques for such exploitation.",
+      "key_findings": [
+        "External source IP addressing an internal destination on port 445",
+        "Traffic characteristics are consistent with lateral movement or SMB exploitation",
+        "Unusual communication for the SMB port from an external IP"
+      ],
+      "mitre_techniques": [
+        "T1021"
+      ],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004335,
+      "time_seconds": 2.4580307006835938,
+      "tokens": {
+        "input": 978,
+        "output": 189
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 91,
+      "flow_id": 91,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow involves a connection to port 445, which is commonly used by Microsoft SMB Protocol and is a known target for exploit attempts (e.g., EternalBlue). The flow is short in duration and involves equal bytes/packages in both directions, which could indicate a scanning or shelled exploit attempt. While there's not enough evidence to definitively classify it as malicious given the dataset context, the flow's characteristics and destination port suggest it is suspicious.",
+      "key_findings": [
+        "Connection to port 445 (commonly targeted by SMB exploits)",
+        "Equal packet sizes and count in both directions",
+        "Short flow duration"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042250000000000005,
+      "time_seconds": 2.9828550815582275,
+      "tokens": {
+        "input": 978,
+        "output": 178
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 92,
+      "flow_id": 92,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": "Potential Infiltration",
+      "reasoning": "The flow involves traffic on port 3389, commonly used for RDP (Remote Desktop Protocol). The source IP is external, accessing an internal private IP, suggesting potential unauthorized remote access. The flow has a short duration with moderate packets and bytes, which may indicate an initial probing or unauthorized access attempt. However, there is no strong evidence of brute force or denial of service attack patterns.",
+      "key_findings": [
+        "External-to-internal traffic on port 3389 (RDP)",
+        "Moderate packet and byte count in short duration",
+        "Potential unauthorized access attempt"
+      ],
+      "mitre_techniques": [
+        "T1076"
+      ],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0042475,
+      "time_seconds": 2.6499340534210205,
+      "tokens": {
+        "input": 983,
+        "output": 179
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 93,
+      "flow_id": 93,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates traffic over port 3389, which is commonly used for Remote Desktop Protocol (RDP). This could be legitimate remote access, but the flow has characteristics that are often seen in suspicious activity, such as a moderate amount of data transferred and abnormal TCP flags (222). The interaction is relatively short and has both inbound and outbound packets with equal counts, suggesting potential probing or unauthorized access attempts.",
+      "key_findings": [
+        "Traffic to port 3389 (RDP) which can be sensitive",
+        "Unusual TCP flags (222) that do not match standard communication patterns",
+        "Moderate data transfer in both directions"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0043100000000000005,
+      "time_seconds": 3.0789918899536133,
+      "tokens": {
+        "input": 984,
+        "output": 185
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 94,
+      "flow_id": 94,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record shows a connection attempt from an external IP address (5.188.11.25) to an internal IP address on a non-standard port (20915). The flow duration is extremely short (1 ms), and the TCP flags indicate only a SYN flag was set, suggesting a possible scanning activity or the start of a TCP connection that was immediately closed or interrupted. The use of a high, uncommon port is typical of backdoor communications or reconnaissance attempts. While this single event doesn't confirm malicious activity, it is anomalous compared to typical benign traffic patterns.",
+      "key_findings": [
+        "External IP address connecting to internal network",
+        "Unusually short flow duration",
+        "Single SYN packet sent with no response",
+        "Connection targeting non-standard, high port (20915)"
+      ],
+      "mitre_techniques": [
+        "T1046"
+      ],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0046275,
+      "time_seconds": 3.987036943435669,
+      "tokens": {
+        "input": 979,
+        "output": 218
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 95,
+      "flow_id": 95,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates an inbound TCP SYN packet from an external source to an internal destination on a non-standard port (6006). The flow duration is extremely short (1 ms) with only 1 packet and 40 bytes inbound, suggesting a potential scan or probing activity. No data was exchanged (outbound bytes and packets are zero), which is unusual for legitimate communication. The internal port 6006 is not typically associated with standard services, adding to the anomaly. The use of a high and uncommon destination port can be indicative of lateral movement attempts or reconnaissance.",
+      "key_findings": [
+        "Inbound SYN packet with no data exchange",
+        "Extremely short flow duration (1 ms)",
+        "Destination port 6006 is uncommon for standard services"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0044975,
+      "time_seconds": 3.686202049255371,
+      "tokens": {
+        "input": 979,
+        "output": 205
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 96,
+      "flow_id": 96,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The flow record indicates a connection attempt on port 3389, which is commonly used for Remote Desktop Protocol (RDP). While RDP traffic is typically benign in an enterprise environment, the duration of 1.223 seconds and the TCP flags set at 222, which indicate PSH, URG, and FIN flags, suggest unusual behaviour for typical RDP sessions. The port being open to an unauthorized external IP might be an indicator of potential reconnaissance or an unauthorized access attempt.",
+      "key_findings": [
+        "Short duration RDP connection attempt",
+        "Unusual TCP flags combination in the session",
+        "External source IP access to internal RDP port"
+      ],
+      "mitre_techniques": [
+        "T1046"
+      ],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0043675,
+      "time_seconds": 3.27986478805542,
+      "tokens": {
+        "input": 983,
+        "output": 191
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 97,
+      "flow_id": 97,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates ICMP traffic (protocol 1) from a source IP to a destination IP with no data flow back. The source to destination IAT max is unusually high (12135 ms), suggesting an irregular pattern. Additionally, there are 21 incoming packets but zero outgoing packets, which is uncommon for typical communication patterns. The combination of zero payload response and high interval could indicate reconnaissance activity or a potential scanning behavior.",
+      "key_findings": [
+        "Unidirectional ICMP traffic",
+        "High inter-arrival time (IAT) max from source to destination",
+        "Significant incoming packet count with no outgoing packets"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.004280000000000001,
+      "time_seconds": 2.861987829208374,
+      "tokens": {
+        "input": 980,
+        "output": 183
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 98,
+      "flow_id": 98,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The NetFlow record indicates communication on port 3389, which is used for Remote Desktop Protocol (RDP). The external IP ('89.248.166.116') connecting to an internal IP ('172.31.66.107') on this port raises a flag as RDP is a common target for unauthorized access attempts. However, further evidence is needed to confirm this as an attack. The packet and byte sizes fall within a range that could suggest normal use, but the combination of an external source IP with RDP requires caution.",
+      "key_findings": [
+        "Communication on port 3389 (RDP)",
+        "External IP connecting to internal IP",
+        "Moderate flow duration and packet sizes"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.00444,
+      "time_seconds": 2.2582221031188965,
+      "tokens": {
+        "input": 984,
+        "output": 198
+      },
+      "model_used": "gpt-4o"
+    },
+    {
+      "flow_idx": 99,
+      "flow_id": 99,
+      "verdict": "SUSPICIOUS",
+      "confidence": 0.7,
+      "attack_type_predicted": null,
+      "reasoning": "The netflow record shows traffic to port 445, which is commonly associated with SMB protocol and is a common target for infiltration and lateral movement attacks. The flow has very small data transfer sizes and a short duration, which can be indicative of unauthorized access attempts or reconnaissance. Although not explicitly malicious, these features warrant further investigation.",
+      "key_findings": [
+        "Traffic to port 445",
+        "Small data transfer sizes",
+        "Short flow duration"
+      ],
+      "mitre_techniques": [],
+      "label_actual": 0,
+      "attack_type_actual": "Benign",
+      "cost_usd": 0.0038925,
+      "time_seconds": 2.3526718616485596,
+      "tokens": {
+        "input": 981,
+        "output": 144
+      },
+      "model_used": "gpt-4o"
+    }
+  ]
+}

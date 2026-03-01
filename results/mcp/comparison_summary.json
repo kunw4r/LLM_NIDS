@@ -1,0 +1,80 @@
+{
+  "configs": [
+    {
+      "config": "A",
+      "model": "gpt-4o-mini",
+      "model_switched": false,
+      "total_flows": 100,
+      "total_cost": 0.0084,
+      "recall": 90.0,
+      "precision": 48.2,
+      "f1": 62.8,
+      "fpr": 41.4,
+      "confusion": {
+        "tp": 27,
+        "fp": 29,
+        "tn": 41,
+        "fn": 3
+      },
+      "cost_per_flow": 0.0001
+    },
+    {
+      "config": "B",
+      "model": "gpt-4o",
+      "model_switched": false,
+      "total_flows": 100,
+      "total_cost": 0.3679,
+      "recall": 66.7,
+      "precision": 51.3,
+      "f1": 58.0,
+      "fpr": 27.1,
+      "confusion": {
+        "tp": 20,
+        "fp": 19,
+        "tn": 51,
+        "fn": 10
+      },
+      "cost_per_flow": 0.0037
+    },
+    {
+      "config": "C",
+      "model": "gpt-4o",
+      "model_switched": false,
+      "total_flows": 100,
+      "total_cost": 0.4537,
+      "recall": 70.0,
+      "precision": 50.0,
+      "f1": 58.3,
+      "fpr": 30.0,
+      "confusion": {
+        "tp": 21,
+        "fp": 21,
+        "tn": 49,
+        "fn": 9
+      },
+      "cost_per_flow": 0.0045
+    }
+  ],
+  "amatas_baseline": {
+    "config": "AMATAS v2",
+    "model": "GPT-4o",
+    "recall": 85,
+    "fpr": 1.1,
+    "f1": 88,
+    "cost_per_1000": 2.59,
+    "architecture": "6-agent + Tier-1 RF"
+  },
+  "total_cost": 0.83,
+  "batch": {
+    "total_flows": 100,
+    "attack_flows": 30,
+    "benign_flows": 70,
+    "attack_types": [
+      "FTP-BruteForce",
+      "SSH-Bruteforce",
+      "DoS_attacks-Hulk"
+    ],
+    "source": "dev_eval.csv"
+  },
+  "timestamp": "2026-03-01T18:28:14.240366+00:00"
+}

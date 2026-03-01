@@ -17,3 +17,4 @@ Generated: 2026-03-01 18:30 UTC
 | Infilteration | [Infilteration_draft.md](Infilteration_draft.md) | 547 | 2026-03-01 11:47 |
 | SQL_Injection | [SQL_Injection_draft.md](SQL_Injection_draft.md) | 538 | 2026-03-01 12:26 |
 | Methodology: Data Integrity | [methodology_data_integrity.md](methodology_data_integrity.md) | 351 | 2026-03-01 18:30 |
+| MCP Comparison | [mcp_comparison_draft.md](mcp_comparison_draft.md) | 535 | 2026-03-01 18:28 |

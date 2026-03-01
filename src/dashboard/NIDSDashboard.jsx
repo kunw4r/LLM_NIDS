@@ -1912,19 +1912,151 @@ export default function NIDSDashboard() {
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {/* MCP EXPERIMENTS                                                    */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
-        {topTab === "mcp" && (
+        {topTab === "mcp" && mcpTab === "overview" && (
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, letterSpacing: "-0.02em" }}>MCP Experiments</h2>
-            <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 24 }}>
-              Comparing three conditions on the same batch: Zero-shot, Engineered prompt, and + MITRE ATT&CK MCP tools.
+            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, letterSpacing: "-0.02em" }}>MCP Comparison Experiments</h2>
+            <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 24, maxWidth: 800, lineHeight: 1.7 }}>
+              Three single-agent configurations tested on the same 100-flow batch (10 FTP + 10 SSH + 10 DoS-Hulk + 70 benign)
+              to isolate the impact of prompt engineering and tool access on NIDS performance.
             </p>
-            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "48px", textAlign: "center" }}>
-              <div style={{ fontSize: 16, color: "#6b7280", marginBottom: 12 }}>MCP experiments running — results will appear here</div>
-              <p style={{ fontSize: 13, color: "#9ca3af", maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>
-                Testing whether MCP tools (AbuseIPDB, OTX, geolocation, MITRE ATT&CK) provide any uplift
-                over pure LLM reasoning on NetFlow features. Initial findings from Phase 1 suggest external
-                threat intelligence returns 0% meaningful data on anonymized CICIDS2018 IPs.
-              </p>
+
+            {/* Hero comparison cards */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
+              {[
+                { label: "A: Zero-Shot", model: "GPT-4o-mini", recall: "90.0%", fpr: "41.4%", f1: "62.8%", cost: "$0.01", border: "#d97706" },
+                { label: "B: Engineered Prompt", model: "GPT-4o", recall: "66.7%", fpr: "27.1%", f1: "58.0%", cost: "$0.37", border: "#3b82f6" },
+                { label: "C: + MITRE Tool", model: "GPT-4o", recall: "70.0%", fpr: "30.0%", f1: "58.3%", cost: "$0.45", border: "#8b5cf6" },
+                { label: "AMATAS v2", model: "GPT-4o (6-agent)", recall: "85%", fpr: "1.1%", f1: "88%", cost: "$2.59/1k", border: "#16a34a" },
+              ].map(c => (
+                <div key={c.label} style={{ border: `2px solid ${c.border}`, borderRadius: 8, padding: "16px", background: "#fff" }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: c.border, marginBottom: 4 }}>{c.label}</div>
+                  <div style={{ fontSize: 11, color: "#9ca3af", marginBottom: 12 }}>{c.model}</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: "#1a1a1a", letterSpacing: "-0.02em" }}>{c.f1}</div>
+                  <div style={{ fontSize: 11, color: "#6b7280", marginTop: 2 }}>F1 Score</div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: 8, fontSize: 11 }}>
+                    <span style={{ color: "#16a34a" }}>R: {c.recall}</span>
+                    <span style={{ color: "#dc2626" }}>FPR: {c.fpr}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4 }}>{c.cost}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Key findings */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "20px", marginBottom: 24 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Key Findings</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, fontSize: 13, color: "#374151", lineHeight: 1.7 }}>
+                <div style={{ display: "flex", gap: 8 }}><span style={{ color: "#d97706", fontWeight: 600, flexShrink: 0 }}>1.</span> <span><strong>GPT-4o-mini zero-shot</strong> catches the most attacks (90% recall) but flags everything suspicious — 41% FPR makes it unusable in production.</span></div>
+                <div style={{ display: "flex", gap: 8 }}><span style={{ color: "#3b82f6", fontWeight: 600, flexShrink: 0 }}>2.</span> <span><strong>Engineered prompt</strong> reduces FPR to 27% but also cuts recall to 67% — the single-agent precision-recall seesaw in action.</span></div>
+                <div style={{ display: "flex", gap: 8 }}><span style={{ color: "#8b5cf6", fontWeight: 600, flexShrink: 0 }}>3.</span> <span><strong>MITRE ATT&CK tool</strong> provides marginal +3.3% recall over engineered prompt at +$0.09 cost — minimal uplift validates Phase 1 finding.</span></div>
+                <div style={{ display: "flex", gap: 8 }}><span style={{ color: "#16a34a", fontWeight: 600, flexShrink: 0 }}>4.</span> <span><strong>AMATAS multi-agent</strong> breaks through the single-agent ceiling: 88% F1 with only 1.1% FPR — specialised roles + adversarial checking beats any single-agent config.</span></div>
+              </div>
+            </div>
+
+            {/* Batch info */}
+            <div style={{ fontSize: 12, color: "#9ca3af", lineHeight: 1.6 }}>
+              Batch: 100 flows from dev_eval.csv (RF holdout) &middot; 10 FTP-BruteForce + 10 SSH-Bruteforce + 10 DoS-Hulk + 70 Benign &middot; Total cost: $0.83 / $6.00 budget
+            </div>
+          </div>
+        )}
+
+        {topTab === "mcp" && mcpTab === "results" && (
+          <div>
+            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, letterSpacing: "-0.02em" }}>Per-Config Results</h2>
+
+            {/* Results table */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden", marginBottom: 24 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+                    {["Config", "Model", "Recall", "FPR", "Precision", "F1", "TP", "FP", "FN", "TN", "Cost"].map(h => (
+                      <th key={h} style={{ padding: "10px 12px", textAlign: "left", fontWeight: 600, fontSize: 11, color: "#6b7280", textTransform: "uppercase" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { config: "A: Zero-Shot", model: "GPT-4o-mini", recall: "90.0%", fpr: "41.4%", precision: "48.2%", f1: "62.8%", tp: 27, fp: 29, fn: 3, tn: 41, cost: "$0.01", bg: "#fffbeb" },
+                    { config: "B: Engineered", model: "GPT-4o", recall: "66.7%", fpr: "27.1%", precision: "51.3%", f1: "58.0%", tp: 20, fp: 19, fn: 10, tn: 51, cost: "$0.37", bg: "#eff6ff" },
+                    { config: "C: + MITRE", model: "GPT-4o", recall: "70.0%", fpr: "30.0%", precision: "50.0%", f1: "58.3%", tp: 21, fp: 21, fn: 9, tn: 49, cost: "$0.45", bg: "#f5f3ff" },
+                  ].map(r => (
+                    <tr key={r.config} style={{ borderBottom: "1px solid #f3f4f6", background: r.bg }}>
+                      <td style={{ padding: "10px 12px", fontWeight: 600 }}>{r.config}</td>
+                      <td style={{ padding: "10px 12px", color: "#6b7280" }}>{r.model}</td>
+                      <td style={{ padding: "10px 12px", color: "#16a34a", fontWeight: 500 }}>{r.recall}</td>
+                      <td style={{ padding: "10px 12px", color: "#dc2626" }}>{r.fpr}</td>
+                      <td style={{ padding: "10px 12px" }}>{r.precision}</td>
+                      <td style={{ padding: "10px 12px", fontWeight: 600 }}>{r.f1}</td>
+                      <td style={{ padding: "10px 12px" }}>{r.tp}</td>
+                      <td style={{ padding: "10px 12px", color: "#dc2626" }}>{r.fp}</td>
+                      <td style={{ padding: "10px 12px", color: "#dc2626" }}>{r.fn}</td>
+                      <td style={{ padding: "10px 12px" }}>{r.tn}</td>
+                      <td style={{ padding: "10px 12px", color: "#6b7280" }}>{r.cost}</td>
+                    </tr>
+                  ))}
+                  <tr style={{ borderTop: "2px solid #e5e7eb", background: "#f0fdf4" }}>
+                    <td style={{ padding: "10px 12px", fontWeight: 700, color: "#166534" }}>AMATAS v2</td>
+                    <td style={{ padding: "10px 12px", color: "#6b7280" }}>GPT-4o (6-agent)</td>
+                    <td style={{ padding: "10px 12px", color: "#16a34a", fontWeight: 700 }}>85%</td>
+                    <td style={{ padding: "10px 12px", color: "#16a34a", fontWeight: 700 }}>1.1%</td>
+                    <td style={{ padding: "10px 12px", fontWeight: 600 }}>97%</td>
+                    <td style={{ padding: "10px 12px", fontWeight: 700, color: "#166534" }}>88%</td>
+                    <td colSpan={4} style={{ padding: "10px 12px", color: "#6b7280", fontSize: 11 }}>14,000 flows across 14 attack types</td>
+                    <td style={{ padding: "10px 12px", color: "#6b7280" }}>$27.35</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ fontSize: 12, color: "#9ca3af" }}>
+              All single-agent configs tested on same 100-flow batch. AMATAS v2 results are aggregate across 14 x 1,000-flow Stage 1 experiments.
+            </div>
+          </div>
+        )}
+
+        {topTab === "mcp" && mcpTab === "comparison" && (
+          <div>
+            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, letterSpacing: "-0.02em" }}>Single-Agent vs Multi-Agent</h2>
+
+            {/* Visual F1 bar chart */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "24px", marginBottom: 24 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "#6b7280", marginBottom: 16 }}>F1 Score Comparison</div>
+              {[
+                { label: "A: Zero-Shot (GPT-4o-mini)", f1: 62.8, color: "#d97706" },
+                { label: "B: Engineered Prompt (GPT-4o)", f1: 58.0, color: "#3b82f6" },
+                { label: "C: + MITRE Tool (GPT-4o)", f1: 58.3, color: "#8b5cf6" },
+                { label: "AMATAS v2 (6-Agent + RF)", f1: 88, color: "#16a34a" },
+              ].map(b => (
+                <div key={b.label} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                  <div style={{ width: 220, fontSize: 12, color: "#374151", textAlign: "right" }}>{b.label}</div>
+                  <div style={{ flex: 1, height: 24, background: "#f3f4f6", borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ width: `${b.f1}%`, height: "100%", background: b.color, borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>{b.f1}%</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Thesis argument */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "20px", background: "#f9fafb" }}>
+              <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Thesis Argument</div>
+              <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.8, maxWidth: 800 }}>
+                <p style={{ marginBottom: 12 }}>
+                  The MCP comparison demonstrates that <strong>no single-agent configuration can match the multi-agent AMATAS architecture</strong>.
+                  The best single-agent (Config A: zero-shot GPT-4o-mini) achieves 90% recall but at the cost of 41% FPR — classifying nearly half of benign traffic as suspicious.
+                  Prompt engineering (Config B) reduces FPR but simultaneously cuts recall, confirming the precision-recall seesaw inherent to single-agent systems.
+                </p>
+                <p style={{ marginBottom: 12 }}>
+                  MITRE ATT&CK tooling (Config C) provides only marginal improvement (+3.3% recall, +$0.09 cost) over the engineered prompt alone.
+                  This validates the Phase 1 finding that <strong>external tools are limited by data quality, not tool quality</strong> — on anonymised synthetic data,
+                  even comprehensive frameworks like MITRE ATT&CK add little beyond what prompt-encoded attack signatures already provide.
+                </p>
+                <p>
+                  AMATAS v2&apos;s 88% F1 with 1.1% FPR is achieved through <strong>specialised analytical roles</strong> (protocol, statistical, behavioural, temporal analysis),
+                  <strong>adversarial cross-checking</strong> (Devil&apos;s Advocate), and <strong>weighted consensus</strong> (Orchestrator) — capabilities fundamentally unavailable to any single-agent approach.
+                </p>
+              </div>
             </div>
           </div>
         )}
