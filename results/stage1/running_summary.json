@@ -7,8 +7,13 @@
       "fpr": 3,
       "f1": 87,
       "cost": 4.21,
-      "cost_per_tp": 0.10,
-      "confusion": { "tp": 42, "fp": 28, "tn": 922, "fn": 8 }
+      "cost_per_tp": 0.1,
+      "confusion": {
+        "tp": 42,
+        "fp": 28,
+        "tn": 922,
+        "fn": 8
+      }
     },
     {
       "attack_type": "DoS-SlowHTTPTest",
@@ -17,18 +22,38 @@
       "fpr": 5,
       "f1": 79,
       "cost": 3.89,
-      "cost_per_tp": 0.10,
-      "confusion": { "tp": 38, "fp": 47, "tn": 903, "fn": 12 }
+      "cost_per_tp": 0.1,
+      "confusion": {
+        "tp": 38,
+        "fp": 47,
+        "tn": 903,
+        "fn": 12
+      }
+    },
+    {
+      "attack_type": "FTP-BruteForce",
+      "status": "complete",
+      "recall": 76,
+      "fpr": 0,
+      "f1": 86,
+      "cost": 1.61,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 38,
+        "fp": 0,
+        "tn": 950,
+        "fn": 12
+      }
     }
   ],
   "overall": {
     "best_f1": 87,
-    "total_flows": 2000,
-    "total_cost": 8.10,
+    "total_flows": 3000,
+    "total_cost": 9.71,
     "best_detected": "SSH-Bruteforce",
     "best_recall": 84,
     "hardest": "DoS-SlowHTTPTest",
     "hardest_recall": 76,
-    "avg_fpr": 4
+    "avg_fpr": 3
   }
 }
