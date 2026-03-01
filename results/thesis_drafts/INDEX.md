@@ -1,6 +1,6 @@
 # Thesis Chapter Drafts — Index
 
-Generated: 2026-03-01 12:46 UTC
+Generated: 2026-03-01 18:30 UTC
 
 | Attack Type | File | Words | Generated |
 |---|---|---|---|
@@ -16,3 +16,4 @@ Generated: 2026-03-01 12:46 UTC
 | FTP-BruteForce | [FTP-BruteForce_draft.md](FTP-BruteForce_draft.md) | 616 | 2026-03-01 12:46 |
 | Infilteration | [Infilteration_draft.md](Infilteration_draft.md) | 547 | 2026-03-01 11:47 |
 | SQL_Injection | [SQL_Injection_draft.md](SQL_Injection_draft.md) | 538 | 2026-03-01 12:26 |
+| Methodology: Data Integrity | [methodology_data_integrity.md](methodology_data_integrity.md) | 351 | 2026-03-01 18:30 |
