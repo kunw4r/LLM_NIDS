@@ -120,7 +120,7 @@ def create_batch(attack_type, eval_df, rng):
     with open(batch_dir / "flows.json", "w") as f:
         json.dump(flows, f, indent=2)
     with open(batch_dir / "ground_truth.json", "w") as f:
-        json.dump(labels, f, indent=2)
+        json.dump({"ground_truth": labels}, f, indent=2)
 
     log(f"  Created batch: {N_ATTACK} {attack_type} + {N_BENIGN} benign = {len(combined)} flows")
     return batch_dir
