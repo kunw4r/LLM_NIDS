@@ -134,16 +134,31 @@
         "tn": 950,
         "fn": 1
       }
+    },
+    {
+      "attack_type": "DDoS_attacks-LOIC-HTTP",
+      "status": "complete",
+      "recall": 82,
+      "fpr": 0,
+      "f1": 90,
+      "cost": 1.57,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 41,
+        "fp": 0,
+        "tn": 950,
+        "fn": 9
+      }
     }
   ],
   "overall": {
     "best_f1": 100,
-    "total_flows": 9000,
-    "total_cost": 17.18,
+    "total_flows": 10000,
+    "total_cost": 18.75,
     "best_detected": "FTP-BruteForce",
     "best_recall": 100,
     "hardest": "Infilteration",
     "hardest_recall": 0,
-    "avg_fpr": 11
+    "avg_fpr": 10
   }
 }
