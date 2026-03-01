@@ -194,16 +194,31 @@
         "tn": 950,
         "fn": 4
       }
+    },
+    {
+      "attack_type": "DoS_attacks-Slowloris",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0,
+      "f1": 100,
+      "cost": 2.16,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      }
     }
   ],
   "overall": {
     "best_f1": 100,
-    "total_flows": 13000,
-    "total_cost": 25.19,
+    "total_flows": 14000,
+    "total_cost": 27.35,
     "best_detected": "FTP-BruteForce",
     "best_recall": 100,
     "hardest": "Infilteration",
     "hardest_recall": 0,
-    "avg_fpr": 8
+    "avg_fpr": 7
   }
 }
