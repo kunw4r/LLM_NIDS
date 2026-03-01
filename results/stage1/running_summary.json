@@ -89,16 +89,31 @@
         "tn": 947,
         "fn": 2
       }
+    },
+    {
+      "attack_type": "DoS_attacks-Slowloris",
+      "status": "complete",
+      "recall": 98,
+      "fpr": 0,
+      "f1": 96,
+      "cost": 2.48,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 49,
+        "fp": 3,
+        "tn": 947,
+        "fn": 1
+      }
     }
   ],
   "overall": {
-    "best_f1": 95,
-    "total_flows": 6000,
-    "total_cost": 17.17,
-    "best_detected": "DoS_attacks-GoldenEye",
-    "best_recall": 96,
+    "best_f1": 96,
+    "total_flows": 7000,
+    "total_cost": 19.65,
+    "best_detected": "DoS_attacks-Slowloris",
+    "best_recall": 98,
     "hardest": "DoS-SlowHTTPTest",
     "hardest_recall": 76,
-    "avg_fpr": 2
+    "avg_fpr": 1
   }
 }
