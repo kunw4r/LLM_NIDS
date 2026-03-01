@@ -164,16 +164,31 @@
         "tn": 950,
         "fn": 4
       }
+    },
+    {
+      "attack_type": "DoS_attacks-SlowHTTPTest",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0,
+      "f1": 100,
+      "cost": 2.12,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      }
     }
   ],
   "overall": {
     "best_f1": 100,
-    "total_flows": 11000,
-    "total_cost": 20.92,
+    "total_flows": 12000,
+    "total_cost": 23.04,
     "best_detected": "FTP-BruteForce",
     "best_recall": 100,
     "hardest": "Infilteration",
     "hardest_recall": 0,
-    "avg_fpr": 9
+    "avg_fpr": 8
   }
 }
