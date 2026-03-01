@@ -398,7 +398,7 @@ export default function NIDSDashboard() {
   const [selectedFlowIdx, setSelectedFlowIdx] = useState(null);
   const [inspectorPage, setInspectorPage] = useState(0);
   const FLOWS_PER_PAGE = 50;
-  const [inspectorSource, setInspectorSource] = useState("stage1_ftp");
+  const [inspectorSource, setInspectorSource] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   // ── Comparison state ────────────────────────────────────────────────────────
