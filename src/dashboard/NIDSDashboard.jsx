@@ -1156,7 +1156,21 @@ export default function NIDSDashboard() {
       })()}
 
       {/* ── TOP HEADER ─────────────────────────────────────────────────────── */}
-      <header style={{ borderBottom: "1px solid #e5e7eb", padding: "16px 32px", display: "flex", alignItems: "center", gap: 24 }}>
+      <header style={{ borderBottom: "1px solid #e5e7eb", padding: "16px 32px", display: "flex", alignItems: "center", gap: 16 }}>
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: 28, height: 28, flexShrink: 0 }}>
+          <path d="M16 2L4 8v8c0 7.2 5.12 13.92 12 16 6.88-2.08 12-8.8 12-16V8L16 2z" fill="#0f172a"/>
+          <path d="M16 5L7 9.5v7c0 6 4.2 11.6 9 13.5 4.8-1.9 9-7.5 9-13.5v-7L16 5z" fill="#1e293b"/>
+          <circle cx="11" cy="13" r="2" fill="#3b82f6"/><circle cx="21" cy="13" r="2" fill="#8b5cf6"/>
+          <circle cx="11" cy="19.5" r="2" fill="#f59e0b"/><circle cx="21" cy="19.5" r="2" fill="#ec4899"/>
+          <circle cx="16" cy="16.2" r="1.8" fill="#ef4444"/>
+          <circle cx="16" cy="24" r="2.2" fill="#10b981"/>
+          <line x1="11" y1="13" x2="16" y2="16.2" stroke="#3b82f6" strokeWidth="0.7" opacity="0.6"/>
+          <line x1="21" y1="13" x2="16" y2="16.2" stroke="#8b5cf6" strokeWidth="0.7" opacity="0.6"/>
+          <line x1="11" y1="19.5" x2="16" y2="16.2" stroke="#f59e0b" strokeWidth="0.7" opacity="0.6"/>
+          <line x1="21" y1="19.5" x2="16" y2="16.2" stroke="#ec4899" strokeWidth="0.7" opacity="0.6"/>
+          <line x1="16" y1="16.2" x2="16" y2="24" stroke="#ef4444" strokeWidth="0.7" opacity="0.6"/>
+          <circle cx="16" cy="24" r="1" fill="#34d399"/>
+        </svg>
         <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0, letterSpacing: "-0.02em" }}>AMATAS</h1>
         <span style={{ fontSize: 13, color: "#6b7280" }}>Autonomous Multi-Agent Threat Analysis System</span>
         <span style={{ marginLeft: "auto", fontSize: 12, color: "#9ca3af" }}>
