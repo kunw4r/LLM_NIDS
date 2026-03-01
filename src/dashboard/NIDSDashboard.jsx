@@ -595,6 +595,19 @@ export default function NIDSDashboard() {
         gpt4omini_20: "/results/scaled/batch1_allgpt4omini_20_test.json",
         gpt4omini_1000: "/results/scaled/batch_3_stealthy_gpt4omini_results.json",
         stage1_ftp: "/results/stage1/FTP-BruteForce_results.json",
+        stage1_ssh: "/results/stage1/SSH-Bruteforce_results.json",
+        stage1_loic_http: "/results/stage1/DDoS_attacks-LOIC-HTTP_results.json",
+        stage1_hulk: "/results/stage1/DoS_attacks-Hulk_results.json",
+        stage1_slowhttp: "/results/stage1/DoS_attacks-SlowHTTPTest_results.json",
+        stage1_goldeneye: "/results/stage1/DoS_attacks-GoldenEye_results.json",
+        stage1_slowloris: "/results/stage1/DoS_attacks-Slowloris_results.json",
+        stage1_hoic: "/results/stage1/DDOS_attack-HOIC_results.json",
+        stage1_loic_udp: "/results/stage1/DDOS_attack-LOIC-UDP_results.json",
+        stage1_bot: "/results/stage1/Bot_results.json",
+        stage1_infilteration: "/results/stage1/Infilteration_results.json",
+        stage1_web: "/results/stage1/Brute_Force_-Web_results.json",
+        stage1_xss: "/results/stage1/Brute_Force_-XSS_results.json",
+        stage1_sql: "/results/stage1/SQL_Injection_results.json",
       };
       const path = fileMap[sourceId];
       if (!path) { setInspectorError("No flow data available for this experiment"); setInspectorLoading(false); return; }
@@ -1282,11 +1295,20 @@ export default function NIDSDashboard() {
                 </thead>
                 <tbody>
                   {s1.experiments.map(exp => {
-                    const stage1IdMap = { "FTP-BruteForce": "stage1_ftp", "SSH-Bruteforce": "stage1_ssh", "DoS-SlowHTTPTest": "stage1_slowhttp" };
+                    const stage1IdMap = {
+                      "FTP-BruteForce": "stage1_ftp", "SSH-Bruteforce": "stage1_ssh",
+                      "DoS-SlowHTTPTest": "stage1_slowhttp", "DoS_attacks-SlowHTTPTest": "stage1_slowhttp",
+                      "DDoS_attacks-LOIC-HTTP": "stage1_loic_http", "DoS_attacks-Hulk": "stage1_hulk",
+                      "DoS_attacks-GoldenEye": "stage1_goldeneye", "DoS_attacks-Slowloris": "stage1_slowloris",
+                      "DDOS_attack-HOIC": "stage1_hoic", "DDOS_attack-LOIC-UDP": "stage1_loic_udp",
+                      "Bot": "stage1_bot", "Infilteration": "stage1_infilteration",
+                      "Brute_Force_-Web": "stage1_web", "Brute_Force_-XSS": "stage1_xss",
+                      "SQL_Injection": "stage1_sql",
+                    };
                     const expId = stage1IdMap[exp.attack_type];
                     return (
-                    <tr key={exp.attack_type} onClick={() => expId && openExperimentDetail(expId)} style={{ borderBottom: "1px solid #f3f4f6", cursor: expId ? "pointer" : "default" }} onMouseEnter={e => expId && (e.currentTarget.style.background = "#f9fafb")} onMouseLeave={e => e.currentTarget.style.background = ""}>
-                      <td style={{ padding: "12px 16px", fontWeight: 500, color: expId ? "#2563eb" : "#374151" }}>{exp.attack_type}</td>
+                    <tr key={exp.attack_type} onClick={() => expId && openExperimentDetail(expId)} style={{ borderBottom: "1px solid #f3f4f6", cursor: "pointer" }} onMouseEnter={e => e.currentTarget.style.background = "#f9fafb"} onMouseLeave={e => e.currentTarget.style.background = ""}>
+                      <td style={{ padding: "12px 16px", fontWeight: 500, color: "#2563eb" }}>{exp.attack_type}</td>
                       <td style={{ padding: "12px 16px", textAlign: "right" }}>
                         {RF_TRAINED_TYPES.has(exp.attack_type) ? (
                           <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600, background: "#dbeafe", color: "#1e40af" }}>dev_eval (holdout)</span>
@@ -1831,8 +1853,9 @@ export default function NIDSDashboard() {
                               </p>
                             </div>
                           )}
-                          <div style={{ border: "1px solid #fbbf24", borderRadius: 8, padding: "12px 16px", background: "#fffbeb", color: "#92400e", fontSize: 13, lineHeight: 1.6 }}>
-                            Detailed per-agent reasoning not available for this experiment — run with the updated pipeline to capture individual agent analysis.
+                          <div style={{ border: "1px solid #93c5fd", borderRadius: 8, padding: "12px 16px", background: "#eff6ff", color: "#1e40af", fontSize: 13, lineHeight: 1.6 }}>
+                            This experiment used the original result format. Full agent reasoning was captured from Stage 1 onwards.
+                            View a Stage 1 experiment to see complete agent analysis with per-specialist reasoning, Devil's Advocate counter-arguments, and Orchestrator synthesis.
                           </div>
                         </div>
                       )}
