@@ -40,7 +40,7 @@ FEATURES = [
     "DNS_QUERY_ID",
 ]
 
-TRAIN_CSV = os.path.join(ROOT, "data", "datasets", "development.csv")
+TRAIN_CSV = os.path.join(ROOT, "data", "datasets", "dev_train.csv")
 MASTER_CSV = os.path.join(ROOT, "data", "f78acbaa2afe1595_NFV3DATA-A11964_A11964", "data", "NF-CICIDS2018-v3.csv")
 MODEL_PATH = os.path.join(ROOT, "models", "tier1_rf.pkl")
 VAL_FLOWS = os.path.join(ROOT, "data", "batches", "stage1", "validation", "flows.json")
@@ -57,7 +57,7 @@ def train():
 
     csv_path = TRAIN_CSV
     if not os.path.exists(csv_path):
-        raise FileNotFoundError(f"Training data not found: {csv_path}. Must train on development.csv only (not master) to avoid data leakage.")
+        raise FileNotFoundError(f"Training data not found: {csv_path}. Must train on dev_train.csv (80% of development split) to avoid within-split overlap.")
     print(f"\nLoading {csv_path} ...")
     t0 = time.time()
     df = pd.read_csv(csv_path, usecols=FEATURES + ["Label"])
