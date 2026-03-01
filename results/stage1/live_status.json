@@ -1,7 +1,7 @@
 {
-  "current_experiment": "DDOS_attack-LOIC-UDP",
+  "current_experiment": "Bot",
   "stage": "Stage 1",
-  "status": "complete",
+  "status": "running",
   "experiments_completed": [
     "SSH-Bruteforce",
     "DoS-SlowHTTPTest",
@@ -14,19 +14,11 @@
     "DDOS_attack-LOIC-UDP"
   ],
   "experiments_queued": [
-    "Bot",
     "Infilteration",
     "Brute_Force_-Web",
     "Brute_Force_-XSS",
     "SQL_Injection"
   ],
   "total_cost_so_far": 23.32,
-  "updated_at": "2026-03-01T11:29:32Z",
-  "last_result": {
-    "attack_type": "DDOS_attack-LOIC-UDP",
-    "recall": 100,
-    "f1": 96,
-    "fpr": 0,
-    "cost": 1.87
-  }
+  "updated_at": "2026-03-01T11:29:33Z"
 }
