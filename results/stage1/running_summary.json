@@ -164,16 +164,31 @@
         "tn": 948,
         "fn": 50
       }
+    },
+    {
+      "attack_type": "Brute_Force_-Web",
+      "status": "complete",
+      "recall": 86,
+      "fpr": 0,
+      "f1": 89,
+      "cost": 2.05,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 43,
+        "fp": 4,
+        "tn": 946,
+        "fn": 7
+      }
     }
   ],
   "overall": {
     "best_f1": 96,
-    "total_flows": 11000,
-    "total_cost": 26.41,
+    "total_flows": 12000,
+    "total_cost": 28.46,
     "best_detected": "DoS_attacks-Slowloris",
     "best_recall": 98,
     "hardest": "Infilteration",
     "hardest_recall": 0,
-    "avg_fpr": 19
+    "avg_fpr": 17
   }
 }
