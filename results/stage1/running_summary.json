@@ -49,7 +49,7 @@
       "attack_type": "DDoS_attacks-LOIC-HTTP",
       "status": "complete",
       "recall": 90,
-      "fpr": 1,
+      "fpr": 100,
       "f1": 90,
       "cost": 2.07,
       "cost_per_tp": 0.05,
@@ -139,7 +139,7 @@
       "attack_type": "Bot",
       "status": "complete",
       "recall": 82,
-      "fpr": 1,
+      "fpr": 100,
       "f1": 85,
       "cost": 2.3,
       "cost_per_tp": 0.06,
@@ -149,16 +149,31 @@
         "tn": 944,
         "fn": 9
       }
+    },
+    {
+      "attack_type": "Infilteration",
+      "status": "complete",
+      "recall": 0,
+      "fpr": 0,
+      "f1": 0,
+      "cost": 0.8,
+      "cost_per_tp": Infinity,
+      "confusion": {
+        "tp": 0,
+        "fp": 2,
+        "tn": 948,
+        "fn": 50
+      }
     }
   ],
   "overall": {
     "best_f1": 96,
-    "total_flows": 10000,
-    "total_cost": 25.62,
-    "best_detected": "DDOS_attack-LOIC-UDP",
-    "best_recall": 100,
-    "hardest": "DDOS_attack-HOIC",
-    "hardest_recall": 58,
-    "avg_fpr": 1
+    "total_flows": 11000,
+    "total_cost": 26.41,
+    "best_detected": "DoS_attacks-Slowloris",
+    "best_recall": 98,
+    "hardest": "Infilteration",
+    "hardest_recall": 0,
+    "avg_fpr": 19
   }
 }
