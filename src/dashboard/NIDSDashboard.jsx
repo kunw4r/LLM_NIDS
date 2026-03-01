@@ -350,7 +350,7 @@ const AGENTS = [
 ];
 
 // GitHub raw base URL for result files
-const RESULTS_BASE = "https://raw.githubusercontent.com/kunwa/LLM_NIDS/main/results";
+const RESULTS_BASE = "https://raw.githubusercontent.com/kunw4r/LLM_NIDS/main/results";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // HELPERS
@@ -455,25 +455,23 @@ export default function NIDSDashboard() {
     let timer;
     const poll = async () => {
       try {
-        // Try local Flask first (3s timeout)
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 3000);
         let data;
+        // Try local Flask first (3s timeout)
         try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 3000);
           const resp = await fetch("http://localhost:5001/api/status", { signal: controller.signal });
           clearTimeout(timeout);
           if (resp.ok) {
             const raw = await resp.json();
-            // Normalise Flask format → flat format
             data = raw.status || raw;
           }
         } catch (_) {
-          clearTimeout(timeout);
           // Fallback to GitHub raw
           const resp2 = await fetch(`${RESULTS_BASE}/stage1/live_status.json?t=${Date.now()}`);
           if (resp2.ok) data = await resp2.json();
         }
-        if (data && (data.status === "running" || data.status === "paused")) {
+        if (data && (data.status === "running" || data.status === "paused" || data.status === "creating_batch" || data.status === "complete" || data.status === "all_done")) {
           setLiveStatus(data);
         } else {
           setLiveStatus(null);
@@ -483,7 +481,7 @@ export default function NIDSDashboard() {
       }
     };
     poll();
-    timer = setInterval(poll, 10000);
+    timer = setInterval(poll, 15000);
     return () => clearInterval(timer);
   }, []);
 
