@@ -119,16 +119,31 @@
         "tn": 950,
         "fn": 0
       }
+    },
+    {
+      "attack_type": "SSH-Bruteforce",
+      "status": "complete",
+      "recall": 98,
+      "fpr": 0,
+      "f1": 99,
+      "cost": 2.16,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 49,
+        "fp": 0,
+        "tn": 950,
+        "fn": 1
+      }
     }
   ],
   "overall": {
     "best_f1": 100,
-    "total_flows": 8000,
-    "total_cost": 15.02,
+    "total_flows": 9000,
+    "total_cost": 17.18,
     "best_detected": "FTP-BruteForce",
     "best_recall": 100,
     "hardest": "Infilteration",
     "hardest_recall": 0,
-    "avg_fpr": 12
+    "avg_fpr": 11
   }
 }
