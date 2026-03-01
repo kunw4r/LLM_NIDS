@@ -44,16 +44,31 @@
         "tn": 950,
         "fn": 12
       }
+    },
+    {
+      "attack_type": "DDoS_attacks-LOIC-HTTP",
+      "status": "complete",
+      "recall": 90,
+      "fpr": 1,
+      "f1": 90,
+      "cost": 2.07,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 45,
+        "fp": 5,
+        "tn": 945,
+        "fn": 5
+      }
     }
   ],
   "overall": {
-    "best_f1": 87,
-    "total_flows": 3000,
-    "total_cost": 9.71,
-    "best_detected": "SSH-Bruteforce",
-    "best_recall": 84,
+    "best_f1": 90,
+    "total_flows": 4000,
+    "total_cost": 11.78,
+    "best_detected": "DDoS_attacks-LOIC-HTTP",
+    "best_recall": 90,
     "hardest": "DoS-SlowHTTPTest",
     "hardest_recall": 76,
-    "avg_fpr": 3
+    "avg_fpr": 2
   }
 }

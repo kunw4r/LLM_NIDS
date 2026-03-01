@@ -190,3 +190,69 @@ THREE-MODEL COMPARISON (same 100-flow validation batch)
 [2026-02-23T02:05:19Z]   Attack source: development.csv
 [2026-02-23T02:05:21Z]   Ordering check for FTP-BruteForce: 0 violations
 [2026-02-23T02:05:21Z]   Batch saved: 1000 flows to /Users/kunwa/Desktop/Projects/thesis-nids/Thesis/data/batches/stage1/FTP-BruteForce
+[2026-03-01T07:52:06Z] Creating batch DDoS_attacks-LOIC-HTTP: 50 DDoS_attacks-LOIC-HTTP + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: development.csv
+[2026-03-01T07:52:06Z] Creating batch DoS_attacks-Hulk: 50 DoS_attacks-Hulk + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: development.csv
+[2026-03-01T07:52:06Z] Creating batch DoS_attacks-GoldenEye: 50 DoS_attacks-GoldenEye + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: development.csv
+[2026-03-01T07:52:06Z] Creating batch DoS_attacks-Slowloris: 50 DoS_attacks-Slowloris + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: development.csv
+[2026-03-01T07:52:06Z] Creating batch DDOS_attack-HOIC: 50 DDOS_attack-HOIC + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: validation.csv
+[2026-03-01T07:52:06Z] Creating batch DDOS_attack-LOIC-UDP: 50 DDOS_attack-LOIC-UDP + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: validation.csv
+[2026-03-01T07:52:06Z] Creating batch Bot: 50 Bot + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: test.csv
+[2026-03-01T07:52:06Z] Creating batch Infilteration: 50 Infilteration + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: test.csv
+[2026-03-01T07:52:06Z] Creating batch Brute_Force_-Web: 50 Brute_Force_-Web + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: validation.csv
+[2026-03-01T07:52:06Z] Creating batch Brute_Force_-XSS: 50 Brute_Force_-XSS + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: test.csv
+[2026-03-01T07:52:06Z] Creating batch SQL_Injection: 50 SQL_Injection + 950 Benign (seed=42)
+[2026-03-01T07:52:06Z]   Attack source: validation.csv
+[2026-03-01T09:11:54Z] Creating batch DDoS_attacks-LOIC-HTTP: 50 DDoS_attacks-LOIC-HTTP + 950 Benign (seed=42)
+[2026-03-01T09:11:54Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:12:02Z]   Ordering check for DDoS_attacks-LOIC-HTTP: 0 violations
+[2026-03-01T09:12:02Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DDoS_attacks-LOIC-HTTP
+[2026-03-01T09:12:12Z] Creating batch DoS_attacks-Hulk: 50 DoS_attacks-Hulk + 950 Benign (seed=42)
+[2026-03-01T09:12:12Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:12:19Z]   Ordering check for DoS_attacks-Hulk: 0 violations
+[2026-03-01T09:12:19Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DoS_attacks-Hulk
+[2026-03-01T09:12:19Z] Creating batch DoS_attacks-GoldenEye: 50 DoS_attacks-GoldenEye + 950 Benign (seed=42)
+[2026-03-01T09:12:19Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:12:23Z]   Ordering check for DoS_attacks-GoldenEye: 0 violations
+[2026-03-01T09:12:23Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DoS_attacks-GoldenEye
+[2026-03-01T09:12:23Z] Creating batch DoS_attacks-Slowloris: 50 DoS_attacks-Slowloris + 950 Benign (seed=42)
+[2026-03-01T09:12:23Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:12:28Z]   Ordering check for DoS_attacks-Slowloris: 0 violations
+[2026-03-01T09:12:28Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DoS_attacks-Slowloris
+[2026-03-01T09:12:28Z] Creating batch DDOS_attack-HOIC: 50 DDOS_attack-HOIC + 950 Benign (seed=42)
+[2026-03-01T09:12:28Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:12:40Z]   Ordering check for DDOS_attack-HOIC: 0 violations
+[2026-03-01T09:12:40Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DDOS_attack-HOIC
+[2026-03-01T09:12:40Z] Creating batch DDOS_attack-LOIC-UDP: 50 DDOS_attack-LOIC-UDP + 950 Benign (seed=42)
+[2026-03-01T09:12:40Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:12:51Z]   Ordering check for DDOS_attack-LOIC-UDP: 0 violations
+[2026-03-01T09:12:51Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DDOS_attack-LOIC-UDP
+[2026-03-01T09:12:51Z] Creating batch Bot: 50 Bot + 950 Benign (seed=42)
+[2026-03-01T09:12:51Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:13:17Z]   Ordering check for Bot: 0 violations
+[2026-03-01T09:13:17Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/Bot
+[2026-03-01T09:13:17Z] Creating batch Infilteration: 50 Infilteration + 950 Benign (seed=42)
+[2026-03-01T09:13:17Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:13:36Z]   Ordering check for Infilteration: 0 violations
+[2026-03-01T09:13:36Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/Infilteration
+[2026-03-01T09:13:36Z] Creating batch Brute_Force_-Web: 50 Brute_Force_-Web + 950 Benign (seed=42)
+[2026-03-01T09:13:36Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:13:50Z]   Ordering check for Brute_Force_-Web: 0 violations
+[2026-03-01T09:13:50Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/Brute_Force_-Web
+[2026-03-01T09:13:50Z] Creating batch Brute_Force_-XSS: 50 Brute_Force_-XSS + 950 Benign (seed=42)
+[2026-03-01T09:13:50Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:14:17Z]   Ordering check for Brute_Force_-XSS: 0 violations
+[2026-03-01T09:14:17Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/Brute_Force_-XSS
+[2026-03-01T09:14:17Z] Creating batch SQL_Injection: 50 SQL_Injection + 950 Benign (seed=42)
+[2026-03-01T09:14:17Z]   Attack source: master CSV (split files unavailable)
+[2026-03-01T09:14:32Z]   Ordering check for SQL_Injection: 0 violations
+[2026-03-01T09:14:32Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/SQL_Injection
