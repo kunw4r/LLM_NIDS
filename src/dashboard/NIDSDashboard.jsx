@@ -2111,6 +2111,87 @@ export default function NIDSDashboard() {
                 })}
               </div>
             </div>
+
+            {/* ── Data Integrity & Split Design ─────────────────────────────── */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "24px", marginTop: 24 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 16 }}>Data Integrity &amp; Split Design</h3>
+
+              {/* Flow diagram */}
+              <div style={{ fontFamily: "monospace", fontSize: 12, lineHeight: 1.6, background: "#f9fafb", borderRadius: 8, padding: "24px", marginBottom: 20, overflowX: "auto" }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                  <div style={{ border: "2px solid #1e40af", borderRadius: 8, padding: "10px 24px", background: "#eff6ff", fontWeight: 600, textAlign: "center" }}>
+                    NF-CICIDS2018-v3.csv&nbsp;&nbsp;(20.1M flows)
+                  </div>
+                  <div style={{ color: "#9ca3af" }}>|</div>
+                  <div style={{ display: "flex", gap: 48, alignItems: "flex-start" }}>
+                    {/* Left branch: development */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                      <div style={{ border: "2px solid #3b82f6", borderRadius: 8, padding: "10px 16px", textAlign: "center" }}>
+                        <div style={{ fontWeight: 600, color: "#1e40af" }}>development</div>
+                        <div style={{ fontSize: 11, color: "#6b7280" }}>7.04M flows &middot; 7 attack types</div>
+                      </div>
+                      <div style={{ color: "#9ca3af" }}>|</div>
+                      <div style={{ fontSize: 11, color: "#6b7280" }}>80 / 20 split</div>
+                      <div style={{ color: "#9ca3af" }}>|</div>
+                      <div style={{ display: "flex", gap: 16 }}>
+                        <div style={{ border: "2px solid #16a34a", borderRadius: 8, padding: "10px 12px", textAlign: "center" }}>
+                          <div style={{ fontWeight: 600, color: "#16a34a" }}>train</div>
+                          <div style={{ fontSize: 11, color: "#6b7280" }}>5.63M</div>
+                          <div style={{ fontSize: 10, color: "#16a34a", marginTop: 2 }}>RF trains here</div>
+                        </div>
+                        <div style={{ border: "2px solid #2563eb", borderRadius: 8, padding: "10px 12px", textAlign: "center" }}>
+                          <div style={{ fontWeight: 600, color: "#2563eb" }}>eval</div>
+                          <div style={{ fontSize: 11, color: "#6b7280" }}>1.41M</div>
+                          <div style={{ fontSize: 10, color: "#2563eb", marginTop: 2 }}>Batch source</div>
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 10, color: "#16a34a", marginTop: 4, textAlign: "center" }}>&#8593; RF never sees eval</div>
+                    </div>
+                    {/* Right branch: validation + test */}
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+                      <div style={{ border: "2px solid #8b5cf6", borderRadius: 8, padding: "10px 16px", textAlign: "center" }}>
+                        <div style={{ fontWeight: 600, color: "#6d28d9" }}>validation + test</div>
+                        <div style={{ fontSize: 11, color: "#6b7280" }}>13.07M flows &middot; 7 attack types</div>
+                      </div>
+                      <div style={{ color: "#9ca3af", marginTop: 8 }}>&#8593;</div>
+                      <div style={{ fontSize: 11, color: "#6b7280", textAlign: "center", maxWidth: 160, lineHeight: 1.5, background: "#f0fdf4", padding: "6px 10px", borderRadius: 6, border: "1px solid #bbf7d0" }}>
+                        These results are fully clean — RF never trained here
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Clean vs Rerun labels */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+                <div style={{ border: "1px solid #bbf7d0", borderRadius: 8, padding: "12px 16px", background: "#f0fdf4" }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#166534", marginBottom: 4 }}>
+                    <span style={{ marginRight: 6 }}>&#x1F7E2;</span>CLEAN (no overlap)
+                  </div>
+                  <div style={{ fontSize: 12, color: "#166534", lineHeight: 1.6 }}>
+                    Bot, Infilteration, SQL_Injection, Brute_Force-XSS, Brute_Force-Web, DDOS-HOIC, DDOS-LOIC-UDP
+                  </div>
+                </div>
+                <div style={{ border: "1px solid #93c5fd", borderRadius: 8, padding: "12px 16px", background: "#eff6ff" }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1e40af", marginBottom: 4 }}>
+                    <span style={{ marginRight: 6 }}>&#x1F535;</span>RERUN (clean split applied)
+                  </div>
+                  <div style={{ fontSize: 12, color: "#1e40af", lineHeight: 1.6 }}>
+                    FTP-BruteForce, SSH-Bruteforce, DDoS-LOIC-HTTP, DoS-Hulk, DoS-SlowHTTPTest, DoS-GoldenEye, DoS-Slowloris
+                  </div>
+                </div>
+              </div>
+
+              {/* Explanation paragraph */}
+              <p style={{ fontSize: 13, color: "#374151", lineHeight: 1.8, margin: 0, textAlign: "justify" }}>
+                During evaluation we identified a within-split overlap in the Tier 1 pre-filter training data.
+                The original RF was trained on development.csv and evaluated on batches also sourced from development.csv.
+                To ensure methodological rigour, development data was sub-split 80/20 and the RF retrained on the training
+                partition only. The 7 affected attack types were rerun with batches sourced exclusively from the 20% holdout
+                the RF never saw. The remaining 7 attack types were always sourced from separate validation and test splits
+                and required no rerun.
+              </p>
+            </div>
           </div>
         )}
 
