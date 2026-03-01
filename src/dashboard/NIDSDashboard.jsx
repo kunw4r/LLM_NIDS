@@ -1421,8 +1421,8 @@ export default function NIDSDashboard() {
                                   {displayVerdict}
                                 </span>
                               </td>
-                              <td style={{ padding: "8px 12px", color: f.tier1_filtered ? "#94a3b8" : correctColor(correct), fontWeight: 600, fontSize: 11 }}>
-                                {f.tier1_filtered ? "—" : correct ? "Yes" : "No"}
+                              <td style={{ padding: "8px 12px", color: correctColor(correct), fontWeight: 600, fontSize: 11 }}>
+                                {correct ? "Yes" : "No"}
                               </td>
                               <td style={{ padding: "8px 12px", color: "#6b7280" }}>{f.confidence != null ? `${(f.confidence * 100).toFixed(0)}%` : "—"}</td>
                             </tr>
