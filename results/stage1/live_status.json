@@ -1,7 +1,7 @@
 {
-  "current_experiment": "DoS_attacks-Slowloris",
+  "current_experiment": "DDOS_attack-HOIC",
   "stage": "Stage 1",
-  "status": "complete",
+  "status": "running",
   "experiments_completed": [
     "SSH-Bruteforce",
     "DoS-SlowHTTPTest",
@@ -12,7 +12,6 @@
     "DoS_attacks-Slowloris"
   ],
   "experiments_queued": [
-    "DDOS_attack-HOIC",
     "DDOS_attack-LOIC-UDP",
     "Bot",
     "Infilteration",
@@ -21,12 +20,5 @@
     "SQL_Injection"
   ],
   "total_cost_so_far": 19.65,
-  "updated_at": "2026-03-01T11:08:28Z",
-  "last_result": {
-    "attack_type": "DoS_attacks-Slowloris",
-    "recall": 98,
-    "f1": 96,
-    "fpr": 0,
-    "cost": 2.48
-  }
+  "updated_at": "2026-03-01T11:08:29Z"
 }
