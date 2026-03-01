@@ -1,0 +1,224 @@
+{
+  "experiments": [
+    {
+      "attack_type": "SSH-Bruteforce",
+      "status": "complete",
+      "recall": 84,
+      "fpr": 3,
+      "f1": 87,
+      "cost": 4.21,
+      "cost_per_tp": 0.1,
+      "confusion": {
+        "tp": 42,
+        "fp": 28,
+        "tn": 922,
+        "fn": 8
+      }
+    },
+    {
+      "attack_type": "DoS-SlowHTTPTest",
+      "status": "complete",
+      "recall": 76,
+      "fpr": 5,
+      "f1": 79,
+      "cost": 3.89,
+      "cost_per_tp": 0.1,
+      "confusion": {
+        "tp": 38,
+        "fp": 47,
+        "tn": 903,
+        "fn": 12
+      }
+    },
+    {
+      "attack_type": "FTP-BruteForce",
+      "status": "complete",
+      "recall": 76,
+      "fpr": 0,
+      "f1": 86,
+      "cost": 1.61,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 38,
+        "fp": 0,
+        "tn": 950,
+        "fn": 12
+      }
+    },
+    {
+      "attack_type": "DDoS_attacks-LOIC-HTTP",
+      "status": "complete",
+      "recall": 90,
+      "fpr": 100,
+      "f1": 90,
+      "cost": 2.07,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 45,
+        "fp": 5,
+        "tn": 945,
+        "fn": 5
+      }
+    },
+    {
+      "attack_type": "DoS_attacks-Hulk",
+      "status": "complete",
+      "recall": 88,
+      "fpr": 0,
+      "f1": 91,
+      "cost": 2.65,
+      "cost_per_tp": 0.06,
+      "confusion": {
+        "tp": 44,
+        "fp": 3,
+        "tn": 947,
+        "fn": 6
+      }
+    },
+    {
+      "attack_type": "DoS_attacks-GoldenEye",
+      "status": "complete",
+      "recall": 96,
+      "fpr": 0,
+      "f1": 95,
+      "cost": 2.74,
+      "cost_per_tp": 0.06,
+      "confusion": {
+        "tp": 48,
+        "fp": 3,
+        "tn": 947,
+        "fn": 2
+      }
+    },
+    {
+      "attack_type": "DoS_attacks-Slowloris",
+      "status": "complete",
+      "recall": 98,
+      "fpr": 0,
+      "f1": 96,
+      "cost": 2.48,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 49,
+        "fp": 3,
+        "tn": 947,
+        "fn": 1
+      }
+    },
+    {
+      "attack_type": "DDOS_attack-HOIC",
+      "status": "complete",
+      "recall": 58,
+      "fpr": 0,
+      "f1": 72,
+      "cost": 1.79,
+      "cost_per_tp": 0.06,
+      "confusion": {
+        "tp": 29,
+        "fp": 1,
+        "tn": 949,
+        "fn": 21
+      }
+    },
+    {
+      "attack_type": "DDOS_attack-LOIC-UDP",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0,
+      "f1": 96,
+      "cost": 1.87,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 4,
+        "tn": 946,
+        "fn": 0
+      }
+    },
+    {
+      "attack_type": "Bot",
+      "status": "complete",
+      "recall": 82,
+      "fpr": 100,
+      "f1": 85,
+      "cost": 2.3,
+      "cost_per_tp": 0.06,
+      "confusion": {
+        "tp": 41,
+        "fp": 6,
+        "tn": 944,
+        "fn": 9
+      }
+    },
+    {
+      "attack_type": "Infilteration",
+      "status": "complete",
+      "recall": 0,
+      "fpr": 0,
+      "f1": 0,
+      "cost": 0.8,
+      "cost_per_tp": Infinity,
+      "confusion": {
+        "tp": 0,
+        "fp": 2,
+        "tn": 948,
+        "fn": 50
+      }
+    },
+    {
+      "attack_type": "Brute_Force_-Web",
+      "status": "complete",
+      "recall": 86,
+      "fpr": 0,
+      "f1": 89,
+      "cost": 2.05,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 43,
+        "fp": 4,
+        "tn": 946,
+        "fn": 7
+      }
+    },
+    {
+      "attack_type": "Brute_Force_-XSS",
+      "status": "complete",
+      "recall": 84,
+      "fpr": 0,
+      "f1": 89,
+      "cost": 2.09,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 42,
+        "fp": 2,
+        "tn": 948,
+        "fn": 8
+      }
+    },
+    {
+      "attack_type": "SQL_Injection",
+      "status": "complete",
+      "recall": 98,
+      "fpr": 0,
+      "f1": 96,
+      "cost": 1.99,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 49,
+        "fp": 3,
+        "tn": 947,
+        "fn": 1
+      }
+    }
+  ],
+  "overall": {
+    "best_f1": 96,
+    "total_flows": 14000,
+    "total_cost": 32.54,
+    "best_detected": "SQL_Injection",
+    "best_recall": 98,
+    "hardest": "Infilteration",
+    "hardest_recall": 0,
+    "avg_fpr": 15
+  }
+}

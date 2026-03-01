@@ -41,6 +41,7 @@ FEATURES = [
 ]
 
 TRAIN_CSV = os.path.join(ROOT, "data", "datasets", "development.csv")
+MASTER_CSV = os.path.join(ROOT, "data", "f78acbaa2afe1595_NFV3DATA-A11964_A11964", "data", "NF-CICIDS2018-v3.csv")
 MODEL_PATH = os.path.join(ROOT, "models", "tier1_rf.pkl")
 VAL_FLOWS = os.path.join(ROOT, "data", "batches", "stage1", "validation", "flows.json")
 VAL_LABELS = os.path.join(ROOT, "data", "batches", "stage1", "validation", "ground_truth.json")
@@ -54,9 +55,12 @@ def train():
     print("STEP 1: Training Tier 1 Random Forest")
     print("=" * 60)
 
-    print(f"\nLoading {TRAIN_CSV} ...")
+    csv_path = TRAIN_CSV
+    if not os.path.exists(csv_path):
+        raise FileNotFoundError(f"Training data not found: {csv_path}. Must train on development.csv only (not master) to avoid data leakage.")
+    print(f"\nLoading {csv_path} ...")
     t0 = time.time()
-    df = pd.read_csv(TRAIN_CSV, usecols=FEATURES + ["Label"])
+    df = pd.read_csv(csv_path, usecols=FEATURES + ["Label"])
     print(f"  Loaded {len(df):,} rows in {time.time() - t0:.1f}s")
 
     # Fill NaN with 0 (some fields like DNS_QUERY_ID are often 0/NaN)

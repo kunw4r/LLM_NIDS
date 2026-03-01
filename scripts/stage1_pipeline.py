@@ -51,6 +51,9 @@ DATASETS = {
     "test": PROJECT_ROOT / "data" / "datasets" / "test.csv",
 }
 
+# Fallback: master CSV if split files don't exist
+MASTER_CSV = PROJECT_ROOT / "data" / "f78acbaa2afe1595_NFV3DATA-A11964_A11964" / "data" / "NF-CICIDS2018-v3.csv"
+
 # ── Feature Set ──────────────────────────────────────────────────────────────
 
 # 14 features (FLOW_DIRECTION absent) + FLOW_START_MILLISECONDS for ordering
@@ -130,13 +133,17 @@ def clean_value(v):
 # ── Batch Creation ───────────────────────────────────────────────────────────
 
 def find_attack_source(attack_type: str) -> str:
-    """Find which CSV contains this attack type."""
+    """Find which CSV contains the most flows of this attack type."""
     with open(INVENTORY_FILE) as f:
         inv = json.load(f)
+    best_split = None
+    best_count = 0
     for split_name, split_data in inv["per_split"].items():
-        if split_data["attacks"].get(attack_type, 0) > 0:
-            return split_name
-    return None
+        count = split_data["attacks"].get(attack_type, 0)
+        if count > best_count:
+            best_count = count
+            best_split = split_name
+    return best_split
 
 
 def create_batch(attack_type: str, n_attack: int, n_benign: int,
@@ -158,12 +165,21 @@ def create_batch(attack_type: str, n_attack: int, n_benign: int,
         raise ValueError(f"No source found for {attack_type}")
 
     log(f"Creating batch {batch_name}: {n_attack} {attack_type} + {n_benign} Benign (seed={seed})")
-    log(f"  Attack source: {attack_source}.csv")
+
+    # Determine source CSV — use split file if available, else master CSV
+    attack_csv = DATASETS.get(attack_source)
+    if attack_csv and attack_csv.exists():
+        log(f"  Attack source: {attack_source}.csv")
+        source_csv = attack_csv
+    elif MASTER_CSV.exists():
+        log(f"  Attack source: master CSV (split files unavailable)")
+        source_csv = MASTER_CSV
+    else:
+        raise FileNotFoundError(f"No CSV found for {attack_type}")
 
     # Collect attack flows
-    attack_csv = DATASETS[attack_source]
     attack_rows = []
-    for chunk in pd.read_csv(attack_csv, chunksize=500_000, usecols=READ_COLS):
+    for chunk in pd.read_csv(source_csv, chunksize=500_000, usecols=READ_COLS):
         mask = chunk["Attack"] == attack_type
         if mask.any():
             attack_rows.append(chunk[mask])
@@ -177,8 +193,10 @@ def create_batch(attack_type: str, n_attack: int, n_benign: int,
 
     sampled_attack = attack_df.sample(n=n_attack, random_state=rng)
 
-    # Collect benign flows — use development.csv primarily (largest benign pool)
+    # Collect benign flows — use development.csv if available, else master CSV
     benign_csv = DATASETS["development"]
+    if not benign_csv.exists() and MASTER_CSV.exists():
+        benign_csv = MASTER_CSV
     benign_rows = []
     for chunk in pd.read_csv(benign_csv, chunksize=500_000, usecols=READ_COLS):
         mask = chunk["Attack"] == "Benign"

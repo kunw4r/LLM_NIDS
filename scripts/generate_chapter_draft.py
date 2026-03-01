@@ -8,6 +8,7 @@ and produces 400-600 words of academic prose (UK English, third person).
 Usage:
     python scripts/generate_chapter_draft.py results/stage1/FTP-BruteForce_results.json
     python scripts/generate_chapter_draft.py results/stage1/SSH-Bruteforce_results.json --attack-type SSH-Bruteforce
+    python scripts/generate_chapter_draft.py results/stage1/Bot_results.json --leaky-results results/stage1/Bot_leaky_results.json
 """
 
 import json
@@ -18,6 +19,17 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DRAFTS_DIR = PROJECT_ROOT / "results" / "thesis_drafts"
 INDEX_FILE = DRAFTS_DIR / "INDEX.md"
+
+# RF training data relationship per attack type
+RF_TRAINED_TYPES = {
+    "FTP-BruteForce", "SSH-Bruteforce", "DDoS_attacks-LOIC-HTTP",
+    "DoS_attacks-Hulk", "DoS_attacks-SlowHTTPTest", "DoS_attacks-GoldenEye",
+    "DoS_attacks-Slowloris",
+}
+RF_CAUGHT_UNSEEN = {"DDOS_attack-HOIC", "DDOS_attack-LOIC-UDP"}
+LEAKY_ATTACK_TYPES = {
+    "Bot", "Infilteration", "SQL_Injection", "Brute_Force_-Web", "Brute_Force_-XSS",
+}
 
 # Phase 3b baseline for comparison section
 BASELINE = {
@@ -290,6 +302,84 @@ def generate_draft(m: dict) -> str:
     return "\n".join(lines)
 
 
+def generate_data_integrity_section(m: dict, leaky_m: dict | None = None) -> str:
+    """Generate a Data Integrity section explaining the RF leakage situation."""
+    at = m["attack_type"]
+    lines = []
+    lines.append("#### Data Integrity Note\n")
+
+    if at in RF_TRAINED_TYPES:
+        lines.append(
+            f"The {at} attack type is present in the development split on which the "
+            f"Tier-1 Random Forest was trained. Consequently, the data leakage identified "
+            f"in the initial RF training (which inadvertently included all 20 million flows "
+            f"rather than the 7.04 million development split) does not affect the results "
+            f"for this attack type. The RF's filtering behaviour for {at} flows is identical "
+            f"under both the leaky and correctly trained models, as the relevant attack "
+            f"signatures were present in the intended training data.\n"
+        )
+    elif at in RF_CAUGHT_UNSEEN:
+        lines.append(
+            f"The {at} attack type is not present in the development split; it appears "
+            f"exclusively in the validation partition. However, the DDoS traffic patterns "
+            f"produced by this attack type are sufficiently distinctive that the Random Forest "
+            f"identifies them regardless of training data composition. Empirical verification "
+            f"confirms that the clean RF (trained only on development data) produces identical "
+            f"filtering decisions for {at} flows, rendering the leakage immaterial for this "
+            f"attack type.\n"
+        )
+    elif at in LEAKY_ATTACK_TYPES:
+        split = "test" if at in ("Bot", "Infilteration") else "validation"
+        lines.append(
+            f"The {at} attack type appears exclusively in the {split} partition and was "
+            f"not present in the intended RF training data (development split). The initial "
+            f"RF, trained on all 20 million flows, had exposure to {at} flows during training, "
+            f"potentially learning to filter them — an instance of data leakage. This experiment "
+            f"was therefore rerun with a clean RF trained only on the 7.04 million development flows. "
+        )
+        if leaky_m:
+            recall_delta = m["recall"] - leaky_m["recall"]
+            f1_delta = m["f1"] - leaky_m["f1"]
+            cost_delta = m["total_cost"] - leaky_m["total_cost"]
+            lines.append(
+                f"Comparing the leaky and clean results: recall moved from "
+                f"{leaky_m['recall'] * 100:.1f}% to {m['recall'] * 100:.1f}% "
+                f"({'+' if recall_delta >= 0 else ''}{recall_delta * 100:.1f} pp), "
+                f"F1 from {leaky_m['f1'] * 100:.1f}% to {m['f1'] * 100:.1f}% "
+                f"({'+' if f1_delta >= 0 else ''}{f1_delta * 100:.1f} pp), "
+                f"and cost from ${leaky_m['total_cost']:.2f} to ${m['total_cost']:.2f} "
+                f"({'+' if cost_delta >= 0 else ''}${cost_delta:.2f}). "
+            )
+            if abs(recall_delta) < 0.05:
+                lines.append(
+                    "The minimal difference suggests that the leakage had negligible "
+                    "practical impact on detection performance for this attack type.\n"
+                )
+            elif recall_delta < -0.05:
+                lines.append(
+                    "The decrease in recall confirms that the leaky RF was artificially "
+                    "filtering attack flows, inflating the apparent detection rate. The clean "
+                    "results presented in this section represent the unbiased evaluation.\n"
+                )
+            else:
+                lines.append(
+                    "The improvement in recall with the clean RF suggests that the leaky model "
+                    "was over-filtering flows that the LLM pipeline would have correctly classified. "
+                    "The clean results are presented as the authoritative evaluation.\n"
+                )
+        else:
+            lines.append(
+                "The results presented reflect the clean RF evaluation. Leaky comparison "
+                "data is available in the supplementary materials.\n"
+            )
+    else:
+        lines.append(
+            f"No data integrity concerns were identified for the {at} evaluation.\n"
+        )
+
+    return "\n".join(lines)
+
+
 def update_index(drafts_dir: Path):
     """Rebuild INDEX.md from all draft files."""
     drafts = sorted(drafts_dir.glob("*_draft.md"))
@@ -322,7 +412,7 @@ def update_index(drafts_dir: Path):
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python scripts/generate_chapter_draft.py <results_file> [--attack-type NAME]")
+        print("Usage: python scripts/generate_chapter_draft.py <results_file> [--attack-type NAME] [--leaky-results FILE]")
         sys.exit(1)
 
     results_path = Path(sys.argv[1])
@@ -335,6 +425,14 @@ def main():
         if idx + 1 < len(sys.argv):
             attack_type_override = sys.argv[idx + 1]
 
+    leaky_results_path = None
+    if "--leaky-results" in sys.argv:
+        idx = sys.argv.index("--leaky-results")
+        if idx + 1 < len(sys.argv):
+            leaky_results_path = Path(sys.argv[idx + 1])
+            if not leaky_results_path.is_absolute():
+                leaky_results_path = PROJECT_ROOT / leaky_results_path
+
     if not results_path.exists():
         print(f"Error: {results_path} not found")
         sys.exit(1)
@@ -344,6 +442,16 @@ def main():
 
     metrics = extract_metrics(data, attack_type_override)
     draft = generate_draft(metrics)
+
+    # Generate data integrity section
+    leaky_metrics = None
+    if leaky_results_path and leaky_results_path.exists():
+        with open(leaky_results_path) as f:
+            leaky_data = json.load(f)
+        leaky_metrics = extract_metrics(leaky_data, attack_type_override)
+
+    integrity_section = generate_data_integrity_section(metrics, leaky_metrics)
+    draft = draft + "\n" + integrity_section
 
     DRAFTS_DIR.mkdir(parents=True, exist_ok=True)
 

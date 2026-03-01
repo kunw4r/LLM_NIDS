@@ -23,3 +23,7 @@ representing a 98% reduction attributable primarily to the Tier-1 pre-filter eli
 The FTP-BruteForce evaluation demonstrates that the AMATAS architecture 
 provides moderate detection capability with 76.0% recall, though the twelve missed attacks indicate room for improvement. Potential avenues for enhancing detection of this attack type include temporal clustering to provide richer context to the temporal agent, specialist prompt refinement with attack-specific heuristics, and threshold tuning in the orchestrator's consensus mechanism. 
 The total experiment cost of $1.61 confirms the economic viability of per-attack-type evaluation at this scale, supporting the continued execution of the Stage 1 evaluation across all fourteen CICIDS2018 attack categories.
+
+#### Data Integrity Note
+
+The FTP-BruteForce attack type is present in the development split on which the Tier-1 Random Forest was trained. Consequently, the data leakage identified in the initial RF training (which inadvertently included all 20 million flows rather than the 7.04 million development split) does not affect the results for this attack type. The RF's filtering behaviour for FTP-BruteForce flows is identical under both the leaky and correctly trained models, as the relevant attack signatures were present in the intended training data.

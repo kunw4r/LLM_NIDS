@@ -349,6 +349,56 @@ const AGENTS = [
   { id: "orchestrator", name: "Orchestrator", color: "#10b981", desc: "Synthesizes all analyses into weighted consensus verdict" },
 ];
 
+// ── Dataset split metadata (from inventory.json) ──────────────────────────────
+const DATASET_SPLITS = {
+  development: {
+    label: "Development", flows: 7040435, pct: 35,
+    badge: "RF TRAINING DATA",
+    attacks: {
+      "FTP-BruteForce": 386720, "SSH-Bruteforce": 188474,
+      "DDoS_attacks-LOIC-HTTP": 288589, "DoS_attacks-Hulk": 100076,
+      "DoS_attacks-SlowHTTPTest": 105550, "DoS_attacks-GoldenEye": 61300,
+      "DoS_attacks-Slowloris": 36040,
+    },
+  },
+  validation: {
+    label: "Validation", flows: 5028882, pct: 25,
+    attacks: {
+      "DDOS_attack-HOIC": 1032311, "DDOS_attack-LOIC-UDP": 3450,
+      "Brute_Force_-Web": 1483, "Brute_Force_-XSS": 19, "SQL_Injection": 440,
+    },
+  },
+  test: {
+    label: "Test", flows: 8046212, pct: 40,
+    attacks: {
+      "Bot": 207703, "Infilteration": 188152,
+      "Brute_Force_-Web": 135, "Brute_Force_-XSS": 461,
+    },
+  },
+};
+
+// Attack types in dev split → RF was trained on these → no leakage concern
+const RF_TRAINED_TYPES = new Set([
+  "FTP-BruteForce", "SSH-Bruteforce", "DDoS_attacks-LOIC-HTTP",
+  "DoS_attacks-Hulk", "DoS_attacks-SlowHTTPTest", "DoS_attacks-GoldenEye",
+  "DoS_attacks-Slowloris",
+]);
+
+// Attack types RF catches despite not being in training (distinctive patterns)
+const RF_CAUGHT_UNSEEN = new Set(["DDOS_attack-HOIC", "DDOS_attack-LOIC-UDP"]);
+
+// Attack types where RF can't help → leakage most impactful
+const LEAKY_ATTACK_TYPES = new Set([
+  "Bot", "Infilteration", "SQL_Injection", "Brute_Force_-Web", "Brute_Force_-XSS",
+]);
+
+// Pill color for each attack type based on RF relationship
+const rfPillColor = (at) => {
+  if (RF_TRAINED_TYPES.has(at)) return { bg: "#dcfce7", color: "#166534", label: "In training" };
+  if (RF_CAUGHT_UNSEEN.has(at)) return { bg: "#fef3c7", color: "#92400e", label: "Caught unseen" };
+  return { bg: "#fee2e2", color: "#991b1b", label: "RF misses" };
+};
+
 // GitHub raw base URL for result files
 const RESULTS_BASE = "https://raw.githubusercontent.com/kunw4r/LLM_NIDS/main/results";
 
@@ -415,6 +465,9 @@ export default function NIDSDashboard() {
   const [thesisDrafts, setThesisDrafts] = useState([]);
   const [selectedDraft, setSelectedDraft] = useState(null);
   const [selectedDraftContent, setSelectedDraftContent] = useState(null);
+
+  // ── Leaky RF comparison state ─────────────────────────────────────────────
+  const [leakySummary, setLeakySummary] = useState(null);
 
   // ── Data fetch timestamp ────────────────────────────────────────────────────
   const [lastFetched, setLastFetched] = useState(null);
@@ -502,6 +555,16 @@ export default function NIDSDashboard() {
             });
           }
         } catch (_) {}
+        // Fetch leaky summary for comparison (one-time, not polled)
+        if (!leakySummary) {
+          try {
+            const leakyResp = await fetch(`${RESULTS_BASE}/stage1/running_summary_leaky.json?t=${Date.now()}`);
+            if (leakyResp.ok) {
+              const leakyData = await leakyResp.json();
+              setLeakySummary(leakyData);
+            }
+          } catch (_) {}
+        }
       } catch (_) {
         setLiveStatus(null);
       }
@@ -1175,6 +1238,25 @@ export default function NIDSDashboard() {
               Each batch: 950 benign + 50 attack flows. Tier-1 RF pre-filter reduces LLM calls by ~95%.
             </p>
 
+            {/* Data leakage warning banner */}
+            <div style={{ border: "1px solid #fbbf24", borderRadius: 8, padding: "16px 20px", background: "#fffbeb", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                <span style={{ fontSize: 18, lineHeight: 1 }}>&#9888;&#65039;</span>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "#92400e", marginBottom: 4 }}>Data Leakage Detected — Results Under Review</div>
+                  <div style={{ fontSize: 12, color: "#78350f", lineHeight: 1.6 }}>
+                    The Tier-1 Random Forest was trained on <strong>all 20M flows</strong> instead of only the 7.04M development split.
+                    This means the RF saw validation and test data during training, inflating its filtering accuracy.
+                    For 7 attack types present in the development split (green), RF behaviour is identical — no impact.
+                    For 2 DDoS types (amber), the RF catches them regardless due to distinctive patterns.
+                    For <strong>5 attack types</strong> (red: Bot, Infilteration, SQL_Injection, Brute_Force-Web, Brute_Force-XSS),
+                    the RF may have learned to filter flows it should not have seen, directly affecting recall and cost metrics.
+                    These 5 experiments will be rerun with a clean RF trained only on the development split.
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Summary cards */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 24 }}>
               {[
@@ -1196,7 +1278,7 @@ export default function NIDSDashboard() {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ background: "#f9fafb" }}>
-                    {["Attack Type", "Status", "Recall", "FPR", "F1", "Cost", "$/TP"].map(h => (
+                    {["Attack Type", "RF Status", "Status", "Recall", "FPR", "F1", "Cost", "$/TP"].map(h => (
                       <th key={h} style={{ textAlign: h === "Attack Type" ? "left" : "right", padding: "12px 16px", fontWeight: 600, color: "#6b7280", fontSize: 12, borderBottom: "1px solid #e5e7eb" }}>{h}</th>
                     ))}
                   </tr>
@@ -1208,6 +1290,13 @@ export default function NIDSDashboard() {
                     return (
                     <tr key={exp.attack_type} onClick={() => expId && openExperimentDetail(expId)} style={{ borderBottom: "1px solid #f3f4f6", cursor: expId ? "pointer" : "default" }} onMouseEnter={e => expId && (e.currentTarget.style.background = "#f9fafb")} onMouseLeave={e => e.currentTarget.style.background = ""}>
                       <td style={{ padding: "12px 16px", fontWeight: 500, color: expId ? "#2563eb" : "#374151" }}>{exp.attack_type}</td>
+                      <td style={{ padding: "12px 16px", textAlign: "right" }}>
+                        {LEAKY_ATTACK_TYPES.has(exp.attack_type) ? (
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600, background: "#fee2e2", color: "#991b1b" }}>DATA LEAK</span>
+                        ) : (
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 500, background: "#fef3c7", color: "#92400e" }}>Leaky RF</span>
+                        )}
+                      </td>
                       <td style={{ padding: "12px 16px", textAlign: "right" }}>
                         <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 500,
                           background: exp.status === "complete" ? "#f0fdf4" : "#fefce8",
@@ -1234,6 +1323,58 @@ export default function NIDSDashboard() {
               <p style={{ fontSize: 12 }}>{liveStatus.experiments_queued.join(", ")}</p>
             </div>
             )}
+
+            {/* Leakage Impact Comparison — only show when both leaky and clean results exist */}
+            {leakySummary?.experiments?.length > 0 && (() => {
+              const leakyByType = {};
+              leakySummary.experiments.forEach(e => { leakyByType[e.attack_type] = e; });
+              const cleanByType = {};
+              s1.experiments.forEach(e => { cleanByType[e.attack_type] = e; });
+              // Only show for the 5 affected types that have both leaky and clean data
+              const affectedRows = [...LEAKY_ATTACK_TYPES].filter(at => leakyByType[at] && cleanByType[at]).map(at => {
+                const leaky = leakyByType[at];
+                const clean = cleanByType[at];
+                return { at, leaky, clean, recallDelta: clean.recall - leaky.recall, f1Delta: clean.f1 - leaky.f1, costDelta: clean.cost - leaky.cost };
+              });
+              if (affectedRows.length === 0) return null;
+              return (
+                <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden", marginTop: 20 }}>
+                  <div style={{ padding: "16px 20px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+                    <div style={{ fontSize: 14, fontWeight: 600 }}>Leakage Impact — Before vs After (5 Affected Types)</div>
+                    <div style={{ fontSize: 12, color: "#6b7280", marginTop: 2 }}>Comparing results from leaky RF vs clean RF trained only on development split</div>
+                  </div>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                    <thead>
+                      <tr style={{ background: "#fafafa" }}>
+                        {["Attack Type", "Leaky Recall", "Clean Recall", "\u0394 Recall", "Leaky F1", "Clean F1", "\u0394 F1", "\u0394 Cost"].map(h => (
+                          <th key={h} style={{ padding: "10px 12px", textAlign: h === "Attack Type" ? "left" : "right", fontWeight: 600, color: "#6b7280", fontSize: 11, borderBottom: "1px solid #e5e7eb" }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {affectedRows.map(r => (
+                        <tr key={r.at} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                          <td style={{ padding: "10px 12px", fontWeight: 500 }}>{r.at}</td>
+                          <td style={{ padding: "10px 12px", textAlign: "right" }}>{r.leaky.recall}%</td>
+                          <td style={{ padding: "10px 12px", textAlign: "right", fontWeight: 600 }}>{r.clean.recall}%</td>
+                          <td style={{ padding: "10px 12px", textAlign: "right", fontWeight: 600, color: r.recallDelta > 0 ? "#16a34a" : r.recallDelta < 0 ? "#dc2626" : "#6b7280" }}>
+                            {r.recallDelta > 0 ? "+" : ""}{r.recallDelta}pp
+                          </td>
+                          <td style={{ padding: "10px 12px", textAlign: "right" }}>{r.leaky.f1}%</td>
+                          <td style={{ padding: "10px 12px", textAlign: "right", fontWeight: 600 }}>{r.clean.f1}%</td>
+                          <td style={{ padding: "10px 12px", textAlign: "right", fontWeight: 600, color: r.f1Delta > 0 ? "#16a34a" : r.f1Delta < 0 ? "#dc2626" : "#6b7280" }}>
+                            {r.f1Delta > 0 ? "+" : ""}{r.f1Delta}pp
+                          </td>
+                          <td style={{ padding: "10px 12px", textAlign: "right", color: "#6b7280" }}>
+                            {r.costDelta > 0 ? "+" : ""}{dollar(r.costDelta)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
           </div>
         )}
 
@@ -1907,7 +2048,7 @@ export default function NIDSDashboard() {
             {/* Dataset info */}
             <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "20px", marginTop: 24 }}>
               <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Dataset: CICIDS2018 NetFlow v3</h3>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, fontSize: 13 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, fontSize: 13, marginBottom: 20 }}>
                 {[
                   { label: "Total Flows", value: "20,115,529" },
                   { label: "Features", value: "53" },
@@ -1919,6 +2060,51 @@ export default function NIDSDashboard() {
                     <div style={{ fontSize: 12, color: "#6b7280" }}>{d.label}</div>
                   </div>
                 ))}
+              </div>
+
+              {/* Stacked proportion bar */}
+              <div style={{ display: "flex", height: 28, borderRadius: 6, overflow: "hidden", marginBottom: 16, border: "1px solid #e5e7eb" }}>
+                <div style={{ width: "35%", background: "#3b82f6", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600 }}>Dev 35%</div>
+                <div style={{ width: "25%", background: "#f59e0b", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600 }}>Val 25%</div>
+                <div style={{ width: "40%", background: "#8b5cf6", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 11, fontWeight: 600 }}>Test 40%</div>
+              </div>
+
+              {/* Legend */}
+              <div style={{ display: "flex", gap: 16, marginBottom: 20, fontSize: 11 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: 3, background: "#dcfce7", border: "1px solid #bbf7d0", display: "inline-block" }}/> In RF training</span>
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: 3, background: "#fef3c7", border: "1px solid #fde68a", display: "inline-block" }}/> Caught unseen</span>
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}><span style={{ width: 10, height: 10, borderRadius: 3, background: "#fee2e2", border: "1px solid #fecaca", display: "inline-block" }}/> RF misses</span>
+              </div>
+
+              {/* Three split cards */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
+                {Object.entries(DATASET_SPLITS).map(([key, split]) => {
+                  const borderColor = key === "development" ? "#3b82f6" : key === "validation" ? "#f59e0b" : "#8b5cf6";
+                  return (
+                    <div key={key} style={{ border: `2px solid ${borderColor}`, borderRadius: 8, padding: "16px", position: "relative" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 700 }}>{split.label}</div>
+                          <div style={{ fontSize: 12, color: "#6b7280" }}>{(split.flows / 1e6).toFixed(2)}M flows ({split.pct}%)</div>
+                        </div>
+                        {split.badge && (
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600, background: "#dbeafe", color: "#1e40af" }}>{split.badge}</span>
+                        )}
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                        {Object.entries(split.attacks).map(([at, count]) => {
+                          const pill = rfPillColor(at);
+                          const display = count >= 1000 ? `${(count / 1000).toFixed(0)}K` : String(count);
+                          return (
+                            <span key={at} style={{ padding: "2px 6px", borderRadius: 4, fontSize: 10, fontWeight: 500, background: pill.bg, color: pill.color, whiteSpace: "nowrap" }}>
+                              {at.replace(/_/g, " ").replace("attacks-", "")} ({display})
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

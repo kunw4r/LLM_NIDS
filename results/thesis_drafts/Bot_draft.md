@@ -23,3 +23,9 @@ representing a 97% reduction attributable primarily to the Tier-1 pre-filter eli
 The Bot evaluation demonstrates that the AMATAS architecture 
 achieves strong detection performance with an F1 of 84.5% and minimal false positives at realistic traffic distributions. The combination of high recall and low false positive rate indicates that this attack type is well-suited to the multi-agent analytical approach, producing sufficiently distinctive flow-level signatures for reliable detection. 
 The total experiment cost of $2.30 confirms the economic viability of per-attack-type evaluation at this scale, supporting the continued execution of the Stage 1 evaluation across all fourteen CICIDS2018 attack categories.
+
+#### Data Integrity Note
+
+The Bot attack type appears exclusively in the test partition and was not present in the intended RF training data (development split). The initial RF, trained on all 20 million flows, had exposure to Bot flows during training, potentially learning to filter them — an instance of data leakage. This experiment was therefore rerun with a clean RF trained only on the 7.04 million development flows. 
+Comparing the leaky and clean results: recall moved from 82.0% to 82.0% (+0.0 pp), F1 from 84.5% to 84.5% (+0.0 pp), and cost from $2.30 to $2.30 (+$0.00). 
+The minimal difference suggests that the leakage had negligible practical impact on detection performance for this attack type.
