@@ -405,6 +405,8 @@ export default function NIDSDashboard() {
 
   // ── Live experiment panel state ────────────────────────────────────────────
   const [liveStatus, setLiveStatus] = useState(null);
+  const [livePanelOpen, setLivePanelOpen] = useState(false);
+  const [liveSummary, setLiveSummary] = useState(null);
 
   // ── Thesis tab state ──────────────────────────────────────────────────────
   const [thesisDrafts, setThesisDrafts] = useState([]);
@@ -476,6 +478,11 @@ export default function NIDSDashboard() {
         } else {
           setLiveStatus(null);
         }
+        // Also fetch running_summary.json for detailed experiment metrics
+        try {
+          const summResp = await fetch(`${RESULTS_BASE}/stage1/running_summary.json?t=${Date.now()}`);
+          if (summResp.ok) setLiveSummary(await summResp.json());
+        } catch (_) {}
       } catch (_) {
         setLiveStatus(null);
       }
@@ -620,56 +627,176 @@ export default function NIDSDashboard() {
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif', color: "#1a1a1a", background: "#fff", minHeight: "100vh" }}>
 
       {/* ── LIVE EXPERIMENT BANNER ──────────────────────────────────────────── */}
-      {liveStatus && (
-        <div style={{ background: "#eff6ff", borderBottom: "1px solid #bfdbfe", padding: "10px 32px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, maxWidth: 1200, margin: "0 auto" }}>
-            {/* Pulsing dot */}
-            <div style={{ position: "relative", width: 10, height: 10, flexShrink: 0 }}>
-              <div style={{ position: "absolute", width: 10, height: 10, borderRadius: "50%", background: liveStatus.status === "paused" ? "#d97706" : "#2563eb", animation: liveStatus.status === "running" ? "pulse 2s ease-in-out infinite" : "none" }} />
-            </div>
-            {/* Experiment name + stage */}
-            <div style={{ fontSize: 13, fontWeight: 600, color: "#1e40af", minWidth: 180 }}>
-              {liveStatus.current_experiment || "Experiment"}
-              {liveStatus.experiments_completed && liveStatus.experiments_queued && (
+      {liveStatus && (() => {
+        const completed = liveStatus.experiments_completed || [];
+        const queued = liveStatus.experiments_queued || [];
+        const totalExperiments = completed.length + queued.length + (liveStatus.status === "all_done" ? 0 : 1);
+        const pctOverall = totalExperiments > 0 ? Math.round((completed.length / totalExperiments) * 100) : 0;
+        const totalCost = liveStatus.total_cost_so_far || 0;
+        const summaryExperiments = liveSummary?.experiments || [];
+        const summaryMap = Object.fromEntries(summaryExperiments.map(e => [e.attack_type, e]));
+        // Compute running totals from summary
+        const totalTP = summaryExperiments.reduce((s, e) => s + (e.confusion?.tp || 0), 0);
+        const totalFN = summaryExperiments.reduce((s, e) => s + (e.confusion?.fn || 0), 0);
+        const totalFP = summaryExperiments.reduce((s, e) => s + (e.confusion?.fp || 0), 0);
+        const totalTN = summaryExperiments.reduce((s, e) => s + (e.confusion?.tn || 0), 0);
+        const isRunning = liveStatus.status === "running" || liveStatus.status === "creating_batch";
+        const isDone = liveStatus.status === "all_done";
+
+        return (
+        <div style={{ background: "#eff6ff", borderBottom: "1px solid #bfdbfe" }}>
+          {/* Clickable banner bar */}
+          <div
+            onClick={() => setLivePanelOpen(p => !p)}
+            style={{ padding: "10px 32px", cursor: "pointer", userSelect: "none" }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 16, maxWidth: 1200, margin: "0 auto" }}>
+              {/* Pulsing dot */}
+              <div style={{ position: "relative", width: 10, height: 10, flexShrink: 0 }}>
+                <div style={{ position: "absolute", width: 10, height: 10, borderRadius: "50%", background: isDone ? "#16a34a" : liveStatus.status === "paused" ? "#d97706" : "#2563eb", animation: isRunning ? "pulse 2s ease-in-out infinite" : "none" }} />
+              </div>
+              {/* Experiment name + progress count */}
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#1e40af", minWidth: 180 }}>
+                {isDone ? "Stage 1 Complete" : liveStatus.current_experiment || "Experiment"}
                 <span style={{ fontWeight: 400, color: "#3b82f6", marginLeft: 8 }}>
-                  ({(liveStatus.experiments_completed?.length || 0)}/{(liveStatus.experiments_completed?.length || 0) + (liveStatus.experiments_queued?.length || 0) + 1})
+                  ({completed.length}/{totalExperiments})
                 </span>
-              )}
+              </div>
+              {/* Progress bar */}
+              <div style={{ flex: 1, height: 6, background: "#dbeafe", borderRadius: 3, overflow: "hidden" }}>
+                <div style={{ width: `${pctOverall}%`, height: "100%", background: isDone ? "#16a34a" : "#2563eb", borderRadius: 3, transition: "width 0.5s ease" }} />
+              </div>
+              <span style={{ fontSize: 12, color: "#3b82f6", fontWeight: 500, minWidth: 40 }}>
+                {pctOverall}%
+              </span>
+              {/* Cost */}
+              <span style={{ fontSize: 12, color: "#6b7280", minWidth: 70 }}>
+                ${totalCost.toFixed(2)}
+              </span>
+              {/* Status badge */}
+              <span style={{
+                padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 500,
+                background: isDone ? "#dcfce7" : liveStatus.status === "paused" ? "#fef3c7" : "#dbeafe",
+                color: isDone ? "#166534" : liveStatus.status === "paused" ? "#92400e" : "#1e40af",
+              }}>
+                {isDone ? "COMPLETE" : liveStatus.status === "paused" ? "PAUSED" : "RUNNING"}
+              </span>
+              {/* Chevron */}
+              <span style={{ fontSize: 12, color: "#6b7280", transition: "transform 0.2s", transform: livePanelOpen ? "rotate(180deg)" : "rotate(0deg)" }}>
+                ▼
+              </span>
             </div>
-            {/* Progress bar */}
-            <div style={{ flex: 1, height: 6, background: "#dbeafe", borderRadius: 3, overflow: "hidden" }}>
-              <div style={{ width: `${liveStatus.pct_complete || 0}%`, height: "100%", background: "#2563eb", borderRadius: 3, transition: "width 0.5s ease" }} />
-            </div>
-            <span style={{ fontSize: 12, color: "#3b82f6", fontWeight: 500, minWidth: 40 }}>
-              {(liveStatus.pct_complete || 0).toFixed(0)}%
-            </span>
-            {/* Cost */}
-            <span style={{ fontSize: 12, color: "#6b7280", minWidth: 60 }}>
-              ${(liveStatus.cost_so_far || 0).toFixed(2)}
-            </span>
-            {/* Recent verdicts (last 8) */}
-            <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
-              {(liveStatus.recent_verdicts || []).slice(-8).map((v, i) => (
-                <div key={i} style={{
-                  width: 8, height: 8, borderRadius: "50%",
-                  background: v.correct ? "#16a34a" : v.tier1_filtered ? "#94a3b8" : "#dc2626",
-                  title: `${v.actual} → ${v.verdict}`,
-                }} />
-              ))}
-            </div>
-            {/* Status badge */}
-            <span style={{
-              padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 500,
-              background: liveStatus.status === "paused" ? "#fef3c7" : "#dbeafe",
-              color: liveStatus.status === "paused" ? "#92400e" : "#1e40af",
-            }}>
-              {liveStatus.status === "paused" ? "PAUSED" : "RUNNING"}
-            </span>
           </div>
+
+          {/* Expanded panel */}
+          {livePanelOpen && (
+            <div style={{ padding: "0 32px 16px", maxWidth: 1200, margin: "0 auto" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, fontSize: 12 }}>
+
+                {/* Left column: Experiment Queue */}
+                <div style={{ background: "#fff", borderRadius: 8, border: "1px solid #e5e7eb", padding: 12 }}>
+                  <div style={{ fontWeight: 600, fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Experiment Queue</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                    {/* Completed experiments */}
+                    {completed.map((name, i) => {
+                      const m = summaryMap[name];
+                      return (
+                        <div key={name} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 8px", borderRadius: 4, background: "#f0fdf4" }}>
+                          <span style={{ color: "#16a34a", fontSize: 13, width: 16 }}>&#10003;</span>
+                          <span style={{ flex: 1, color: "#166534", fontWeight: 500 }}>{name}</span>
+                          {m && (
+                            <span style={{ color: "#6b7280", fontSize: 11 }}>
+                              {m.recall}% recall &middot; ${m.cost?.toFixed(2)}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {/* Current experiment */}
+                    {!isDone && liveStatus.current_experiment && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 8px", borderRadius: 4, background: "#eff6ff", border: "1px solid #bfdbfe" }}>
+                        <span style={{ color: "#2563eb", fontSize: 13, width: 16, animation: "pulse 2s ease-in-out infinite" }}>&#9654;</span>
+                        <span style={{ flex: 1, color: "#1e40af", fontWeight: 600 }}>{liveStatus.current_experiment}</span>
+                        <span style={{ color: "#3b82f6", fontSize: 11 }}>running</span>
+                      </div>
+                    )}
+                    {/* Queued experiments */}
+                    {queued.map((name) => (
+                      <div key={name} style={{ display: "flex", alignItems: "center", gap: 8, padding: "4px 8px", borderRadius: 4, color: "#9ca3af" }}>
+                        <span style={{ width: 16, textAlign: "center" }}>&middot;</span>
+                        <span style={{ flex: 1 }}>{name}</span>
+                        <span style={{ fontSize: 11 }}>queued</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Right column: Running Totals + Last Result */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {/* Running totals */}
+                  <div style={{ background: "#fff", borderRadius: 8, border: "1px solid #e5e7eb", padding: 12 }}>
+                    <div style={{ fontWeight: 600, fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Running Totals</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <div style={{ background: "#f0fdf4", borderRadius: 6, padding: "8px 12px", textAlign: "center" }}>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: "#166534" }}>{totalTP + totalFN > 0 ? Math.round(totalTP / (totalTP + totalFN) * 100) : 0}%</div>
+                        <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>Recall ({totalTP}/{totalTP + totalFN} detected)</div>
+                      </div>
+                      <div style={{ background: totalFP > 0 ? "#fef2f2" : "#f0fdf4", borderRadius: 6, padding: "8px 12px", textAlign: "center" }}>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: totalFP > 0 ? "#991b1b" : "#166534" }}>{totalFP + totalTN > 0 ? ((totalFP / (totalFP + totalTN)) * 100).toFixed(1) : 0}%</div>
+                        <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>FPR ({totalFP}/{totalFP + totalTN} flagged)</div>
+                      </div>
+                      <div style={{ background: "#f8fafc", borderRadius: 6, padding: "8px 12px", textAlign: "center" }}>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: "#1e40af" }}>{summaryExperiments.length > 0 ? Math.round(summaryExperiments.reduce((s, e) => s + (e.f1 || 0), 0) / summaryExperiments.length) : 0}%</div>
+                        <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>Avg F1 across {summaryExperiments.length} experiments</div>
+                      </div>
+                      <div style={{ background: "#f8fafc", borderRadius: 6, padding: "8px 12px", textAlign: "center" }}>
+                        <div style={{ fontSize: 20, fontWeight: 700, color: "#6b7280" }}>${totalCost.toFixed(2)}</div>
+                        <div style={{ fontSize: 10, color: "#6b7280", marginTop: 2 }}>Total cost ({completed.length * 1000} flows)</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Last completed result */}
+                  {liveStatus.last_result && (
+                    <div style={{ background: "#fff", borderRadius: 8, border: "1px solid #e5e7eb", padding: 12 }}>
+                      <div style={{ fontWeight: 600, fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Last Completed</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span style={{ fontWeight: 600, color: "#1a1a1a" }}>{liveStatus.last_result.attack_type}</span>
+                        <span style={{ color: "#16a34a", fontWeight: 500 }}>{liveStatus.last_result.recall}% recall</span>
+                        <span style={{ color: "#3b82f6" }}>F1: {liveStatus.last_result.f1}%</span>
+                        <span style={{ color: "#6b7280" }}>${liveStatus.last_result.cost?.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Best / Hardest */}
+                  {liveSummary?.overall && (
+                    <div style={{ background: "#fff", borderRadius: 8, border: "1px solid #e5e7eb", padding: 12 }}>
+                      <div style={{ fontWeight: 600, fontSize: 11, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Highlights</div>
+                      <div style={{ display: "flex", gap: 16 }}>
+                        <div>
+                          <span style={{ color: "#6b7280" }}>Best: </span>
+                          <span style={{ fontWeight: 600, color: "#166534" }}>{liveSummary.overall.best_detected}</span>
+                          <span style={{ color: "#16a34a", marginLeft: 4 }}>{liveSummary.overall.best_recall}% recall</span>
+                        </div>
+                        <div>
+                          <span style={{ color: "#6b7280" }}>Hardest: </span>
+                          <span style={{ fontWeight: 600, color: "#991b1b" }}>{liveSummary.overall.hardest}</span>
+                          <span style={{ color: "#dc2626", marginLeft: 4 }}>{liveSummary.overall.hardest_recall}% recall</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Pulse animation */}
           <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }`}</style>
         </div>
-      )}
+        );
+      })()}
 
       {/* ── TOP HEADER ─────────────────────────────────────────────────────── */}
       <header style={{ borderBottom: "1px solid #e5e7eb", padding: "16px 32px", display: "flex", alignItems: "center", gap: 24 }}>
