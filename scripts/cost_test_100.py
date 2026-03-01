@@ -95,8 +95,8 @@ def create_batch(attack_type, eval_df, rng):
 
     # Build flows.json — use EXTRACT_COLS (same as stage1_pipeline.py)
     flows = []
-    for _, row in combined.iterrows():
-        flow = {}
+    for idx, (_, row) in enumerate(combined.iterrows()):
+        flow = {"flow_id": idx}
         for f in EXTRACT_COLS:
             if f in row.index:
                 val = row[f]
