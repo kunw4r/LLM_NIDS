@@ -1012,11 +1012,12 @@ export default function NIDSDashboard() {
         {topTab === "amatas" && amatasTab === "overview" && (
           <div>
             {/* Hero numbers */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16, marginBottom: 32 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 24 }}>
               {[
-                { label: "Best F1 Score", value: pct(bestF1), sub: "Phase 3b — 150 flows" },
+                { label: "Best F1 Score", value: `${s1.overall.best_f1 || Math.round(bestF1 * 100)}%`, sub: s1.overall.best_detected || "Phase 3b" },
                 { label: "Total Flows Analysed", value: totalFlows.toLocaleString(), sub: "Across all experiments" },
                 { label: "Total Cost", value: dollar(totalCost), sub: "All API calls combined" },
+                { label: "Stage 1 Coverage", value: `${s1.experiments.length} / 14`, sub: "Attack types evaluated" },
               ].map(h => (
                 <div key={h.label} style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "24px" }}>
                   <div style={{ fontSize: 36, fontWeight: 700, color: "#1a1a1a", letterSpacing: "-0.02em" }}>{h.value}</div>
@@ -1025,6 +1026,25 @@ export default function NIDSDashboard() {
                 </div>
               ))}
             </div>
+
+            {/* Results summary */}
+            {s1.experiments.length > 0 && (() => {
+              const avgF1 = Math.round(s1.experiments.reduce((s, e) => s + (e.f1 || 0), 0) / s1.experiments.length);
+              const bestExp = s1.experiments.reduce((b, e) => (e.recall || 0) > (b.recall || 0) ? e : b, s1.experiments[0]);
+              const hardestExp = s1.experiments.reduce((h, e) => (e.recall || 0) < (h.recall || 0) ? e : h, s1.experiments[0]);
+              return (
+                <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "16px 20px", marginBottom: 24, background: "#f9fafb" }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8 }}>Stage 1 Summary</div>
+                  <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.8 }}>
+                    {s1.experiments.length >= 14 ? "Stage 1 complete" : `${s1.experiments.length}/14 experiments complete`}:
+                    avg {avgF1}% F1 across {s1.experiments.length} attack types.
+                    Best: {bestExp.attack_type} {bestExp.recall}% recall.
+                    Hardest: {hardestExp.attack_type} {hardestExp.recall}% recall.
+                    Total cost: {dollar(s1.overall.total_cost)}.
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* One-sentence summary */}
             <p style={{ fontSize: 15, lineHeight: 1.7, color: "#374151", marginBottom: 32, maxWidth: 800 }}>
