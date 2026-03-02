@@ -1,5 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { RESULTS_BASE, INSPECTOR_FILE_MAP, FLOWS_PER_PAGE } from "../data/constants";
+
+// In-memory cache: avoids re-fetching 2MB files when navigating back and forth
+const dataCache = new Map();
 
 export default function useFlowInspector() {
   const [inspectorData, setInspectorData] = useState(null);
@@ -14,20 +17,32 @@ export default function useFlowInspector() {
   const [expandedPrompts, setExpandedPrompts] = useState({});
 
   const loadInspectorData = useCallback(async (sourceId) => {
-    setInspectorLoading(true);
-    setInspectorError(null);
-    setInspectorData(null);
     setSelectedFlowIdx(null);
     setInspectorPage(0);
     setInspectorFilter("all");
     setSearchQuery("");
+
+    // Return cached data instantly if available
+    if (dataCache.has(sourceId)) {
+      setInspectorData(dataCache.get(sourceId));
+      setInspectorError(null);
+      setLastFetched(new Date());
+      return;
+    }
+
+    setInspectorLoading(true);
+    setInspectorError(null);
+    setInspectorData(null);
     const path = INSPECTOR_FILE_MAP[sourceId];
     if (!path) { setInspectorError("No flow data available for this experiment"); setInspectorLoading(false); return; }
     try {
-      const url = `${RESULTS_BASE.replace("/results", "")}${path}?t=${Date.now()}`;
+      // Use 5-min cache window instead of per-request busting
+      const cacheBuster = Math.floor(Date.now() / 300000);
+      const url = `${RESULTS_BASE.replace("/results", "")}${path}?t=${cacheBuster}`;
       const resp = await fetch(url);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const data = await resp.json();
+      dataCache.set(sourceId, data);
       setInspectorData(data);
       setLastFetched(new Date());
     } catch (err) {
@@ -36,6 +51,7 @@ export default function useFlowInspector() {
         const resp2 = await fetch("." + path);
         if (resp2.ok) {
           const data = await resp2.json();
+          dataCache.set(sourceId, data);
           setInspectorData(data);
           setInspectorError(null);
           setLastFetched(new Date());
@@ -65,12 +81,18 @@ export default function useFlowInspector() {
 
   const selectedFlow = selectedFlowIdx != null ? inspectorFlows.find(f => f.flow_idx === selectedFlowIdx) : null;
 
-  const pieCounts = {
-    malicious: inspectorFlows.filter(f => f.verdict?.toUpperCase() === "MALICIOUS").length,
-    suspicious: inspectorFlows.filter(f => f.verdict?.toUpperCase() === "SUSPICIOUS").length,
-    benign: inspectorFlows.filter(f => f.verdict?.toUpperCase() === "BENIGN").length,
-    filtered: inspectorFlows.filter(f => f.tier1_filtered).length,
-  };
+  // Single-pass pie counts instead of 4x .filter()
+  const pieCounts = (() => {
+    const c = { malicious: 0, suspicious: 0, benign: 0, filtered: 0 };
+    for (const f of inspectorFlows) {
+      if (f.tier1_filtered) { c.filtered++; continue; }
+      const v = (f.verdict || "").toUpperCase();
+      if (v === "MALICIOUS") c.malicious++;
+      else if (v === "SUSPICIOUS") c.suspicious++;
+      else if (v === "BENIGN") c.benign++;
+    }
+    return c;
+  })();
 
   return {
     inspectorData, inspectorLoading, inspectorError,

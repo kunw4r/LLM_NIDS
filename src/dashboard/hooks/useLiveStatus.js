@@ -7,6 +7,7 @@ import { STAGE1_SUMMARY } from "../data/stage1";
  *
  * Performance: All network fetches run in parallel and never block
  * initial render — the hardcoded STAGE1_SUMMARY is returned immediately.
+ * Cache-busting is limited to once per minute to allow browser caching.
  */
 export default function useLiveStatus() {
   const [liveStatus, setLiveStatus] = useState(null);
@@ -14,21 +15,28 @@ export default function useLiveStatus() {
   const [leakySummary, setLeakySummary] = useState(null);
   const [newResultNotif, setNewResultNotif] = useState(null);
   const leakyFetched = useRef(false);
+  const isLocal = useRef(null); // null = unknown, true/false after first probe
 
   useEffect(() => {
     let timer;
-    const poll = async () => {
-      // Try localhost backend first (fast fail — 1.5s timeout, non-blocking)
-      const localPromise = fetchLocal();
+    // Cache buster changes once per minute (allows browser caching within that window)
+    const cacheBuster = () => Math.floor(Date.now() / 60000);
 
-      // Fetch all GitHub files in parallel (don't wait for localhost)
+    const poll = async () => {
+      // Only try localhost on first poll or if it previously succeeded
+      let localData = null;
+      if (isLocal.current !== false) {
+        localData = await fetchLocal();
+        isLocal.current = !!localData;
+      }
+
+      // Fetch all GitHub files in parallel
       const [statusData, summData, leakyData] = await Promise.all([
-        localPromise.then(d => d).catch(() =>
-          fetchJSON(`${RESULTS_BASE}/stage1/live_status.json?t=${Date.now()}`)
-        ),
-        fetchJSON(`${RESULTS_BASE}/stage1/running_summary.json?t=${Date.now()}`),
+        localData ? Promise.resolve(localData) :
+          fetchJSON(`${RESULTS_BASE}/stage1/live_status.json?t=${cacheBuster()}`),
+        fetchJSON(`${RESULTS_BASE}/stage1/running_summary.json?t=${cacheBuster()}`),
         leakyFetched.current ? Promise.resolve(null) :
-          fetchJSON(`${RESULTS_BASE}/stage1/running_summary_leaky.json?t=${Date.now()}`),
+          fetchJSON(`${RESULTS_BASE}/stage1/running_summary_leaky.json?t=${cacheBuster()}`),
       ]);
 
       // Process live status
@@ -99,10 +107,10 @@ export default function useLiveStatus() {
   return { liveStatus, liveSummary, leakySummary, newResultNotif, s1 };
 }
 
-/** Try localhost backend with a short timeout */
+/** Try localhost backend with a short timeout (500ms — fail fast on GitHub Pages) */
 async function fetchLocal() {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 1500);
+  const timeout = setTimeout(() => controller.abort(), 500);
   try {
     const resp = await fetch("http://localhost:5001/api/status", { signal: controller.signal });
     clearTimeout(timeout);
