@@ -61,27 +61,33 @@ export default function AblationStudy() {
 
   const conditions = data.conditions || {};
 
-  // Split into FTP and SSH
-  const ftpResults = [];
-  const sshResults = [];
-
+  // Split by attack type
+  const attackGroups = {};
   for (const [key, val] of Object.entries(conditions)) {
-    if (val.attack_type === "FTP-BruteForce") ftpResults.push({ key, ...val });
-    else if (val.attack_type === "SSH-Bruteforce") sshResults.push({ key, ...val });
+    const at = val.attack_type;
+    if (!attackGroups[at]) attackGroups[at] = [];
+    attackGroups[at].push({ key, ...val });
   }
 
   // Sort by condition order
   const condOrder = ABLATION_CONDITIONS.map(c => c.id);
   const sortFn = (a, b) => {
-    const ia = condOrder.indexOf(a.key.replace("_ssh", ""));
-    const ib = condOrder.indexOf(b.key.replace("_ssh", ""));
+    const strip = k => k.replace(/_ssh$/, "").replace(/_hoic$/, "");
+    const ia = condOrder.indexOf(strip(a.key));
+    const ib = condOrder.indexOf(strip(b.key));
     return ia - ib;
   };
-  ftpResults.sort(sortFn);
-  sshResults.sort(sortFn);
+  Object.values(attackGroups).forEach(arr => arr.sort(sortFn));
 
-  const results = selectedAttack === "ftp" ? ftpResults : sshResults;
-  const attackLabel = selectedAttack === "ftp" ? "FTP-BruteForce" : "SSH-Bruteforce";
+  const attackTabs = [
+    ["ftp", "FTP-BruteForce"],
+    ["ssh", "SSH-Bruteforce"],
+    ["hoic", "DDOS_attack-HOIC"],
+  ].filter(([, at]) => attackGroups[at]?.length > 0);
+
+  const attackTypeMap = { ftp: "FTP-BruteForce", ssh: "SSH-Bruteforce", hoic: "DDOS_attack-HOIC" };
+  const results = attackGroups[attackTypeMap[selectedAttack]] || [];
+  const attackLabel = attackTypeMap[selectedAttack] || selectedAttack;
 
   const maxRecall = 1;
   const maxCost = Math.max(...results.map(r => r.cost || 0), 0.01);
@@ -100,7 +106,7 @@ export default function AblationStudy() {
 
       {/* Attack type toggle */}
       <div className="flex gap-2 mb-6">
-        {[["ftp", "FTP-BruteForce"], ["ssh", "SSH-Bruteforce"]].map(([id, label]) => (
+        {attackTabs.map(([id, label]) => (
           <button
             key={id}
             onClick={() => setSelectedAttack(id)}
@@ -134,8 +140,9 @@ export default function AblationStudy() {
               </thead>
               <tbody>
                 {results.map((r, i) => {
-                  const cond = ABLATION_CONDITIONS.find(c => r.key.replace("_ssh", "") === c.id);
-                  const isBaseline = r.key === "full_amatas" || r.key === "full_amatas_ssh";
+                  const strip = k => k.replace(/_ssh$/, "").replace(/_hoic$/, "");
+                  const cond = ABLATION_CONDITIONS.find(c => strip(r.key) === c.id);
+                  const isBaseline = strip(r.key) === "full_amatas";
                   const cm = r.confusion || {};
                   return (
                     <tr key={r.key} className={`border-b border-gray-100 ${isBaseline ? "bg-green-50" : ""}`}>
@@ -179,7 +186,7 @@ export default function AblationStudy() {
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Recall by Condition</h3>
               <div className="space-y-2">
                 {results.map(r => {
-                  const cond = ABLATION_CONDITIONS.find(c => r.key.replace("_ssh", "") === c.id);
+                  const cond = ABLATION_CONDITIONS.find(c => r.key.replace(/_ssh$/, "").replace(/_hoic$/, "") === c.id);
                   return (
                     <Bar
                       key={r.key}
@@ -201,7 +208,7 @@ export default function AblationStudy() {
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Cost by Condition</h3>
               <div className="space-y-2">
                 {results.map(r => {
-                  const cond = ABLATION_CONDITIONS.find(c => r.key.replace("_ssh", "") === c.id);
+                  const cond = ABLATION_CONDITIONS.find(c => r.key.replace(/_ssh$/, "").replace(/_hoic$/, "") === c.id);
                   return (
                     <Bar
                       key={r.key}
@@ -220,28 +227,66 @@ export default function AblationStudy() {
           <div className="border border-blue-100 bg-blue-50/30 rounded-lg p-4 sm:p-5 mb-8">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Key Findings</h3>
             <div className="space-y-3 text-sm text-gray-700">
-              {results.some(r => r.key.includes("two_agent") && r.recall < 0.5) && (
-                <div className="flex gap-2">
-                  <span className="text-red-500 font-bold">!</span>
-                  <span><strong>2-Agent collapse:</strong> Protocol + Orchestrator alone achieves only {pct(results.find(r => r.key.includes("two_agent"))?.recall)} recall — simple orchestration of a single perspective is insufficient.</span>
-                </div>
-              )}
-              {results.some(r => r.key.includes("no_temporal") && r.recall < 1) && (
-                <div className="flex gap-2">
-                  <span className="text-amber-500 font-bold">!</span>
-                  <span><strong>Temporal agent matters:</strong> Without temporal context, recall drops to {pct(results.find(r => r.key.includes("no_temporal"))?.recall)} — cross-flow IP pattern analysis provides signal that individual flow features cannot.</span>
-                </div>
-              )}
-              {results.some(r => r.key.includes("no_devils") && r.fpr > 0) && (
-                <div className="flex gap-2">
-                  <span className="text-red-500 font-bold">!</span>
-                  <span><strong>DA controls false positives:</strong> Without the Devil's Advocate, FPR increases to {pct(results.find(r => r.key.includes("no_devils"))?.fpr)}.</span>
-                </div>
-              )}
-              <div className="flex gap-2">
-                <span className="text-green-500 font-bold">+</span>
-                <span><strong>Full AMATAS is optimal:</strong> The complete 6-agent architecture achieves the best balance of recall, precision, and false positive control.</span>
-              </div>
+              {(() => {
+                const baseline = results.find(r => r.key.replace(/_ssh$/, "").replace(/_hoic$/, "") === "full_amatas");
+                const noDA = results.find(r => r.key.includes("no_devils"));
+                const noTemporal = results.find(r => r.key.includes("no_temporal"));
+                const twoAgent = results.find(r => r.key.includes("two_agent"));
+                const findings = [];
+
+                // DA harmful on ambiguous attacks
+                if (noDA && baseline && noDA.recall > baseline.recall + 0.1) {
+                  findings.push(
+                    <div key="da-harmful" className="flex gap-2">
+                      <span className="text-red-500 font-bold">!</span>
+                      <span><strong>DA is counterproductive:</strong> Removing the Devil's Advocate improves recall from {pct(baseline.recall)} to {pct(noDA.recall)} and F1 from {pct(baseline.f1)} to {pct(noDA.f1)} — the 30% adversarial weight suppresses correct detections on ambiguous attacks.</span>
+                    </div>
+                  );
+                } else if (noDA && noDA.fpr > 0 && baseline && baseline.fpr === 0) {
+                  findings.push(
+                    <div key="da-controls" className="flex gap-2">
+                      <span className="text-red-500 font-bold">!</span>
+                      <span><strong>DA controls false positives:</strong> Without the Devil's Advocate, FPR increases to {pct(noDA.fpr)}.</span>
+                    </div>
+                  );
+                }
+
+                if (twoAgent && twoAgent.recall < 0.5) {
+                  findings.push(
+                    <div key="two-agent" className="flex gap-2">
+                      <span className="text-red-500 font-bold">!</span>
+                      <span><strong>2-Agent collapse:</strong> Protocol + Orchestrator alone achieves only {pct(twoAgent.recall)} recall — simple orchestration of a single perspective is insufficient.</span>
+                    </div>
+                  );
+                }
+
+                if (noTemporal && baseline && noTemporal.recall < baseline.recall - 0.1) {
+                  findings.push(
+                    <div key="temporal" className="flex gap-2">
+                      <span className="text-amber-500 font-bold">!</span>
+                      <span><strong>Temporal agent is critical:</strong> Without temporal context, recall drops from {pct(baseline.recall)} to {pct(noTemporal.recall)} — cross-flow IP pattern analysis provides signal that individual flow features cannot.</span>
+                    </div>
+                  );
+                }
+
+                if (baseline && noDA && noDA.recall > baseline.recall + 0.1) {
+                  findings.push(
+                    <div key="adaptive" className="flex gap-2">
+                      <span className="text-blue-500 font-bold">→</span>
+                      <span><strong>DA weight needs adaptation:</strong> The fixed 30% DA weight is optimal for clear-signal attacks but harmful for ambiguous ones — an attack-type-adaptive weighting scheme would improve overall performance.</span>
+                    </div>
+                  );
+                } else {
+                  findings.push(
+                    <div key="optimal" className="flex gap-2">
+                      <span className="text-green-500 font-bold">+</span>
+                      <span><strong>Full AMATAS is optimal:</strong> The complete 6-agent architecture achieves the best balance of recall, precision, and false positive control.</span>
+                    </div>
+                  );
+                }
+
+                return findings;
+              })()}
             </div>
           </div>
         </>

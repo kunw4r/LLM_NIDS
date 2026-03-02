@@ -1,6 +1,6 @@
 {
   "experiment": "Agent Ablation Study",
-  "date": "2026-03-03T00:07:01.206607",
+  "date": "2026-03-03T03:59:06.047064",
   "description": "Quantify each agent's contribution by systematically disabling agents",
   "conditions": {
     "full_amatas": {
@@ -222,6 +222,116 @@
         "fn": 1
       },
       "cost": 0.8973325000000001
+    },
+    "full_amatas_hoic": {
+      "label": "Full AMATAS (6 agents)",
+      "attack_type": "DDOS_attack-HOIC",
+      "disabled_agents": [],
+      "recall": 0.58,
+      "precision": 0.9666666666666667,
+      "f1": 0.725,
+      "fpr": 0.0010526315789473684,
+      "confusion": {
+        "tp": 29,
+        "fp": 1,
+        "tn": 949,
+        "fn": 21
+      },
+      "cost": 1.7924775000000002
+    },
+    "no_devils_advocate_hoic": {
+      "label": "No Devil's Advocate",
+      "attack_type": "DDOS_attack-HOIC",
+      "disabled_agents": [
+        "devils_advocate"
+      ],
+      "recall": 0.98,
+      "precision": 0.98,
+      "f1": 0.98,
+      "fpr": 0.0010526315789473684,
+      "confusion": {
+        "tp": 49,
+        "fp": 1,
+        "tn": 949,
+        "fn": 1
+      },
+      "cost": 1.178455
+    },
+    "no_temporal_hoic": {
+      "label": "No Temporal Agent",
+      "attack_type": "DDOS_attack-HOIC",
+      "disabled_agents": [
+        "temporal"
+      ],
+      "recall": 0.22,
+      "precision": 0.9166666666666666,
+      "f1": 0.3548387096774193,
+      "fpr": 0.0010526315789473684,
+      "confusion": {
+        "tp": 11,
+        "fp": 1,
+        "tn": 949,
+        "fn": 39
+      },
+      "cost": 1.2269325
+    },
+    "no_statistical_hoic": {
+      "label": "No Statistical Agent",
+      "attack_type": "DDOS_attack-HOIC",
+      "disabled_agents": [
+        "statistical"
+      ],
+      "recall": 0.84,
+      "precision": 0.9767441860465116,
+      "f1": 0.9032258064516129,
+      "fpr": 0.0010526315789473684,
+      "confusion": {
+        "tp": 42,
+        "fp": 1,
+        "tn": 949,
+        "fn": 8
+      },
+      "cost": 1.3600100000000002
+    },
+    "two_agent_hoic": {
+      "label": "2-Agent (Protocol + Orchestrator)",
+      "attack_type": "DDOS_attack-HOIC",
+      "disabled_agents": [
+        "behavioural",
+        "devils_advocate",
+        "statistical",
+        "temporal"
+      ],
+      "recall": 0.1,
+      "precision": 1.0,
+      "f1": 0.18181818181818182,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 5,
+        "fp": 0,
+        "tn": 950,
+        "fn": 45
+      },
+      "cost": 0.45669750000000003
+    },
+    "four_agent_hoic": {
+      "label": "4-Agent (no DA + Temporal)",
+      "attack_type": "DDOS_attack-HOIC",
+      "disabled_agents": [
+        "devils_advocate",
+        "temporal"
+      ],
+      "recall": 0.9,
+      "precision": 0.9782608695652174,
+      "f1": 0.9375,
+      "fpr": 0.0010526315789473684,
+      "confusion": {
+        "tp": 45,
+        "fp": 1,
+        "tn": 949,
+        "fn": 5
+      },
+      "cost": 0.8726525
     }
   }
 }
