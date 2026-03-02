@@ -179,6 +179,140 @@ export default function Overview({ s1, onNavigateToJourney }) {
       {/* Agent Performance Summary */}
       <AgentHeatmap />
 
+      {/* Understanding the Metrics */}
+      <div className="border border-gray-200 rounded-lg p-6">
+        <h3 className="text-base font-bold tracking-tight mb-2">Understanding the Metrics</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          These metrics are used throughout the dashboard to evaluate AMATAS performance. Here's what each one means.
+        </p>
+
+        {/* Confusion matrix visual */}
+        <div className="mb-5">
+          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">The Confusion Matrix</div>
+          <p className="text-sm text-gray-600 leading-relaxed mb-3">
+            Every detection outcome falls into one of four categories. The confusion matrix counts how many flows ended up in each:
+          </p>
+          <div className="grid max-w-md mx-auto mb-3" style={{ gridTemplateColumns: "120px 1fr 1fr" }}>
+            <div className="p-2 text-xs text-gray-500"></div>
+            <div className="p-2 text-xs font-semibold text-gray-500 text-center border-b border-gray-200">System says Benign</div>
+            <div className="p-2 text-xs font-semibold text-gray-500 text-center border-b border-gray-200">System says Attack</div>
+            <div className="p-2 text-xs font-semibold text-gray-500 border-r border-gray-200">Actually Benign</div>
+            <div className="p-3 text-center bg-green-50 rounded-tl">
+              <div className="text-sm font-bold text-green-700">TN</div>
+              <div className="text-[10px] text-gray-500">True Negative</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">Correct: benign flow, correctly ignored</div>
+            </div>
+            <div className="p-3 text-center bg-red-50 rounded-tr">
+              <div className="text-sm font-bold text-red-700">FP</div>
+              <div className="text-[10px] text-gray-500">False Positive</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">Error: benign flow, wrongly flagged</div>
+            </div>
+            <div className="p-2 text-xs font-semibold text-gray-500 border-r border-gray-200">Actually Attack</div>
+            <div className="p-3 text-center bg-red-50 rounded-bl">
+              <div className="text-sm font-bold text-red-700">FN</div>
+              <div className="text-[10px] text-gray-500">False Negative</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">Error: attack missed entirely</div>
+            </div>
+            <div className="p-3 text-center bg-green-50 rounded-br">
+              <div className="text-sm font-bold text-green-700">TP</div>
+              <div className="text-[10px] text-gray-500">True Positive</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">Correct: attack detected</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Metric definitions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {[
+            {
+              name: "Recall (Sensitivity)",
+              formula: "TP / (TP + FN)",
+              color: "#16a34a",
+              desc: "Of all actual attacks, what percentage did we catch? A recall of 84% means 42 of 50 attacks were detected and 8 were missed. In security, missed attacks are dangerous — we want this as high as possible.",
+            },
+            {
+              name: "Precision",
+              formula: "TP / (TP + FP)",
+              color: "#2563eb",
+              desc: "Of all flows we flagged as attacks, what percentage were actually attacks? Low precision means many false alarms — the system cries wolf too often, wasting analyst time.",
+            },
+            {
+              name: "F1 Score",
+              formula: "2 × (Precision × Recall) / (Precision + Recall)",
+              color: "#7c3aed",
+              desc: "The harmonic mean of precision and recall — a single number that balances both. F1 of 90%+ means the system catches most attacks without too many false alarms. This is the primary metric used throughout the dashboard.",
+            },
+            {
+              name: "False Positive Rate (FPR)",
+              formula: "FP / (FP + TN)",
+              color: "#dc2626",
+              desc: "Of all benign flows, what percentage were wrongly flagged? In a network with millions of flows, even 1% FPR means thousands of false alarms per day. AMATAS targets <1% FPR.",
+            },
+            {
+              name: "Cost per TP ($/TP)",
+              formula: "Total LLM Cost / True Positives",
+              color: "#d97706",
+              desc: "How much did each correctly detected attack cost in LLM API calls? Lower is better. Varies from $0.02 (brute force) to $0.23 (stealthy attacks) depending on how many flows reach the LLM pipeline.",
+            },
+          ].map(m => (
+            <div key={m.name} className="border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="text-sm font-bold" style={{ color: m.color }}>{m.name}</div>
+              </div>
+              <div className="text-[11px] font-mono bg-gray-50 px-2 py-1 rounded mb-2 text-gray-600">
+                {m.formula}
+              </div>
+              <div className="text-xs text-gray-600 leading-relaxed">{m.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CICIDS2018 Dataset */}
+      <div className="border border-gray-200 rounded-lg p-6">
+        <h3 className="text-base font-bold tracking-tight mb-2">The Dataset: CICIDS2018 NetFlow v3</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          All AMATAS experiments use the Canadian Institute for Cybersecurity's 2018 Intrusion Detection dataset — the most widely used modern IDS benchmark.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+          {[
+            { label: "Total Flows", value: "20.1M" },
+            { label: "Features", value: "53 (14 used)" },
+            { label: "Attack Types", value: "14" },
+            { label: "Benign Ratio", value: "~87%" },
+          ].map(s => (
+            <div key={s.label} className="text-center py-3 bg-gray-50 rounded-lg">
+              <div className="text-xl font-bold text-gray-900">{s.value}</div>
+              <div className="text-[10px] text-gray-500">{s.label}</div>
+            </div>
+          ))}
+        </div>
+        <div className="text-sm text-gray-700 leading-relaxed space-y-2">
+          <p className="m-0">
+            <strong>Why this dataset?</strong> CICIDS2018 is the standard benchmark in IDS research. It contains
+            realistic network traffic captured over 10 days in a controlled lab environment, including both legitimate
+            user activity and 14 different attack types. The NetFlow v3 variant provides aggregated flow-level features
+            (packet counts, byte volumes, timing) rather than raw packet captures.
+          </p>
+          <p className="m-0">
+            <strong>Three-way split:</strong> The dataset is split into <strong>development</strong> (7.04M flows, 35%) for
+            training the RF pre-filter, <strong>validation</strong> (5.03M flows, 25%) for tuning hyperparameters, and
+            <strong> test</strong> (8.05M flows, 40%) as a held-out final evaluation set. Different attack types appear in
+            different splits — this is important because the RF was only trained on development-split attacks.
+          </p>
+          <p className="m-0">
+            <strong>Why NetFlow, not raw packets?</strong> NetFlow features are what real-world network monitoring systems
+            actually collect. Raw packet inspection is computationally expensive and raises privacy concerns. If AMATAS
+            works on NetFlow, it can plug into existing network infrastructure.
+          </p>
+          <p className="m-0">
+            <strong>Limitation:</strong> All IP addresses in the dataset are anonymized (private ranges like 172.31.x.x).
+            This means external threat intelligence tools (AbuseIPDB, OTX) return no data — which is why AMATAS relies on
+            flow features and agent reasoning rather than external lookups.
+          </p>
+        </div>
+      </div>
+
       {/* Journey link */}
       {onNavigateToJourney && (
         <div className="border border-gray-200 rounded-lg p-5 text-center">

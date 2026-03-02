@@ -11,9 +11,49 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
     <div>
       {/* Header */}
       <h2 className="text-xl font-bold mb-1 tracking-tight">Per-Attack-Type Detection at 5% Prevalence</h2>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-gray-500 mb-4">
         Each batch: 950 benign + 50 attack flows. Tier-1 RF pre-filter reduces LLM calls by ~95%.
       </p>
+
+      {/* Batch composition + split legend */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+        <div className="border border-gray-200 rounded-lg p-4">
+          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Why 5% Attack Prevalence?</div>
+          <div className="text-xs text-gray-600 leading-relaxed space-y-1.5">
+            <p className="m-0">
+              Each batch contains <strong>50 attack + 950 benign</strong> flows (5% attack ratio). This mirrors realistic
+              network conditions — real-world traffic is overwhelmingly benign, with attacks comprising 1-13% of flows.
+            </p>
+            <p className="m-0">
+              A 50/50 split would make detection trivially easy and hide false positive problems. At 5%, a single false
+              positive on 950 benign flows gives 0.1% FPR — testing the system's ability to stay quiet on normal traffic.
+            </p>
+            <p className="m-0 text-gray-500 italic">
+              50 attack flows provides enough statistical power to estimate recall with ±14% margin at 95% confidence.
+            </p>
+          </div>
+        </div>
+        <div className="border border-gray-200 rounded-lg p-4">
+          <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Data Split Badges</div>
+          <div className="text-xs text-gray-600 leading-relaxed space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-100 text-blue-800 flex-shrink-0">dev_eval</span>
+              <span>Attack flows come from the <strong>development</strong> split. The RF was trained on this data, so it may
+              filter more accurately — results should be interpreted cautiously.</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800 flex-shrink-0">validation</span>
+              <span>Attack flows come from the <strong>validation</strong> split. The RF never trained on these attacks —
+              a fairer test of generalization.</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-800 flex-shrink-0">test</span>
+              <span>Attack flows come from the <strong>held-out test</strong> split. Strictest evaluation — no parameters
+              were tuned on this data.</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* ── RECALL BAR CHART ──────────────────────────────────── */}
       <div className="border border-gray-200 rounded-lg p-4 sm:p-6 mb-6">
