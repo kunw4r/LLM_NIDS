@@ -34,7 +34,7 @@
       "attack_type": "Bot",
       "status": "complete",
       "recall": 82,
-      "fpr": 100,
+      "fpr": 1,
       "f1": 85,
       "cost": 2.3,
       "cost_per_tp": 0.06,
@@ -219,6 +219,6 @@
     "best_recall": 100,
     "hardest": "Infilteration",
     "hardest_recall": 0,
-    "avg_fpr": 7
+    "avg_fpr": 0
   }
 }

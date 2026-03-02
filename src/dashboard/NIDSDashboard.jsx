@@ -341,13 +341,13 @@ const STAGE1_SUMMARY = {
     { attack_type: "DoS_attacks-Slowloris", status: "complete", recall: 100, fpr: 0, f1: 100, cost: 2.16, cost_per_tp: 0.04, confusion: { tp: 50, fp: 0, tn: 950, fn: 0 } },
     { attack_type: "DDOS_attack-HOIC", status: "complete", recall: 58, fpr: 0, f1: 72, cost: 1.79, cost_per_tp: 0.06, confusion: { tp: 29, fp: 1, tn: 949, fn: 21 } },
     { attack_type: "DDOS_attack-LOIC-UDP", status: "complete", recall: 100, fpr: 0, f1: 96, cost: 1.87, cost_per_tp: 0.04, confusion: { tp: 50, fp: 4, tn: 946, fn: 0 } },
-    { attack_type: "Bot", status: "complete", recall: 82, fpr: 100, f1: 85, cost: 2.30, cost_per_tp: 0.06, confusion: { tp: 41, fp: 6, tn: 944, fn: 9 } },
+    { attack_type: "Bot", status: "complete", recall: 82, fpr: 1, f1: 85, cost: 2.30, cost_per_tp: 0.06, confusion: { tp: 41, fp: 6, tn: 944, fn: 9 } },
     { attack_type: "Infilteration", status: "complete", recall: 0, fpr: 0, f1: 0, cost: 0.80, cost_per_tp: Infinity, confusion: { tp: 0, fp: 2, tn: 948, fn: 50 } },
     { attack_type: "Brute_Force_-Web", status: "complete", recall: 86, fpr: 0, f1: 89, cost: 2.05, cost_per_tp: 0.05, confusion: { tp: 43, fp: 4, tn: 946, fn: 7 } },
     { attack_type: "Brute_Force_-XSS", status: "complete", recall: 84, fpr: 0, f1: 89, cost: 2.09, cost_per_tp: 0.05, confusion: { tp: 42, fp: 2, tn: 948, fn: 8 } },
     { attack_type: "SQL_Injection", status: "complete", recall: 98, fpr: 0, f1: 96, cost: 1.99, cost_per_tp: 0.04, confusion: { tp: 49, fp: 3, tn: 947, fn: 1 } },
   ],
-  overall: { best_f1: 100, total_flows: 14000, total_cost: 27.35, avg_fpr: 7 },
+  overall: { best_f1: 100, total_flows: 14000, total_cost: 27.35, avg_fpr: 0 },
 };
 
 // Agent definitions
