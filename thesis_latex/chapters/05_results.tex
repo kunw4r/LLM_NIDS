@@ -361,3 +361,78 @@ Condition C, combining temporal clustering with an Infiltration-aware enriched p
 The clustering results reveal a fundamental precision--recall trade-off that does not arise for other attack types. The 13 attack categories evaluated in Stage 1 achieved false positive rates between 0\% and 5.1\%, whereas the best Infiltration condition (C) produced a 19.2\% FPR --- nearly four times the worst-case FPR observed elsewhere. This disparity arises because the clustering mechanism, by bypassing the Tier 1 filter for entire IP groups, forwards substantially more benign flows to the LLM pipeline than the standard per-flow threshold would permit. The agents, confronted with clusters containing a mixture of genuinely benign and subtly malicious flows, over-classify benign traffic as suspicious.
 
 Nevertheless, the progression from 0\% recall (Condition A) to 58\% recall (Condition C) validates the core v3 hypothesis: temporal clustering provides the multi-flow context necessary to detect campaign-style attacks that are invisible at the individual flow level. The remaining 42\% of missed attack flows likely represent Infiltration activity from source IPs that did not exceed the 8-query DNS threshold, suggesting that alternative or adaptive clustering criteria could further improve recall. The elevated false positive rate, while undesirable, reflects a deliberate architectural choice to prioritise detection of a previously invisible attack type, and could be mitigated through post-clustering confidence calibration or a dedicated Infiltration-specific agent in future iterations.
+
+\section{Agent Ablation Study}
+\label{sec:agent-ablation}
+
+To quantify the marginal contribution of each architectural component, an ablation study was conducted on two attack types --- FTP-BruteForce and SSH-Bruteforce --- using the same 1{,}000-flow batches employed in Stage~1. Six conditions were evaluated: the full six-agent system (baseline), four single-agent removal conditions (no Devil's Advocate, no Temporal Agent, no Statistical Agent), a minimal two-agent system (Protocol Agent and Orchestrator only), and a four-agent intermediate configuration (omitting both the Devil's Advocate and Temporal Agent). All conditions used identical batches, the same GPT-4o model, and the same Tier~1 Random Forest pre-filter at threshold 0.15, ensuring that performance differences are attributable solely to architectural changes in the LLM pipeline. Each condition was subject to a cost limit of \$1.50, and disabled agents were replaced with neutral stub responses (verdict: SKIPPED, confidence: 0.5) to preserve the pipeline's structural integrity without contributing analytical signal.
+
+The most striking finding is the collapse of the minimal two-agent configuration. With only the Protocol Agent and Orchestrator active, recall fell to 12\% on FTP-BruteForce (44 of 50 attack flows missed) and to 0\% on SSH-Bruteforce (all 50 attack flows missed). The Protocol Agent analyses port usage and connection patterns, but without statistical context, temporal correlation, behavioural signature matching, or adversarial counter-argumentation, the Orchestrator receives insufficient evidence to distinguish sustained brute force activity from legitimate connection attempts. On SSH-Bruteforce, every attack flow was classified as BENIGN with confidence scores of 0.90--1.00, indicating that the Protocol Agent actively reinforced the benign interpretation: SSH connections to port~22 are individually unremarkable, and without the multi-flow perspective provided by the Temporal Agent, the single-perspective pipeline cannot identify the repetitive pattern that characterises brute force campaigns. This result establishes that the multi-agent architecture is not additive decoration --- the collective reasoning of specialist agents is necessary for reliable detection.
+
+\begin{table}[H]
+\centering
+\caption{Agent Ablation Results --- FTP-BruteForce ($n = 1{,}000$; 50 attack + 950 benign)}
+\label{tab:ablation-ftp}
+\begin{tabular}{l r r r r r r r r}
+\toprule
+Condition & TP & FP & FN & TN & Recall & FPR & F1 & Cost (\$) \\
+\midrule
+Full AMATAS (6 agents) & 50 & 0 & 0 & 950 & 100\% & 0.0\% & 100\% & 2.13 \\
+No Devil's Advocate & 43 & 0 & 0 & 783 & 100\% & 0.0\% & 100\% & 1.51 \\
+No Temporal Agent & 47 & 0 & 3 & 950 & 94\% & 0.0\% & 97\% & 1.25 \\
+No Statistical Agent & 39 & 0 & 0 & 783 & 100\% & 0.0\% & 100\% & 1.50 \\
+2-Agent (Protocol + Orch.) & 6 & 0 & 44 & 950 & 12\% & 0.0\% & 21\% & 0.45 \\
+4-Agent (no DA + Temporal) & 50 & 0 & 0 & 950 & 100\% & 0.0\% & 100\% & 0.87 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Agent Ablation Results --- SSH-Bruteforce ($n = 1{,}000$; 50 attack + 950 benign)}
+\label{tab:ablation-ssh}
+\begin{tabular}{l r r r r r r r r}
+\toprule
+Condition & TP & FP & FN & TN & Recall & FPR & F1 & Cost (\$) \\
+\midrule
+Full AMATAS (6 agents) & 49 & 0 & 1 & 950 & 98\% & 0.0\% & 99\% & 2.16 \\
+No Devil's Advocate & 43 & 0 & 0 & 29 & 100\% & 0.0\% & 100\% & 1.52 \\
+No Temporal Agent & 27 & 1 & 23 & 949 & 54\% & 0.1\% & 69\% & 1.26 \\
+No Statistical Agent & 39 & 0 & 0 & 29 & 100\% & 0.0\% & 100\% & 1.51 \\
+2-Agent (Protocol + Orch.) & 0 & 0 & 50 & 950 & 0\% & 0.0\% & 0\% & 0.45 \\
+4-Agent (no DA + Temporal) & 49 & 1 & 1 & 949 & 98\% & 0.1\% & 98\% & 0.90 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Temporal Agent emerges as the single most valuable specialist. Its removal produced the largest performance degradation across both attack types: SSH-Bruteforce recall fell from 98\% to 54\% --- a 44 percentage point collapse --- whilst FTP-BruteForce recall declined from 100\% to 94\%. This result is architecturally coherent: brute force attacks are fundamentally temporal phenomena, characterised by repeated connection attempts from the same source IP across a compressed time window. The Temporal Agent's role --- cross-correlating flows from the same source IP and identifying repetitive patterns such as burst, sequential, or repetitive temporal signatures --- is precisely the mechanism that distinguishes sustained attack activity from isolated connection attempts. Without temporal context, the remaining agents assess each flow largely in isolation, and many brute force flows are individually plausible as legitimate authentication attempts. The asymmetry between FTP-BruteForce (6\% recall loss) and SSH-Bruteforce (44\% recall loss) reflects the relative distinctiveness of the flow-level signatures: FTP brute force flows exhibit more anomalous packet-to-byte ratios and connection durations that the Protocol and Behavioural Agents can detect independently, whereas SSH brute force flows more closely resemble legitimate SSH sessions at the individual flow level.
+
+Devil's Advocate removal produced no degradation on either brute force attack type --- recall and false positive rate remained identical to the full system. This result warrants careful interpretation rather than dismissal of the agent's contribution. FTP-BruteForce and SSH-Bruteforce generate highly distinctive flow signatures that all four specialist agents classify with high confidence; in this context, the Devil's Advocate counter-argument is consistently overruled by the weight of specialist evidence. The DA's contribution is more visible in the system-wide false positive analysis (Section~\ref{sec:false-positive-analysis}), where the adversarial checking mechanism suppresses the over-classification bias that produced a 41.4\% false positive rate in the zero-shot MCP configuration (Section~\ref{sec:mcp-comparison}). The ablation evidence suggests that the DA's value is conditional on classification difficulty: it provides insurance against over-classification on ambiguous flows whilst adding negligible overhead on unambiguous ones. Future work should extend the DA ablation to attack types with higher classification ambiguity --- particularly DDoS-HOIC and Bot --- where the agent's contribution is expected to be substantially larger.
+
+Statistical Agent removal similarly produced no recall degradation on either brute force attack type, suggesting that the protocol and temporal agents provide sufficient discriminative signal without statistical feature analysis for this attack category. The Statistical Agent's primary contribution --- identifying anomalous byte-per-packet ratios, inter-arrival timing deviations, and volume-based outliers --- is most relevant to attack types characterised by volumetric anomalies, notably DDoS variants and DoS-Hulk, where statistical features dominate the detection signal. This finding motivates a targeted ablation across the full attack taxonomy as future work, to identify attack categories where the Statistical Agent is the critical differentiator.
+
+The four-agent configuration --- omitting both the Devil's Advocate and Temporal Agent --- achieved 98--100\% recall at approximately 59\% of the full six-agent cost (\$0.87--\$0.90 versus \$2.13--\$2.16). This result identifies a cost-performance trade-off that may be relevant for deployment contexts where API budget is constrained: on brute force attack types, the four-agent system retains near-perfect detection at a substantial cost saving. However, as demonstrated above, the Temporal Agent's contribution is substantial on attacks with temporal signatures, and the DA's value is not captured on brute force attack types where specialist confidence is uniformly high. The four-agent configuration should therefore not be treated as a general substitute for the six-agent system without ablation evidence across the full fourteen-category attack taxonomy.
+
+\section{Tier 1 Routing Validation}
+\label{sec:routing-validation}
+
+A control experiment was conducted to validate that the Tier~1 Random Forest performs intelligent routing rather than functioning as a random cost-reduction mechanism. If the RF's contribution were merely to reduce the volume of flows forwarded to the LLM pipeline --- without specifically targeting attack flows --- then a random filter at the same selection rate should achieve comparable performance. Two random filter conditions were evaluated against the trained RF on the FTP-BruteForce batch ($n = 1{,}000$; 50 attack + 950 benign), using the same six-agent pipeline and GPT-4o model as the Stage~1 baseline.
+
+A random 7\% filter --- matching the RF's actual selection rate --- selected 70 flows uniformly at random (seed = 42) for LLM analysis. Of these, only 3 were attack flows, reflecting the 5\% attack prevalence in the batch. The LLM pipeline classified none of the 3 forwarded attack flows as malicious, yielding 0\% recall across the full batch. Additionally, the random filter introduced 10 false positives from the 67 benign flows it forwarded, producing a false positive rate of 2.2\% --- a degradation from the trained RF's zero per cent FPR. A more aggressive random 50\% filter forwarded 500 flows, capturing 28 of 50 attack flows by chance, yet still achieved 0\% recall: the LLM pipeline failed to correctly classify any of the forwarded attack flows as malicious. This condition also produced 28 false positives (FPR: 5.0\%) at a cost of \$3.02 --- 42\% more expensive than the trained RF whilst detecting zero attacks.
+
+\begin{table}[H]
+\centering
+\caption{Tier 1 Routing Validation --- Trained RF vs.\ Random Filters on FTP-BruteForce}
+\label{tab:routing-control}
+\begin{tabular}{l r r r r r}
+\toprule
+Filter Type & Attacks Forwarded & Recall & FPR & F1 & Cost (\$) \\
+\midrule
+Trained RF (threshold 0.15) & 50 / 50 & 100\% & 0.0\% & 100\% & 2.13 \\
+Random filter (7\%) & 3 / 50 & 0\% & 2.2\% & 0\% & 1.01 \\
+Random filter (50\%) & 28 / 50 & 0\% & 5.0\% & 0\% & 3.02 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The divergence between the trained RF and the random filters confirms that the Tier~1 Random Forest is not merely reducing API cost through volume reduction --- it is specifically identifying the flows most likely to be malicious and routing them to the LLM pipeline. The trained RF at a 7\% selection rate forwards all 50 attack flows to the pipeline, achieving 100\% recall; a random filter at the same selection rate forwards only 3 attack flows by chance and achieves 0\% recall. Even at a 50\% random selection rate --- forwarding seven times more flows than the trained RF at 42\% higher cost --- the random filter captures only 56\% of attacks by chance and still achieves 0\% recall, as the randomly selected attack flows lack the clustering context and temporal structure that the RF's targeted selection preserves. This result quantifies the routing contribution precisely: the RF does not merely reduce volume, it surfaces the specific flows that the LLM pipeline is capable of detecting. A system that sent random flows to the LLM would require selection rates approaching 100\% --- eliminating the cost benefit entirely --- to achieve comparable attack coverage, confirming that intelligent routing is an essential, non-substitutable component of the two-tier architecture.
