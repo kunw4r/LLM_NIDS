@@ -1667,19 +1667,50 @@ export default function NIDSDashboard() {
             <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, letterSpacing: "-0.02em" }}>Flow Inspector</h2>
 
             {/* Source selector */}
-            <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
-              <span style={{ fontSize: 12, color: "#6b7280", marginRight: 4 }}>Load experiment:</span>
-              {EXPERIMENTS.map(exp => (
-                <button key={exp.id} onClick={() => { setInspectorSource(exp.id); loadInspectorData(exp.id); }} style={{
-                  padding: "4px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer",
-                  border: inspectorSource === exp.id ? "1px solid #2563eb" : "1px solid #e5e7eb",
-                  background: inspectorSource === exp.id ? "#eff6ff" : "#fff",
-                  color: inspectorSource === exp.id ? "#2563eb" : "#374151",
-                  fontWeight: inspectorSource === exp.id ? 600 : 400,
-                }}>
-                  {exp.name}
-                </button>
-              ))}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+                <span style={{ fontSize: 12, color: "#6b7280", marginRight: 4, fontWeight: 600, minWidth: 90 }}>Development:</span>
+                {EXPERIMENTS.map(exp => (
+                  <button key={exp.id} onClick={() => { setInspectorSource(exp.id); loadInspectorData(exp.id); }} style={{
+                    padding: "4px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer",
+                    border: inspectorSource === exp.id ? "1px solid #2563eb" : "1px solid #e5e7eb",
+                    background: inspectorSource === exp.id ? "#eff6ff" : "#fff",
+                    color: inspectorSource === exp.id ? "#2563eb" : "#374151",
+                    fontWeight: inspectorSource === exp.id ? 600 : 400,
+                  }}>
+                    {exp.name}
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>
+                <span style={{ fontSize: 12, color: "#6b7280", marginRight: 4, fontWeight: 600, minWidth: 90 }}>Stage 1:</span>
+                {STAGE1_SUMMARY.experiments.map(exp => {
+                  const slug = exp.attack_type.replace(/ /g, "_");
+                  const idMap = {
+                    "FTP-BruteForce": "stage1_ftp", "SSH-Bruteforce": "stage1_ssh",
+                    "DDoS_attacks-LOIC-HTTP": "stage1_loic_http", "DoS_attacks-Hulk": "stage1_hulk",
+                    "DoS_attacks-SlowHTTPTest": "stage1_slowhttp", "DoS_attacks-GoldenEye": "stage1_goldeneye",
+                    "DoS_attacks-Slowloris": "stage1_slowloris", "DDOS_attack-HOIC": "stage1_hoic",
+                    "DDOS_attack-LOIC-UDP": "stage1_loic_udp", "Bot": "stage1_bot",
+                    "Infilteration": "stage1_infilteration", "Brute_Force_-Web": "stage1_web",
+                    "Brute_Force_-XSS": "stage1_xss", "SQL_Injection": "stage1_sql",
+                  };
+                  const sourceId = idMap[exp.attack_type] || `stage1_${slug.toLowerCase()}`;
+                  const isActive = inspectorSource === sourceId;
+                  const recallColor = exp.recall >= 95 ? "#16a34a" : exp.recall >= 80 ? "#2563eb" : exp.recall >= 50 ? "#d97706" : "#dc2626";
+                  return (
+                    <button key={sourceId} onClick={() => { setInspectorSource(sourceId); loadInspectorData(sourceId); }} style={{
+                      padding: "4px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer",
+                      border: isActive ? `1px solid ${recallColor}` : "1px solid #e5e7eb",
+                      background: isActive ? `${recallColor}10` : "#fff",
+                      color: isActive ? recallColor : "#374151",
+                      fontWeight: isActive ? 600 : 400,
+                    }}>
+                      {exp.attack_type.replace(/_/g, " ")} <span style={{ color: recallColor, fontSize: 10 }}>{exp.recall}%</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Loading / Error / Empty states */}
@@ -2787,34 +2818,40 @@ export default function NIDSDashboard() {
             <div style={{ display: "flex", flexDirection: "column", gap: 16, maxWidth: 700 }}>
               {[
                 {
-                  title: "Complete Stage 1: All 14 Attack Types",
-                  desc: "Run the per-attack evaluation pipeline for all remaining attack types in the CICIDS2018 dataset. Each batch tests one attack type at 5% prevalence with Tier-1 RF pre-filtering.",
-                  status: "In Progress",
+                  title: "Stage 1: All 14 Attack Types",
+                  desc: "Per-attack evaluation across all 14 CICIDS2018 attack types. 1000 flows each (50 attack + 950 benign) with Tier-1 RF pre-filtering + GPT-4o 6-agent pipeline. 12/14 types detected at 82%+ recall, 0% FPR across the board. Total cost: $27.35.",
+                  status: "Complete",
+                  statusColor: "#16a34a",
+                },
+                {
+                  title: "MCP Comparison Experiment",
+                  desc: "Three single-agent configs vs AMATAS: (A) GPT-4o-mini zero-shot (90% recall, 41% FPR), (B) GPT-4o engineered prompt (67% recall, 27% FPR), (C) GPT-4o + MITRE tool (70% recall, 30% FPR). AMATAS v2 achieves 88% F1 with 1.1% FPR — no single agent comes close.",
+                  status: "Complete",
+                  statusColor: "#16a34a",
+                },
+                {
+                  title: "Infilteration Deep Dive",
+                  desc: "Infilteration scored 0% recall — attack flows are DNS/NTP/DHCP queries statistically identical to benign traffic. Tier 1 RF filtered 40/50 attacks as benign; the LLM missed the remaining 10. Individual-flow analysis cannot detect this attack; temporal clustering is the hypothesis.",
+                  status: "Investigating",
+                  statusColor: "#d97706",
+                },
+                {
+                  title: "AMATAS v3: Temporal Clustering",
+                  desc: "Group flows by source IP within time windows before LLM analysis. Hypothesis: clustered context reveals exfiltration patterns (46 DNS queries from one IP) invisible at the individual flow level. Primary target: Infilteration recovery from 0% recall.",
+                  status: "Next Up",
                   statusColor: "#2563eb",
                 },
                 {
-                  title: "MCP Controlled Experiment",
-                  desc: "Three-condition comparison on the same batch: (1) Zero-shot LLM only, (2) Engineered prompt with NetFlow context, (3) LLM + MITRE ATT&CK MCP tools. Tests whether MCP tools add value beyond prompt engineering.",
-                  status: "Planned",
-                  statusColor: "#6b7280",
-                },
-                {
-                  title: "Temporal Clustering",
-                  desc: "Group flows by source IP and time window before analysis. Test whether cluster-level context improves detection of attacks like Infiltration that mimic benign DNS traffic.",
-                  status: "Planned",
-                  statusColor: "#6b7280",
-                },
-                {
-                  title: "Cross-Model Validation",
-                  desc: "Run the best configuration (GPT-4o-mini at $0.004/flow) across all attack types and compare against the Sonnet-4 baseline for quality-cost trade-off analysis.",
+                  title: "Test Set Final Evaluation",
+                  desc: "Run the complete AMATAS v2 (and v3 if clustering works) pipeline on the held-out test.csv split (8.05M flows). This is the final evaluation for the thesis — no parameter tuning allowed.",
                   status: "Planned",
                   statusColor: "#6b7280",
                 },
                 {
                   title: "Thesis Write-Up",
-                  desc: "Compile all experimental results, architecture decisions, and findings into the formal thesis document. The dashboard serves as the interactive companion to the written thesis.",
-                  status: "Planned",
-                  statusColor: "#6b7280",
+                  desc: "Compile all experimental results into the formal thesis. Key contributions: two-tier ML+LLM architecture, per-attack-type evaluation at realistic distributions, explainable verdicts via multi-agent reasoning chains, and the role of temporal context in NIDS.",
+                  status: "In Progress",
+                  statusColor: "#2563eb",
                 },
               ].map(item => (
                 <div key={item.title} style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "20px" }}>
