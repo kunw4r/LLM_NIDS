@@ -148,7 +148,7 @@ export default function FlowInspector({ inspector }) {
               <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-gray-200 text-gray-600 mr-2">{attackInfo.category}</span>
               <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700">{attackInfo.datasetSplit}</span>
               <p className="text-sm text-gray-700 mt-2 mb-2 leading-relaxed">{attackInfo.description}</p>
-              <div className="grid grid-cols-3 gap-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div>
                   <div className="font-semibold text-gray-500 mb-0.5">How it works</div>
                   <div className="text-gray-700 leading-relaxed">{attackInfo.howItWorks}</div>
@@ -185,7 +185,7 @@ export default function FlowInspector({ inspector }) {
                   <span className="text-[11px] text-gray-400">{exp.date}</span>
                 </div>
                 <h3 className="text-lg font-bold mb-3 tracking-tight">{exp.name}</h3>
-                <div className="grid grid-cols-6 gap-2 mb-3">
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-3">
                   {[
                     { label: "F1", value: pct(exp.f1) },
                     { label: "Recall", value: pct(exp.recall) },
@@ -255,18 +255,9 @@ export default function FlowInspector({ inspector }) {
               costSource = "stage1";
             }
 
-            // Last fallback: global averages
+            // Last fallback: skip — don't show misleading global averages
             if (!costData) {
-              costData = {};
-              AGENT_KEYS.forEach(k => {
-                costData[k] = { cost: AGENT_COST_DATA[k].cost / 14, pct: AGENT_COST_DATA[k].pct };
-              });
-              costData._total = AGENT_COST_DATA.avgPerBatch;
-              costData._llmFlows = Math.round(AGENT_COST_DATA.totalLlmFlows / 14);
-              costData._filtered = Math.round(AGENT_COST_DATA.totalFiltered / 14);
-              costData._estWithout = AGENT_COST_DATA.estWithoutTier1 / 14;
-              costData._tp = 0;
-              costSource = "average";
+              return null;
             }
 
             return (
@@ -280,20 +271,20 @@ export default function FlowInspector({ inspector }) {
                 <div className="flex flex-col gap-1 mb-3">
                   {[...AGENT_KEYS].sort((a, b) => (costData[b]?.pct || 0) - (costData[a]?.pct || 0)).map(a => (
                     <div key={a} className="flex items-center gap-1.5">
-                      <div className="w-20 text-[10px] text-gray-500 text-right">{AGENT_COST_DATA[a].label}</div>
-                      <div className="flex-1 bg-gray-200 rounded-sm h-3.5 overflow-hidden">
+                      <div className="w-16 sm:w-20 text-[10px] text-gray-500 text-right flex-shrink-0">{AGENT_COST_DATA[a].label}</div>
+                      <div className="flex-1 bg-gray-200 rounded-sm h-3.5 overflow-hidden min-w-0">
                         <div
                           className="h-full rounded-sm"
                           style={{ width: `${(costData[a].pct / 45) * 100}%`, maxWidth: "100%", background: AGENT_COST_DATA[a].color }}
                         />
                       </div>
-                      <div className="w-24 text-[10px] text-gray-500 font-mono">
-                        ${costData[a].cost.toFixed(3)} ({costData[a].pct.toFixed(0)}%)
+                      <div className="w-20 sm:w-24 text-[10px] text-gray-500 font-mono flex-shrink-0">
+                        ${costData[a].cost.toFixed(3)} <span className="hidden sm:inline">({costData[a].pct.toFixed(0)}%)</span>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                   {[
                     { label: "Total cost", value: `$${costData._total.toFixed(2)}`, bg: "bg-green-50", color: "text-green-800" },
                     { label: "Cost/flow", value: `$${(costData._total / 1000).toFixed(4)}`, bg: "bg-blue-50", color: "text-blue-800" },
@@ -312,7 +303,7 @@ export default function FlowInspector({ inspector }) {
           })()}
 
           {/* Verdict distribution cards */}
-          <div className="grid grid-cols-4 gap-3 mb-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
             {[
               { label: "Malicious", count: pieCounts.malicious, color: "#dc2626", filter: "malicious" },
               { label: "Suspicious", count: pieCounts.suspicious, color: "#d97706", filter: "suspicious" },
@@ -340,7 +331,7 @@ export default function FlowInspector({ inspector }) {
           <ReasoningShowcase flows={inspectorFlows} />
 
           {/* Search + filter bar */}
-          <div className="flex gap-2 mb-3 items-center">
+          <div className="flex flex-col sm:flex-row gap-2 mb-3">
             <input
               type="text"
               placeholder="Search by flow #, verdict, or attack type..."
@@ -348,31 +339,33 @@ export default function FlowInspector({ inspector }) {
               onChange={e => setSearchQuery(e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-200 rounded-md text-sm outline-none focus:border-blue-400"
             />
-            {[
-              ["all", "All"],
-              ["correct", "Correct"],
-              ["wrong", "Wrong"],
-              ["attacks", "Attacks"],
-              ["benign_actual", "Benign"],
-              ["filtered", "Filtered"],
-            ].map(([id, label]) => (
-              <button
-                key={id}
-                onClick={() => { setInspectorFilter(id); setInspectorPage(0); }}
-                className={`px-3 py-2 rounded-md text-xs cursor-pointer border ${
-                  inspectorFilter === id
-                    ? "border-blue-600 bg-blue-50 text-blue-600"
-                    : "border-gray-200 bg-white text-gray-500"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+            <div className="flex gap-1.5 flex-wrap">
+              {[
+                ["all", "All"],
+                ["correct", "Correct"],
+                ["wrong", "Wrong"],
+                ["attacks", "Attacks"],
+                ["benign_actual", "Benign"],
+                ["filtered", "Filtered"],
+              ].map(([id, label]) => (
+                <button
+                  key={id}
+                  onClick={() => { setInspectorFilter(id); setInspectorPage(0); }}
+                  className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs cursor-pointer border ${
+                    inspectorFilter === id
+                      ? "border-blue-600 bg-blue-50 text-blue-600"
+                      : "border-gray-200 bg-white text-gray-500"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Two-column layout: FlowTable + FlowDetail */}
+          {/* Two-column layout: FlowTable + FlowDetail — stacks on mobile */}
           <div
-            className="grid gap-5"
+            className="flex flex-col lg:grid lg:gap-5"
             style={{ gridTemplateColumns: selectedFlow ? "45% 55%" : "1fr" }}
           >
             <FlowTable
@@ -385,11 +378,13 @@ export default function FlowInspector({ inspector }) {
             />
 
             {selectedFlow && (
-              <FlowDetail
-                flow={selectedFlow}
-                expandedPrompts={expandedPrompts}
-                setExpandedPrompts={setExpandedPrompts}
-              />
+              <div className="mt-4 lg:mt-0">
+                <FlowDetail
+                  flow={selectedFlow}
+                  expandedPrompts={expandedPrompts}
+                  setExpandedPrompts={setExpandedPrompts}
+                />
+              </div>
             )}
           </div>
         </>

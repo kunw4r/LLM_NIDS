@@ -31,7 +31,7 @@ export default function MCPAblation({ s1 }) {
       </p>
 
       {/* Hero comparison cards */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
         {heroCards.map(c => (
           <div key={c.label} className="rounded-lg p-4 bg-white" style={{ border: `2px solid ${c.border}` }}>
             <div className="text-xs font-semibold mb-1" style={{ color: c.border }}>{c.label}</div>

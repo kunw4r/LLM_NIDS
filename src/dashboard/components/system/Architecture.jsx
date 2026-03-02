@@ -39,7 +39,7 @@ export default function Architecture() {
           <div className="text-gray-400">&#8595;</div>
           <div className="border border-gray-200 rounded-lg p-5 w-full max-w-xl">
             <div className="text-xs font-semibold text-gray-500 mb-3 text-center">Tier 2: 6-Agent Multi-Agent LLM Pipeline</div>
-            <div className="grid grid-cols-4 gap-2 mb-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
               {AGENTS.filter(a => a.id !== "devils_advocate" && a.id !== "orchestrator").map(a => (
                 <div key={a.id} className="border border-gray-200 rounded-md py-2 px-2 text-center">
                   <div className="text-xs font-semibold" style={{ color: a.color }}>{a.name}</div>
@@ -154,7 +154,7 @@ export default function Architecture() {
       {/* Dataset info */}
       <div className="border border-gray-200 rounded-lg p-5 mt-6">
         <h3 className="text-sm font-semibold mb-3">Dataset: CICIDS2018 NetFlow v3</h3>
-        <div className="grid grid-cols-4 gap-4 text-sm mb-5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-sm mb-5">
           {[
             { label: "Total Flows", value: "20,115,529" },
             { label: "Features", value: "53" },

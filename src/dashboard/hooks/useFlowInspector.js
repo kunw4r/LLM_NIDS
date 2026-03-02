@@ -16,6 +16,7 @@ export default function useFlowInspector() {
   const loadInspectorData = useCallback(async (sourceId) => {
     setInspectorLoading(true);
     setInspectorError(null);
+    setInspectorData(null);
     setSelectedFlowIdx(null);
     setInspectorPage(0);
     setInspectorFilter("all");

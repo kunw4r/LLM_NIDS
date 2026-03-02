@@ -9,13 +9,61 @@ import { AGENTS } from "../../data/agents";
 // Lib
 import { computeErrorAttribution } from "../../lib/errorAttribution";
 import { computeAgentSummaries, generateAgentNarrative } from "../../lib/agentSummary";
-import { dollar, pct, verdictColor, verdictBg } from "../../lib/format";
+import { dollar, verdictColor, verdictBg } from "../../lib/format";
 
 // Components
 import ErrorAttribution from "./ErrorAttribution";
 import ReasoningShowcase from "./ReasoningShowcase";
 import FlowTable from "../inspector/FlowTable";
 import FlowDetail from "../inspector/FlowDetail";
+
+/**
+ * Resolve cost data from the best available source.
+ * Priority: 1) live JSON metadata  2) AGENT_COST_PER_EXPERIMENT  3) null
+ */
+function resolveCostData(inspectorData, attackType, cm) {
+  const meta = inspectorData?.evaluation_metadata;
+  const agentStats = meta?.agent_stats;
+  const tier1 = meta?.tier1 || {};
+  const metrics = meta?.metrics?.confusion || {};
+
+  // 1. Live JSON metadata (most accurate — reflects actual API spend)
+  if (agentStats) {
+    const total = Object.values(agentStats).reduce((s, a) => s + (typeof a === "object" ? (a.total_cost || 0) : 0), 0);
+    if (total > 0) {
+      const data = {};
+      AGENT_KEYS.forEach(k => {
+        const c = typeof agentStats[k] === "object" ? (agentStats[k]?.total_cost || 0) : 0;
+        data[k] = { cost: c, pct: (c / total * 100) };
+      });
+      data._total = total;
+      data._llmFlows = tier1.flows_sent_to_llm || 0;
+      data._filtered = tier1.flows_filtered || 0;
+      data._estWithout = tier1.estimated_cost_without_tier1 || 0;
+      data._tp = metrics.tp || cm?.tp || 0;
+      data._source = "live";
+      return data;
+    }
+  }
+
+  // 2. Hardcoded per-experiment data from stage1.js
+  const perExp = AGENT_COST_PER_EXPERIMENT[attackType];
+  if (perExp) {
+    const data = {};
+    AGENT_KEYS.forEach(k => {
+      data[k] = { cost: perExp[k] || 0, pct: perExp.total > 0 ? ((perExp[k] || 0) / perExp.total * 100) : 0 };
+    });
+    data._total = perExp.total;
+    data._llmFlows = perExp.llmFlows;
+    data._filtered = perExp.filtered;
+    data._estWithout = perExp.estWithout;
+    data._tp = cm?.tp || 0;
+    data._source = "stage1";
+    return data;
+  }
+
+  return null;
+}
 
 export default function ExperimentDetail({ attackType, inspector, onBack }) {
   const [explainerOpen, setExplainerOpen] = useState(false);
@@ -36,7 +84,12 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
   const expectedBehavior = EXPECTED_AGENT_BEHAVIOR[attackType] || {};
   const experiment = STAGE1_SUMMARY.experiments.find(e => e.attack_type === attackType);
   const cm = experiment?.confusion || {};
-  const perExpCost = AGENT_COST_PER_EXPERIMENT[attackType];
+
+  // Resolve cost from best available source
+  const costData = useMemo(
+    () => resolveCostData(inspectorData, attackType, cm),
+    [inspectorData, attackType, cm]
+  );
 
   // Compute attribution and agent summaries from loaded flows
   const attribution = useMemo(
@@ -100,13 +153,13 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
         <div className="border border-gray-200 rounded-lg mb-5 overflow-hidden">
           <button
             onClick={() => setExplainerOpen(p => !p)}
-            className="w-full flex justify-between items-center px-5 py-3 bg-gray-50 cursor-pointer border-none text-left"
+            className="w-full flex justify-between items-center px-4 sm:px-5 py-3 bg-gray-50 cursor-pointer border-none text-left"
           >
             <span className="text-sm font-semibold text-gray-700">About This Attack</span>
             <span className="text-xs text-gray-400">{explainerOpen ? "Collapse" : "Expand"}</span>
           </button>
           {explainerOpen && (
-            <div className="px-5 py-4">
+            <div className="px-4 sm:px-5 py-4">
               <p className="text-sm text-gray-700 leading-relaxed mb-3">{attackInfo.description} {attackInfo.howItWorks}</p>
               <div className="text-xs text-gray-600 mb-3">
                 <strong>Detection signature:</strong> {attackInfo.signature}
@@ -117,7 +170,7 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
               {Object.keys(expectedBehavior).length > 0 && (
                 <div>
                   <div className="text-xs font-semibold text-gray-600 mb-2">Expected Agent Behavior</div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {AGENTS.map(agent => {
                       const exp = expectedBehavior[agent.id];
                       if (!exp) return null;
@@ -141,7 +194,7 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
       {/* ── Section 3: Experiment Config ───────────────────── */}
       <div className="border border-gray-200 rounded-lg p-4 mb-5 bg-gray-50/60">
         <div className="text-xs font-semibold text-gray-500 mb-2">Experiment Configuration</div>
-        <div className="flex gap-4 flex-wrap text-xs text-gray-700">
+        <div className="flex gap-x-4 gap-y-1 flex-wrap text-xs text-gray-700">
           <span><strong>Model:</strong> GPT-4o</span>
           <span><strong>Tier 1 Threshold:</strong> 0.15</span>
           <span><strong>Batch:</strong> {attackInfo ? `${attackInfo.batchComposition.attack}a / ${attackInfo.batchComposition.benign}b` : "50a / 950b"}</span>
@@ -154,22 +207,22 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
 
       {/* ── Section 4: Results Summary ─────────────────────── */}
       {experiment && (
-        <div className="grid grid-cols-2 gap-5 mb-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
           {/* Left: Confusion matrix + metrics */}
-          <div className="border border-gray-200 rounded-lg p-5">
+          <div className="border border-gray-200 rounded-lg p-4 sm:p-5">
             <div className="text-sm font-semibold mb-3">Results</div>
 
             {/* Confusion matrix */}
-            <div className="grid mb-4" style={{ gridTemplateColumns: "90px 1fr 1fr", maxWidth: 300 }}>
-              <div className="p-2 text-xs text-gray-500"></div>
-              <div className="p-2 text-xs font-semibold text-gray-500 text-center border-b border-gray-200">Pred Benign</div>
-              <div className="p-2 text-xs font-semibold text-gray-500 text-center border-b border-gray-200">Pred Attack</div>
-              <div className="p-2 text-xs font-semibold text-gray-500 border-r border-gray-200">True Benign</div>
-              <div className="p-2 text-center text-lg font-bold text-green-600 bg-green-50 rounded-tl">{cm.tn}</div>
-              <div className="p-2 text-center text-lg font-bold rounded-tr" style={{ color: cm.fp > 0 ? "#dc2626" : "#16a34a", background: cm.fp > 0 ? "#fef2f2" : "#f0fdf4" }}>{cm.fp}</div>
-              <div className="p-2 text-xs font-semibold text-gray-500 border-r border-gray-200">True Attack</div>
-              <div className="p-2 text-center text-lg font-bold rounded-bl" style={{ color: cm.fn > 0 ? "#dc2626" : "#16a34a", background: cm.fn > 0 ? "#fef2f2" : "#f0fdf4" }}>{cm.fn}</div>
-              <div className="p-2 text-center text-lg font-bold text-green-600 bg-green-50 rounded-br">{cm.tp}</div>
+            <div className="grid mb-4" style={{ gridTemplateColumns: "70px 1fr 1fr", maxWidth: 280 }}>
+              <div className="p-1.5 text-xs text-gray-500"></div>
+              <div className="p-1.5 text-[10px] sm:text-xs font-semibold text-gray-500 text-center border-b border-gray-200">Pred Benign</div>
+              <div className="p-1.5 text-[10px] sm:text-xs font-semibold text-gray-500 text-center border-b border-gray-200">Pred Attack</div>
+              <div className="p-1.5 text-[10px] sm:text-xs font-semibold text-gray-500 border-r border-gray-200">True Benign</div>
+              <div className="p-1.5 text-center text-base font-bold text-green-600 bg-green-50 rounded-tl">{cm.tn}</div>
+              <div className="p-1.5 text-center text-base font-bold rounded-tr" style={{ color: cm.fp > 0 ? "#dc2626" : "#16a34a", background: cm.fp > 0 ? "#fef2f2" : "#f0fdf4" }}>{cm.fp}</div>
+              <div className="p-1.5 text-[10px] sm:text-xs font-semibold text-gray-500 border-r border-gray-200">True Attack</div>
+              <div className="p-1.5 text-center text-base font-bold rounded-bl" style={{ color: cm.fn > 0 ? "#dc2626" : "#16a34a", background: cm.fn > 0 ? "#fef2f2" : "#f0fdf4" }}>{cm.fn}</div>
+              <div className="p-1.5 text-center text-base font-bold text-green-600 bg-green-50 rounded-br">{cm.tp}</div>
             </div>
 
             {/* Metric cards */}
@@ -180,7 +233,7 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
                 { label: "F1", value: `${experiment.f1}%`, color: "#2563eb" },
               ].map(m => (
                 <div key={m.label} className="text-center py-2 border border-gray-200 rounded-md">
-                  <div className="text-xl font-bold" style={{ color: m.color }}>{m.value}</div>
+                  <div className="text-lg sm:text-xl font-bold" style={{ color: m.color }}>{m.value}</div>
                   <div className="text-[10px] text-gray-500">{m.label}</div>
                 </div>
               ))}
@@ -204,7 +257,7 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
                     />
                   ))}
                 </div>
-                <div className="flex gap-3 mt-1">
+                <div className="flex gap-2 sm:gap-3 mt-1 flex-wrap">
                   {[
                     { count: pieCounts.malicious, color: "#dc2626", label: "Malicious" },
                     { count: pieCounts.suspicious, color: "#d97706", label: "Suspicious" },
@@ -224,10 +277,10 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
           {/* Right: Error attribution + RF vs LLM */}
           <div>
             <ErrorAttribution attribution={attribution} />
-            {perExpCost && (
+            {costData && (
               <div className="border border-gray-200 rounded-lg p-4 bg-gray-50/60">
                 <div className="text-xs text-gray-600 leading-relaxed">
-                  <strong>Tier 1 filtered {perExpCost.filtered}</strong> of 1000 flows ({((perExpCost.filtered / 1000) * 100).toFixed(0)}%) — <strong>LLM analysed {perExpCost.llmFlows}</strong>.
+                  <strong>Tier 1 filtered {costData._filtered}</strong> of 1000 flows ({((costData._filtered / 1000) * 100).toFixed(0)}%) — <strong>LLM analysed {costData._llmFlows}</strong>.
                 </div>
                 {attribution && (
                   <div className="text-xs text-gray-500 mt-1">
@@ -247,44 +300,44 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
       )}
 
       {/* ── Section 5: Cost Breakdown ──────────────────────── */}
-      {perExpCost && (
-        <div className="border border-gray-200 rounded-lg p-5 mb-5">
+      {costData && (
+        <div className="border border-gray-200 rounded-lg p-4 sm:p-5 mb-5">
           <div className="text-sm font-semibold mb-3">Cost Breakdown</div>
 
           {/* Horizontal bars */}
           <div className="flex flex-col gap-1.5 mb-4">
-            {[...AGENT_KEYS].sort((a, b) => (perExpCost[b] || 0) - (perExpCost[a] || 0)).map(a => {
-              const cost = perExpCost[a] || 0;
-              const pctVal = perExpCost.total > 0 ? (cost / perExpCost.total * 100) : 0;
+            {[...AGENT_KEYS].sort((a, b) => (costData[b]?.cost || 0) - (costData[a]?.cost || 0)).map(a => {
+              const cost = costData[a]?.cost || 0;
+              const pctVal = costData[a]?.pct || 0;
               return (
-                <div key={a} className="flex items-center gap-2">
-                  <div className="w-24 text-xs text-gray-500 text-right">{AGENT_COST_DATA[a].label}</div>
-                  <div className="flex-1 bg-gray-100 rounded-sm h-4 overflow-hidden">
+                <div key={a} className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-16 sm:w-24 text-[10px] sm:text-xs text-gray-500 text-right flex-shrink-0">{AGENT_COST_DATA[a].label}</div>
+                  <div className="flex-1 bg-gray-100 rounded-sm h-3.5 sm:h-4 overflow-hidden min-w-0">
                     <div
                       className="h-full rounded-sm flex items-center justify-end pr-1"
                       style={{ width: `${(pctVal / 45) * 100}%`, maxWidth: "100%", background: AGENT_COST_DATA[a].color }}
                     >
-                      {pctVal >= 10 && <span className="text-[9px] text-white font-semibold">{pctVal.toFixed(0)}%</span>}
+                      {pctVal >= 12 && <span className="text-[8px] sm:text-[9px] text-white font-semibold">{pctVal.toFixed(0)}%</span>}
                     </div>
                   </div>
-                  <div className="w-28 text-[11px] text-gray-500 font-mono">${cost.toFixed(3)} ({pctVal.toFixed(0)}%)</div>
+                  <div className="w-20 sm:w-28 text-[10px] sm:text-[11px] text-gray-500 font-mono flex-shrink-0">${cost.toFixed(3)} <span className="hidden sm:inline">({pctVal.toFixed(0)}%)</span></div>
                 </div>
               );
             })}
           </div>
 
           {/* Summary cards */}
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
             {[
-              { label: "Total cost", value: dollar(perExpCost.total), bg: "bg-green-50", color: "text-green-800" },
-              { label: "Cost/flow", value: `$${(perExpCost.total / 1000).toFixed(4)}`, bg: "bg-blue-50", color: "text-blue-800" },
-              { label: "Cost/TP", value: cm.tp > 0 ? `$${(perExpCost.total / cm.tp).toFixed(3)}` : "\u2014", bg: "bg-yellow-50", color: "text-yellow-800" },
-              { label: "Tier 1 saved", value: `$${(perExpCost.filtered * (perExpCost.total / (perExpCost.llmFlows || 1))).toFixed(2)}`, bg: "bg-green-50", color: "text-green-800" },
-              { label: "Without Tier 1", value: `$${perExpCost.estWithout.toFixed(0)}`, bg: "bg-red-50", color: "text-red-900" },
+              { label: "Total cost", value: `$${costData._total.toFixed(2)}`, bg: "bg-green-50", color: "text-green-800" },
+              { label: "Cost/flow", value: `$${(costData._total / 1000).toFixed(4)}`, bg: "bg-blue-50", color: "text-blue-800" },
+              { label: "Cost/TP", value: costData._tp > 0 ? `$${(costData._total / costData._tp).toFixed(3)}` : "\u2014", bg: "bg-yellow-50", color: "text-yellow-800" },
+              { label: "Tier 1 saved", value: `$${(costData._filtered * (costData._total / (costData._llmFlows || 1))).toFixed(2)}`, bg: "bg-green-50", color: "text-green-800" },
+              { label: "Without Tier 1", value: `$${costData._estWithout.toFixed(0)}`, bg: "bg-red-50", color: "text-red-900" },
             ].map(s => (
-              <div key={s.label} className={`text-center py-2.5 px-1 ${s.bg} rounded-md`}>
-                <div className={`text-sm font-bold ${s.color} font-mono`}>{s.value}</div>
-                <div className="text-[9px] text-gray-500 mt-0.5">{s.label}</div>
+              <div key={s.label} className={`text-center py-2 px-1 ${s.bg} rounded-md`}>
+                <div className={`text-xs sm:text-sm font-bold ${s.color} font-mono`}>{s.value}</div>
+                <div className="text-[8px] sm:text-[9px] text-gray-500 mt-0.5">{s.label}</div>
               </div>
             ))}
           </div>
@@ -301,7 +354,7 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
             Agent Summaries {agentSummaryOpen ? "\u25BC" : "\u25B6"}
           </button>
           {agentSummaryOpen && (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {AGENTS.map(agent => {
                 const s = agentSummaries[agent.id];
                 if (!s) return null;
@@ -311,7 +364,7 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
                 const isOrch = agent.id === "orchestrator";
 
                 return (
-                  <div key={agent.id} className="border border-gray-200 rounded-lg p-4">
+                  <div key={agent.id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-xs font-bold uppercase" style={{ color: agent.color }}>{agent.name}</span>
                       <span className="text-[10px] text-gray-400">{s.count || 0} flows</span>
@@ -368,7 +421,7 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
                         </div>
                         {s.topBenignIndicator && (
                           <div className="text-[10px] text-gray-400 mt-0.5 truncate" title={s.topBenignIndicator}>
-                            Top argument: "{s.topBenignIndicator}"
+                            Top argument: &ldquo;{s.topBenignIndicator}&rdquo;
                           </div>
                         )}
                       </div>
@@ -423,13 +476,13 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
 
       {/* ── Section 8: Flow Inspector ──────────────────────── */}
       {inspectorLoading && (
-        <div className="border border-gray-200 rounded-lg p-12 text-center text-gray-500">
+        <div className="border border-gray-200 rounded-lg p-8 sm:p-12 text-center text-gray-500">
           Loading flow data...
         </div>
       )}
 
       {inspectorError && !inspectorData && (
-        <div className="border border-red-300 rounded-lg p-6 bg-red-50 text-red-600 text-sm">
+        <div className="border border-red-300 rounded-lg p-4 sm:p-6 bg-red-50 text-red-600 text-sm">
           Failed to load: {inspectorError}
         </div>
       )}
@@ -439,7 +492,7 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
           <div className="text-sm font-semibold mb-3">Flow Inspector</div>
 
           {/* Search + filter bar */}
-          <div className="flex gap-2 mb-3 items-center">
+          <div className="flex flex-col sm:flex-row gap-2 mb-3">
             <input
               type="text"
               placeholder="Search by flow #, verdict, or attack type..."
@@ -447,33 +500,32 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
               onChange={e => setSearchQuery(e.target.value)}
               className="flex-1 px-3 py-2 border border-gray-200 rounded-md text-sm outline-none focus:border-blue-400"
             />
-            {[
-              ["all", "All"],
-              ["correct", "Correct"],
-              ["wrong", "Wrong"],
-              ["attacks", "Attacks"],
-              ["benign_actual", "Benign"],
-              ["filtered", "Filtered"],
-            ].map(([id, label]) => (
-              <button
-                key={id}
-                onClick={() => { setInspectorFilter(id); setInspectorPage(0); }}
-                className={`px-3 py-2 rounded-md text-xs cursor-pointer border ${
-                  inspectorFilter === id
-                    ? "border-blue-600 bg-blue-50 text-blue-600"
-                    : "border-gray-200 bg-white text-gray-500"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+            <div className="flex gap-1.5 flex-wrap">
+              {[
+                ["all", "All"],
+                ["correct", "Correct"],
+                ["wrong", "Wrong"],
+                ["attacks", "Attacks"],
+                ["benign_actual", "Benign"],
+                ["filtered", "Filtered"],
+              ].map(([id, label]) => (
+                <button
+                  key={id}
+                  onClick={() => { setInspectorFilter(id); setInspectorPage(0); }}
+                  className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs cursor-pointer border ${
+                    inspectorFilter === id
+                      ? "border-blue-600 bg-blue-50 text-blue-600"
+                      : "border-gray-200 bg-white text-gray-500"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Two-column: table + detail */}
-          <div
-            className="grid gap-5"
-            style={{ gridTemplateColumns: selectedFlow ? "45% 55%" : "1fr" }}
-          >
+          {/* Table + detail — stack on mobile */}
+          <div className="flex flex-col lg:grid lg:gap-5" style={{ gridTemplateColumns: selectedFlow ? "45% 55%" : "1fr" }}>
             <FlowTable
               flows={filteredFlows}
               page={inspectorPage}
@@ -483,11 +535,13 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
               setSelectedFlowIdx={setSelectedFlowIdx}
             />
             {selectedFlow && (
-              <FlowDetail
-                flow={selectedFlow}
-                expandedPrompts={expandedPrompts}
-                setExpandedPrompts={setExpandedPrompts}
-              />
+              <div className="mt-4 lg:mt-0">
+                <FlowDetail
+                  flow={selectedFlow}
+                  expandedPrompts={expandedPrompts}
+                  setExpandedPrompts={setExpandedPrompts}
+                />
+              </div>
             )}
           </div>
         </>

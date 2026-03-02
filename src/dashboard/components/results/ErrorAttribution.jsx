@@ -17,7 +17,7 @@ export default function ErrorAttribution({ attribution }) {
   } = attribution;
 
   return (
-    <div className="border border-gray-200 rounded-lg p-5 mb-5">
+    <div className="border border-gray-200 rounded-lg p-3 sm:p-5 mb-5 overflow-x-auto">
       <div className="text-sm font-bold mb-1">Error Attribution — Where Did Mistakes Happen?</div>
       <p className="text-xs text-gray-500 mb-4">Traces each flow through the pipeline to identify whether Tier 1 (RF) or Tier 2 (LLM) caused misclassifications.</p>
 

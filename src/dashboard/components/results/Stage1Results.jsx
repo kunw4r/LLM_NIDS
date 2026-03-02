@@ -16,14 +16,14 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
       </p>
 
       {/* ── RECALL BAR CHART ──────────────────────────────────── */}
-      <div className="border border-gray-200 rounded-lg p-6 mb-6">
+      <div className="border border-gray-200 rounded-lg p-4 sm:p-6 mb-6">
         <div className="text-sm font-semibold mb-4">Detection Recall by Attack Type</div>
         {[...s1.experiments].sort((a, b) => (b.recall || 0) - (a.recall || 0)).map(exp => {
           const recall = exp.recall || 0;
           const barColor = recall === 0 ? "#dc2626" : recall >= 80 ? "#16a34a" : recall >= 50 ? "#d97706" : "#dc2626";
           return (
-            <div key={exp.attack_type} className="flex items-center gap-2 mb-1.5">
-              <div className="w-44 text-xs text-gray-700 text-right flex-shrink-0 overflow-hidden text-ellipsis whitespace-nowrap">
+            <div key={exp.attack_type} className="flex items-center gap-1.5 sm:gap-2 mb-1.5">
+              <div className="w-24 sm:w-44 text-[10px] sm:text-xs text-gray-700 text-right flex-shrink-0 overflow-hidden text-ellipsis whitespace-nowrap">
                 {exp.attack_type.replace(/_/g, " ")}
               </div>
               <div className="flex-1 h-[22px] bg-gray-100 rounded overflow-hidden relative">
@@ -46,7 +46,7 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
           );
         })}
         <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-          <div className="w-44" />
+          <div className="w-24 sm:w-44" />
           <div className="flex-1 relative">
             <span className="absolute text-[10px] text-gray-500" style={{ left: "78%" }}>80% threshold</span>
           </div>
@@ -54,7 +54,7 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
         {[
           { label: "Best F1", value: `${s1.overall.best_f1}%`, sub: s1.overall.best_detected || "\u2014" },
           { label: "Total Flows", value: s1.overall.total_flows.toLocaleString(), sub: `${s1.experiments.length} attack types tested` },
@@ -84,7 +84,7 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
       </div>
 
       {/* Results table with expandable confusion matrices */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
+      <div className="border border-gray-200 rounded-lg overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="bg-gray-50">

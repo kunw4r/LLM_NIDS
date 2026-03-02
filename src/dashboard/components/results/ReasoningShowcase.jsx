@@ -103,7 +103,7 @@ function DecisionTimeline({ flow }) {
   });
 
   return (
-    <div className="flex gap-1 items-stretch overflow-x-auto pb-1">
+    <div className="flex gap-1 items-stretch overflow-x-auto pb-1 -mx-1 px-1">
       {steps.map((s, i) => (
         <React.Fragment key={i}>
           {i > 0 && <div className="flex items-center text-gray-300 text-xs flex-shrink-0">&rarr;</div>}

@@ -9,7 +9,7 @@ export default function FlowDetail({ flow, expandedPrompts, setExpandedPrompts }
   const correct = isCorrect(flow);
 
   return (
-    <div className="border border-gray-200 rounded-lg p-5 max-h-[70vh] overflow-y-auto">
+    <div className="border border-gray-200 rounded-lg p-3 sm:p-5 max-h-none lg:max-h-[70vh] overflow-y-auto">
       {/* Header */}
       <div className="mb-4">
         <div className="flex justify-between items-baseline">

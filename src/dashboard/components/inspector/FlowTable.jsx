@@ -8,7 +8,7 @@ export default function FlowTable({ flows, page, setPage, pageSize, selectedFlow
   const pageFlows = flows.slice(page * pageSize, (page + 1) * pageSize);
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden max-h-[70vh] overflow-y-auto">
+    <div className="border border-gray-200 rounded-lg overflow-hidden max-h-[50vh] lg:max-h-[70vh] overflow-y-auto">
       <table className="w-full border-collapse text-xs">
         <thead className="sticky top-0 bg-gray-50 z-[1]">
           <tr>

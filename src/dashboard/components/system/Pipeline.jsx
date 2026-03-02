@@ -125,7 +125,7 @@ export default function Pipeline() {
             verdict (BENIGN/SUSPICIOUS/MALICIOUS), confidence (0.0-1.0), attack type prediction, key evidence findings, and
             <strong> full reasoning text</strong> — the complete chain of thought, not just a label.
           </p>
-          <div className="grid grid-cols-4 gap-2 ml-9">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 ml-0 sm:ml-9">
             {specialists.map(a => (
               <div key={a.name} className="border border-gray-200 rounded-md p-3 text-center bg-white">
                 <div className="text-xs font-semibold" style={{ color: a.color }}>{a.name}</div>

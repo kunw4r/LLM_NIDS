@@ -45,7 +45,7 @@ export default function Shell({
 
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-8 py-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-4 sm:py-6">
           <div className="flex items-center gap-3">
             <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 flex-shrink-0">
               <path d="M16 2L4 8v8c0 7.2 5.12 13.92 12 16 6.88-2.08 12-8.8 12-16V8L16 2z" fill="#0f172a"/>
@@ -83,13 +83,13 @@ export default function Shell({
       )}
 
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-8 py-8 flex-1 w-full">
+      <main className="max-w-6xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex-1 w-full">
         {children}
       </main>
 
       {/* Footer */}
       <footer className="border-t border-gray-200 bg-white">
-        <div className="max-w-6xl mx-auto px-8 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-4 flex items-center justify-between">
           <p className="text-xs text-gray-400">AMATAS — University Thesis 2026</p>
           {lastFetched && (
             <p className="text-xs text-gray-400">
