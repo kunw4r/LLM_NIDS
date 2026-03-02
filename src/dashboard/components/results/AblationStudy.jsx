@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ABLATION_CONDITIONS } from "../../data/ablation";
 import { RESULTS_BASE } from "../../data/constants";
+import RoutingControl from "./RoutingControl";
 
 const METRIC_LABELS = { recall: "Recall", fpr: "FPR", f1: "F1", cost: "Cost" };
 
@@ -216,7 +217,7 @@ export default function AblationStudy() {
           </div>
 
           {/* Key findings */}
-          <div className="border border-gray-200 rounded-lg p-4 sm:p-5">
+          <div className="border border-blue-100 bg-blue-50/30 rounded-lg p-4 sm:p-5 mb-8">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Key Findings</h3>
             <div className="space-y-3 text-sm text-gray-700">
               {results.some(r => r.key.includes("two_agent") && r.recall < 0.5) && (
@@ -245,6 +246,19 @@ export default function AblationStudy() {
           </div>
         </>
       )}
+
+      {/* Routing validation — paired experiment */}
+      <div className="mt-10">
+        <div className="flex items-baseline gap-3 mb-1 flex-wrap">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Tier 1 Routing Validation</h2>
+          <span className="text-xs text-gray-400">Experiment 2</span>
+        </div>
+        <p className="text-sm text-gray-500 mb-6 max-w-2xl">
+          Control experiment replacing the trained Random Forest with random flow selection
+          to confirm that cost reduction comes from intelligent routing, not random sampling.
+        </p>
+        <RoutingControl />
+      </div>
     </div>
   );
 }
