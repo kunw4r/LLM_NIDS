@@ -88,7 +88,7 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="bg-gray-50">
-              {["Attack Type", "Data Split", "Recall", "FPR", "F1", "Cost", "$/TP"].map(h => (
+              {["Attack Type", "Difficulty", "Data Split", "Recall", "FPR", "F1", "Cost", "$/TP"].map(h => (
                 <th
                   key={h}
                   className={`px-4 py-3 font-semibold text-gray-500 text-xs border-b border-gray-200 ${
@@ -115,6 +115,24 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
                     <td className="px-4 py-3 font-medium text-blue-600">
                       <span className="mr-1.5 text-[10px] text-gray-400">{isExpanded ? "\u25BC" : "\u25B6"}</span>
                       {exp.attack_type}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {(() => {
+                        const info = ATTACK_DESCRIPTIONS[exp.attack_type];
+                        if (!info) return null;
+                        const d = info.difficulty;
+                        return (
+                          <span
+                            className="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                            style={{
+                              color: d === "Hardest" || d === "Hard" ? "#dc2626" : d === "Medium" ? "#d97706" : "#16a34a",
+                              background: d === "Hardest" || d === "Hard" ? "#fef2f2" : d === "Medium" ? "#fffbeb" : "#f0fdf4",
+                            }}
+                          >
+                            {d}
+                          </span>
+                        );
+                      })()}
                     </td>
                     <td className="px-4 py-3 text-right">
                       {RF_TRAINED_TYPES.has(exp.attack_type) ? (
@@ -146,7 +164,7 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
                   {/* Expanded confusion matrix + attack info + cost breakdown */}
                   {isExpanded && (
                     <tr>
-                      <td colSpan={7} className="px-4 pb-4 bg-gray-50 border-b border-gray-200">
+                      <td colSpan={8} className="px-4 pb-4 bg-gray-50 border-b border-gray-200">
                         {/* Attack description */}
                         {(() => {
                           const info = ATTACK_DESCRIPTIONS[exp.attack_type];

@@ -1,9 +1,11 @@
 import React from "react";
 import { EXPERIMENTS } from "../../data/experiments";
-import { AGENT_COST_DATA } from "../../data/stage1";
+import { AGENT_COST_DATA, STAGE1_SUMMARY } from "../../data/stage1";
+import { DIFFICULTY_TIERS, ATTACK_DESCRIPTIONS } from "../../data/attacks";
 import { dollar } from "../../lib/format";
+import AgentHeatmap from "./AgentHeatmap";
 
-export default function Overview({ s1 }) {
+export default function Overview({ s1, onNavigateToJourney }) {
   const totalFP = s1.experiments.reduce((s, e) => s + (e.confusion?.fp || 0), 0);
   const totalTN = s1.experiments.reduce((s, e) => s + (e.confusion?.tn || 0), 0);
   const fpr = ((totalFP / (totalFP + totalTN)) * 100).toFixed(1);
@@ -44,7 +46,7 @@ export default function Overview({ s1 }) {
         <div className="text-sm font-bold text-blue-800 mb-2">About MCP in this system</div>
         <div className="text-sm text-blue-900 leading-relaxed space-y-2">
           <p>AMATAS does <strong>not</strong> use MCP tools for detection. The 6 agents reason purely from network flow features using their pre-trained knowledge.</p>
-          <p>MCP was evaluated separately (see Comparison tab) and found to provide minimal uplift on this dataset — external threat intel tools return no useful data on private/anonymised IPs.</p>
+          <p>MCP was evaluated separately (see MCP Comparison sub-tab) and found to provide minimal uplift on this dataset — external threat intel tools return no useful data on private/anonymised IPs.</p>
           <p>The multi-agent architecture itself is the contribution — specialised roles + adversarial checking outperforms any single-agent configuration.</p>
         </div>
       </div>
@@ -139,6 +141,56 @@ export default function Overview({ s1 }) {
           </div>
         </div>
       </div>
+
+      {/* Difficulty Tier Breakdown */}
+      <div className="border border-gray-200 rounded-lg p-6">
+        <h3 className="text-base font-bold tracking-tight mb-4">Detection Difficulty Tiers</h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Attack types grouped by how distinctive their NetFlow signatures are — harder attacks mimic legitimate traffic more closely.
+        </p>
+        {Object.entries(DIFFICULTY_TIERS).map(([tier, data]) => {
+          const tierExps = data.attacks.map(at => s1.experiments.find(e => e.attack_type === at)).filter(Boolean);
+          const tierAvgF1 = tierExps.length > 0 ? Math.round(tierExps.reduce((s, e) => s + (e.f1 || 0), 0) / tierExps.length) : 0;
+          return (
+            <div key={tier} className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xs font-bold" style={{ color: data.color }}>{data.label}</span>
+                <span className="text-xs text-gray-400">Avg F1: {tierAvgF1}%</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {data.attacks.map(at => {
+                  const exp = s1.experiments.find(e => e.attack_type === at);
+                  if (!exp) return null;
+                  return (
+                    <span key={at} className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-[11px] border border-gray-200 bg-gray-50">
+                      <span className="text-gray-600">{at.replace(/_/g, " ")}</span>
+                      <span className="font-bold" style={{ color: exp.f1 >= 90 ? "#16a34a" : exp.f1 >= 70 ? "#d97706" : "#dc2626" }}>
+                        F1 {exp.f1}%
+                      </span>
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Agent Performance Summary */}
+      <AgentHeatmap />
+
+      {/* Journey link */}
+      {onNavigateToJourney && (
+        <div className="border border-gray-200 rounded-lg p-5 text-center">
+          <p className="text-sm text-gray-600 mb-2">Want the full story behind these results?</p>
+          <button
+            onClick={onNavigateToJourney}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium cursor-pointer border-none"
+          >
+            Start the Research Journey &rarr;
+          </button>
+        </div>
+      )}
 
       {/* Architecture diagram */}
       <div className="border border-gray-200 rounded-lg p-8">

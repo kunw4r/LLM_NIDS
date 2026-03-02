@@ -7,66 +7,55 @@ import Shell from "./components/layout/Shell";
 import useLiveStatus from "./hooks/useLiveStatus";
 import useFlowInspector from "./hooks/useFlowInspector";
 import useRunLog from "./hooks/useRunLog";
-import useThesisDrafts from "./hooks/useThesisDrafts";
+
+// Journey
+import ResearchJourney from "./components/journey/ResearchJourney";
 
 // Results pages
 import Overview from "./components/results/Overview";
-import ExperimentTimeline from "./components/results/ExperimentTimeline";
 import Stage1Results from "./components/results/Stage1Results";
 import ClusteringResults from "./components/results/ClusteringResults";
-import FlowInspector from "./components/results/FlowInspector";
 import ExperimentDetail from "./components/results/ExperimentDetail";
+import MCPAblation from "./components/comparison/MCPAblation";
 
 import { STAGE1_ID_MAP } from "./data/constants";
 
 // System pages
 import Architecture from "./components/system/Architecture";
 import Pipeline from "./components/system/Pipeline";
+import AgentDocs from "./components/system/AgentDocs";
 import RunLog from "./components/system/RunLog";
-
-// Comparison pages
-import AllExperiments from "./components/comparison/AllExperiments";
-import MCPAblation from "./components/comparison/MCPAblation";
-
-// Roadmap
-import Roadmap from "./components/roadmap/Roadmap";
 
 // Sub-tab definitions per top tab
 const SUB_TABS = {
+  journey: [],
   results: [
     ["overview", "Overview"],
-    ["story", "Experiments"],
     ["stage1", "Stage 1"],
     ["clustering", "Clustering"],
-    ["inspector", "Flow Inspector"],
+    ["mcp", "MCP Comparison"],
   ],
   system: [
     ["architecture", "Architecture"],
     ["pipeline", "Pipeline"],
+    ["agents", "Agents"],
     ["runlog", "Run Log"],
   ],
-  comparison: [
-    ["all", "All Experiments"],
-    ["mcp", "MCP Ablation"],
-  ],
-  roadmap: [],
 };
 
 const TOP_TABS = [
+  ["journey", "Journey"],
   ["results", "Results"],
   ["system", "System"],
-  ["comparison", "Comparison"],
-  ["roadmap", "Roadmap"],
 ];
 
 export default function App() {
   // Navigation
-  const [topTab, setTopTab] = useState("results");
+  const [topTab, setTopTab] = useState("journey");
   const [subTabs, setSubTabs] = useState({
+    journey: "",
     results: "overview",
     system: "architecture",
-    comparison: "all",
-    roadmap: "",
   });
 
   // Experiment detail page state
@@ -90,9 +79,6 @@ export default function App() {
     topTab === "system" && subTabs.system === "runlog"
   );
 
-  // Thesis drafts
-  const thesisDrafts = useThesisDrafts(topTab === "roadmap");
-
   // Stage 1 state
   const [showCostBreakdown, setShowCostBreakdown] = useState(false);
 
@@ -113,13 +99,17 @@ export default function App() {
     setDetailAttackType(null);
   }, []);
 
-  // Open flow inspector — navigates to the inspector sub-tab
+  // Open flow inspector — navigates to the Stage 1 detail page
   const openInspector = useCallback((expId) => {
     inspector.setInspectorSource(expId);
     inspector.loadInspectorData(expId);
-    setTopTab("results");
-    setSubTabs(prev => ({ ...prev, results: "inspector" }));
   }, [inspector]);
+
+  // Navigate to Results > Stage 1
+  const navigateToResults = useCallback(() => {
+    setTopTab("results");
+    setSubTabs(prev => ({ ...prev, results: "stage1" }));
+  }, []);
 
   return (
     <Shell
@@ -136,12 +126,20 @@ export default function App() {
       newResultNotif={newResultNotif}
       lastFetched={inspector.lastFetched}
     >
+      {/* -- Journey ------------------------------------------------ */}
+      {topTab === "journey" && (
+        <ResearchJourney
+          onNavigateToDetail={openDetailPage}
+          onNavigateToResults={navigateToResults}
+        />
+      )}
+
       {/* -- Results -------------------------------------------------- */}
       {topTab === "results" && subTab === "overview" && (
-        <Overview s1={s1} />
-      )}
-      {topTab === "results" && subTab === "story" && (
-        <ExperimentTimeline onInspectFlows={openInspector} />
+        <Overview
+          s1={s1}
+          onNavigateToJourney={() => setTopTab("journey")}
+        />
       )}
       {topTab === "results" && subTab === "stage1" && !detailAttackType && (
         <Stage1Results
@@ -164,8 +162,8 @@ export default function App() {
       {topTab === "results" && subTab === "clustering" && (
         <ClusteringResults onInspectFlows={openInspector} />
       )}
-      {topTab === "results" && subTab === "inspector" && (
-        <FlowInspector inspector={inspector} />
+      {topTab === "results" && subTab === "mcp" && (
+        <MCPAblation s1={s1} />
       )}
 
       {/* -- System --------------------------------------------------- */}
@@ -175,6 +173,9 @@ export default function App() {
       {topTab === "system" && subTab === "pipeline" && (
         <Pipeline />
       )}
+      {topTab === "system" && subTab === "agents" && (
+        <AgentDocs />
+      )}
       {topTab === "system" && subTab === "runlog" && (
         <RunLog
           runLogText={runLogText}
@@ -182,19 +183,6 @@ export default function App() {
           runLogSearch={runLogSearch}
           setRunLogSearch={setRunLogSearch}
         />
-      )}
-
-      {/* -- Comparison ----------------------------------------------- */}
-      {topTab === "comparison" && subTab === "all" && (
-        <AllExperiments onInspectFlows={openInspector} />
-      )}
-      {topTab === "comparison" && subTab === "mcp" && (
-        <MCPAblation s1={s1} />
-      )}
-
-      {/* -- Roadmap -------------------------------------------------- */}
-      {topTab === "roadmap" && (
-        <Roadmap {...thesisDrafts} />
       )}
     </Shell>
   );
