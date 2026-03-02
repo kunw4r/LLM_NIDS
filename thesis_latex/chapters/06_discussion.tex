@@ -25,6 +25,8 @@ The zero per cent false positive rate across thirteen of fourteen attack types i
 
 The mechanism responsible for AMATAS's false positive suppression is the Devil's Advocate agent operating at a weight of thirty per cent in the Orchestrator's consensus calculation. This weight was calibrated through empirical ablation: at fifty per cent (Phase 3e), the agent became excessively aggressive, depressing recall below acceptable thresholds; at thirty per cent, it applies sufficient adversarial pressure to prevent the specialist agents from over-classifying ambiguous flows as malicious, without overwhelming genuinely malicious signals. This finding provides the first demonstration of the adversarial agent mechanism, described conceptually by \textcite{Yin2024} and the multi-agent debate literature \autocite{Du2023, Chan2023}, applied specifically to network intrusion detection with quantified performance consequences across a fourteen-category evaluation.
 
+The ablation study (Section~\ref{sec:agent-ablation}) adds nuance to this picture: the DA's fixed weighting reduces recall on DDoS-HOIC from 98 per cent (no DA) to 58 per cent, indicating that on attacks with high feature overlap with benign traffic, the adversarial counter-argument carries disproportionate weight. The appropriate response is not to remove the DA but to make its weighting adaptive --- a design change that would preserve its FPR control benefits on unambiguous attacks whilst reducing its suppressive effect on high-ambiguity categories.
+
 \section{Limitations and Failure Modes}
 \label{sec:limitations}
 
