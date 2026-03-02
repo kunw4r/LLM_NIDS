@@ -14,6 +14,73 @@ The adversarial dimension of the architecture is grounded in a distinct body of 
 
 The result is an architecture with two orthogonal quality mechanisms: specialist depth, which increases the likelihood of detecting genuine attacks, and adversarial pressure, which suppresses over-eager malicious classifications. The Orchestrator agent at the apex of the pipeline then faces a well-posed synthesis problem: it receives evidence and counter-evidence from parties with explicit, different mandates, and is required to adjudicate between them according to explicit consensus rules. This is architecturally closer to a judicial proceeding than to a classification vote, and it preserves the full reasoning chain at every stage.
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=6mm and 8mm,
+    every node/.style={font=\small},
+    box/.style={draw, rounded corners=3pt, minimum height=9mm, text centered, fill=#1!12, draw=#1!60, minimum width=22mm},
+    box/.default=black,
+    phase/.style={draw, dashed, rounded corners=5pt, inner sep=4mm, fill=#1!4},
+    phase/.default=gray,
+    arr/.style={-{Stealth[length=2.5mm]}, thick},
+]
+
+% Input
+\node[box=black, minimum width=40mm] (input) {Raw NetFlow Record};
+
+% Tier 1
+\node[box=Maroon, below=8mm of input, minimum width=55mm] (rf) {\textbf{Tier 1:} Random Forest ($p < 0.15$)};
+
+% Tier 1 outputs
+\node[box=ForestGreen, below left=10mm and 8mm of rf, minimum width=32mm] (autoben) {Auto-BENIGN};
+\node[below=2mm of autoben, font=\scriptsize\itshape, text=gray] {${\sim}95\%$ of flows};
+
+% Phase 1 agents
+\node[box=RoyalBlue, below right=18mm and -24mm of rf] (proto) {Protocol};
+\node[box=RoyalBlue, right=3mm of proto] (stat) {Statistical};
+\node[box=RoyalBlue, right=3mm of stat] (behav) {Behavioural};
+\node[box=RoyalBlue, right=3mm of behav] (temp) {Temporal};
+
+% Phase 1 label
+\node[above=1mm of proto.north west, anchor=south west, font=\scriptsize\bfseries, text=RoyalBlue] {Phase 1 (parallel)};
+
+% Phase 2
+\node[box=RedOrange, below=14mm of $(stat.south)!0.5!(behav.south)$, minimum width=50mm] (da) {\textbf{Devil's Advocate} (30\% weight)};
+\node[above=1mm of da.north west, anchor=south west, font=\scriptsize\bfseries, text=RedOrange] {Phase 2};
+
+% Phase 3
+\node[box=Purple, below=14mm of da, minimum width=50mm] (orch) {\textbf{Orchestrator} (consensus)};
+\node[above=1mm of orch.north west, anchor=south west, font=\scriptsize\bfseries, text=Purple] {Phase 3};
+
+% Output
+\node[box=black, below=8mm of orch, minimum width=55mm] (output) {Verdict + Reasoning Chain};
+
+% Arrows
+\draw[arr] (input) -- (rf);
+\draw[arr] (rf.south) -- ++(0,-4mm) -| (autoben.north);
+\draw[arr] (rf.south) -- ++(0,-4mm) -| ($(proto.north)!0.5!(temp.north)$) coordinate (mid1);
+\draw[arr] (mid1) -- (proto.north);
+\draw[arr] (mid1) -- (stat.north);
+\draw[arr] (mid1) -- (behav.north);
+\draw[arr] (mid1) -- (temp.north);
+
+% Label on right branch
+\node[right=2mm of mid1, font=\scriptsize\itshape, text=gray, anchor=west] {${\sim}5\%$ suspicious};
+
+\draw[arr] (proto.south) -- ++(0,-4mm) -| (da.north west);
+\draw[arr] (stat.south) -- ++(0,-4mm) -| ([xshift=-5mm]da.north);
+\draw[arr] (behav.south) -- ++(0,-4mm) -| ([xshift=5mm]da.north);
+\draw[arr] (temp.south) -- ++(0,-4mm) -| (da.north east);
+
+\draw[arr] (da) -- (orch);
+\draw[arr] (orch) -- (output);
+
+\end{tikzpicture}
+\caption{AMATAS two-tier architecture. Tier~1 filters ${\sim}95\%$ of flows as auto-benign; remaining flows pass through the three-phase LLM pipeline.}
+\label{fig:architecture}
+\end{figure}
+
 \section{Tier 1: Random Forest Pre-Filter}
 \label{sec:tier1-rf}
 

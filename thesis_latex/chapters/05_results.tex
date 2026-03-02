@@ -40,6 +40,54 @@ SQL\_Injection & 49 & 3 & 1 & 947 & 98.0\% & 0.32\% & 96.1\% & 1.99 & 94.0\% \\
 \noindent\textit{FPR = False Positive Rate (FP / (FP + TN)); F1 = harmonic mean of precision and recall; Filter Rate = proportion of flows classified as benign by Tier 1 without LLM invocation.}
 \end{table}
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[y=0.38cm, x=0.065cm]
+
+% Draw bars individually (sorted by F1 descending)
+\foreach \name/\val/\col/\ypos in {
+  FTP-BruteForce/100/ForestGreen/13,
+  DoS-SlowHTTPTest/100/ForestGreen/12,
+  DoS-Slowloris/100/ForestGreen/11,
+  SSH-Bruteforce/99/ForestGreen/10,
+  DDoS-LOIC-UDP/96/RoyalBlue/9,
+  SQL\_Injection/96/RoyalBlue/8,
+  DoS-Hulk/96/RoyalBlue/7,
+  DoS-GoldenEye/96/RoyalBlue/6,
+  DDoS-LOIC-HTTP/90/RoyalBlue/5,
+  Brute\_Force-XSS/89/Goldenrod/4,
+  Brute\_Force-Web/89/Goldenrod/3,
+  Bot/85/Goldenrod/2,
+  DDoS-HOIC/72/RedOrange/1
+} {
+  \fill[\col!70] (0,\ypos-0.35) rectangle (\val,\ypos+0.35);
+  \node[left, font=\scriptsize] at (-1,\ypos) {\name};
+  \node[right, font=\scriptsize\bfseries] at (\val+1,\ypos) {\val\%};
+}
+
+% Infiltration separately (0%)
+\fill[red!70] (0,-0.35) rectangle (1,0.35);
+\node[left, font=\scriptsize] at (-1,0) {Infiltration};
+\node[right, font=\scriptsize\bfseries, text=red] at (2,0) {0\%};
+
+% Axes
+\draw[thick] (0,-0.7) -- (0,13.7);
+\draw[thick] (0,-0.7) -- (105,-0.7);
+\foreach \x in {0,20,40,60,80,100} {
+  \draw (\x,-0.7) -- (\x,-1.1);
+  \node[below, font=\scriptsize] at (\x,-1.1) {\x};
+}
+\node[below, font=\small] at (50,-2.2) {F1 Score (\%)};
+
+% Mean line (excluding Infiltration)
+\draw[dashed, thick, Purple] (92.9,-0.7) -- (92.9,13.7);
+\node[above, font=\scriptsize, text=Purple, rotate=90, anchor=south] at (92.9,7) {Mean F1 = 92.9\% (excl.\ Infiltration)};
+
+\end{tikzpicture}
+\caption{Stage 1 F1 scores across all fourteen attack types. Colours indicate performance tiers: green (F1 $\geq$ 99\%), blue (90--96\%), gold (85--89\%), orange/red ($<$ 85\%).}
+\label{fig:stage1-f1}
+\end{figure}
+
 Across all 14,000 flows, AMATAS v2 achieved a mean recall of 83.7\% and a mean F1 score of 86.3\%. The false positive rate remained exceptionally low at a mean of 0.07\%, with 10 of the 14 attack types producing exactly zero false positives. If the Infiltration experiment is excluded on the grounds that it represents a qualitatively distinct failure mode (discussed fully in Section~\ref{sec:infiltration-failure}), the mean recall across the remaining 13 detectable attack types rises to 90.2\%, with a mean F1 of 92.9\%. Four attack types --- FTP-BruteForce, DoS-SlowHTTPTest, DoS-Slowloris, and DDoS-LOIC-UDP --- achieved perfect 100\% recall.
 
 These results confirm the central hypothesis of the v2 architecture: that a two-tier design combining a Random Forest pre-filter with a multi-agent LLM pipeline can deliver high-recall, low-FPR detection across a diverse threat landscape at a substantially reduced cost compared to running the LLM pipeline on every flow.
@@ -226,6 +274,57 @@ C: Engineered prompt + MITRE tool & gpt-4o & 70.0\% & 30.0\% & 58.3\% & 0.45 \\
 \noindent\textit{AMATAS v2 baseline computed over the DDoS-HOIC experiment only; MCP configurations evaluated on $n=100$ flows.}
 \end{table}
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[y=0.5cm, x=0.065cm]
+% MCP comparison: grouped bars for F1 and FPR
+% Configs: A (62.8%, 41.4%), B (58.0%, 27.1%), C (58.3%, 30.0%), AMATAS (88.0%, 1.1%)
+
+% Config A
+\fill[gray!60] (0,0) rectangle (10,5.02); % 62.8 * 0.08
+\node[above, font=\tiny\bfseries] at (5,5.02) {62.8\%};
+\fill[red!40] (12,0) rectangle (22,3.31); % 41.4 * 0.08
+\node[above, font=\tiny\bfseries, text=red!70!black] at (17,3.31) {41.4\%};
+\node[below, font=\tiny, text width=22mm, align=center] at (11,-0.4) {A: Zero-shot};
+
+% Config B
+\fill[Goldenrod!60] (28,0) rectangle (38,4.64); % 58.0 * 0.08
+\node[above, font=\tiny\bfseries] at (33,4.64) {58.0\%};
+\fill[red!40] (40,0) rectangle (50,2.17); % 27.1 * 0.08
+\node[above, font=\tiny\bfseries, text=red!70!black] at (45,2.17) {27.1\%};
+\node[below, font=\tiny, text width=22mm, align=center] at (39,-0.4) {B: Engineered};
+
+% Config C
+\fill[RedOrange!60] (56,0) rectangle (66,4.66); % 58.3 * 0.08
+\node[above, font=\tiny\bfseries] at (61,4.66) {58.3\%};
+\fill[red!40] (68,0) rectangle (78,2.40); % 30.0 * 0.08
+\node[above, font=\tiny\bfseries, text=red!70!black] at (73,2.40) {30.0\%};
+\node[below, font=\tiny, text width=22mm, align=center] at (67,-0.4) {C: + MITRE tool};
+
+% AMATAS v2
+\fill[ForestGreen!60] (84,0) rectangle (94,7.04); % 88.0 * 0.08
+\node[above, font=\tiny\bfseries] at (89,7.04) {88.0\%};
+\fill[red!40] (96,0) rectangle (106,0.09); % 1.1 * 0.08
+\node[above, font=\tiny\bfseries, text=red!70!black] at (101,0.09) {1.1\%};
+\node[below, font=\tiny, text width=22mm, align=center] at (95,-0.4) {AMATAS v2};
+
+% Axes
+\draw[thick] (0,0) -- (0,8);
+\draw[thick] (0,0) -- (112,0);
+\foreach \y/\lab in {0/0, 2/25, 4/50, 6/75, 8/100} {
+  \draw (-1,\y) -- (0,\y);
+  \node[left, font=\scriptsize] at (-1,\y) {\lab\%};
+}
+
+% Legend
+\fill[RoyalBlue!40] (70,7.2) rectangle (73,7.7); \node[right, font=\tiny] at (73.5,7.45) {F1 Score};
+\fill[red!40] (87,7.2) rectangle (90,7.7); \node[right, font=\tiny] at (90.5,7.45) {FPR};
+
+\end{tikzpicture}
+\caption{MCP comparison: F1 score versus false positive rate. AMATAS v2 achieves the highest F1 (88\%) with the lowest FPR (1.1\%), demonstrating that multi-agent debate outperforms single-agent configurations with or without tool access.}
+\label{fig:mcp-comparison}
+\end{figure}
+
 Configuration A (zero-shot gpt-4o-mini) achieved the highest raw recall (90\%) but at an entirely impractical false positive rate of 41.4\% --- nearly half of all benign flows were flagged as malicious. This mirrors the systematic over-classification bias that led to gpt-4o-mini's rejection as the primary model in AMATAS development. A system with a 41\% FPR would generate an unmanageable volume of analyst alerts in a production environment processing millions of flows per day.
 
 Configuration B introduced a detailed system prompt encoding attack signatures, protocol knowledge, and CICIDS2018-specific feature interpretations. This substantially reduced the false positive rate (27.1\%) relative to Config A but also reduced recall to 66.7\%, as the more cautious prompt encouraged the model to seek stronger evidence before flagging a flow. The net effect on F1 was negligible (58.0\% vs 62.8\%).
@@ -288,6 +387,53 @@ Protocol Agent & 9.7\% & Port, flag, and protocol validation \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[y=0.55cm, x=0.25cm]
+% Agent cost share horizontal bars
+% Draw bars individually to avoid foreach parsing issues
+\fill[RoyalBlue!60] (0,0) rectangle (9.7,0.85);
+\node[left, font=\scriptsize] at (-0.5,0.42) {Protocol};
+\node[right, font=\scriptsize\bfseries] at (10,0.42) {9.7\%};
+
+\fill[RoyalBlue!60] (0,1.2) rectangle (10.1,2.05);
+\node[left, font=\scriptsize] at (-0.5,1.62) {Statistical};
+\node[right, font=\scriptsize\bfseries] at (10.4,1.62) {10.1\%};
+
+\fill[RoyalBlue!60] (0,2.4) rectangle (10.4,3.25);
+\node[left, font=\scriptsize] at (-0.5,2.82) {Behavioural};
+\node[right, font=\scriptsize\bfseries] at (10.7,2.82) {10.4\%};
+
+\fill[RedOrange!60] (0,3.6) rectangle (18.5,4.45);
+\node[left, font=\scriptsize] at (-0.5,4.02) {Devil's Advocate};
+\node[right, font=\scriptsize\bfseries] at (18.8,4.02) {18.5\%};
+
+\fill[Purple!60] (0,4.8) rectangle (21.3,5.65);
+\node[left, font=\scriptsize] at (-0.5,5.22) {Orchestrator};
+\node[right, font=\scriptsize\bfseries] at (21.6,5.22) {21.3\%};
+
+\fill[Maroon!60] (0,6.0) rectangle (30.0,6.85);
+\node[left, font=\scriptsize] at (-0.5,6.42) {Temporal};
+\node[right, font=\scriptsize\bfseries] at (30.3,6.42) {30.0\%};
+
+% Axis
+\draw[thick] (0,-0.3) -- (0,6.8);
+\draw[thick] (0,-0.3) -- (35,-0.3);
+\foreach \x in {0,5,10,15,20,25,30} {
+  \draw (\x,-0.3) -- (\x,-0.6);
+  \node[below, font=\scriptsize] at (\x,-0.6) {\x};
+}
+\node[below, font=\small] at (17.5,-1.5) {Share of Total LLM Cost (\%)};
+
+% Annotation: group the three cheap specialists
+\draw[decorate, decoration={brace, amplitude=4pt, mirror}, thick, gray]
+  (-0.3,-0.15) -- (-0.3,2.85) node[midway, left=5pt, font=\tiny, text=gray, text width=18mm, align=right] {30.2\% combined};
+
+\end{tikzpicture}
+\caption{Per-agent share of total LLM cost. The Temporal Agent dominates at 30\% due to multi-flow context injection; the three cheaper specialists together account for 30.2\%.}
+\label{fig:agent-cost}
+\end{figure}
 
 The Temporal Agent accounts for the largest single cost share (30\%) because its prompt construction involves retrieving and embedding co-IP flow context --- typically 3--7 additional flows from the same source IP --- into the model's input. This context enrichment substantially increases token counts relative to the three specialist agents (behavioural, statistical, protocol), each of which analyses a single flow in isolation with a fixed-length prompt. The Orchestrator's 21.3\% share reflects its role as a synthesis engine: it receives and must reason over the full outputs of all five preceding agents before generating its verdict, resulting in the longest input prompts in the pipeline.
 
@@ -422,6 +568,72 @@ No Statistical Agent & 42 & 1 & 8 & 949 & 84\% & 0.1\% & 90\% & 1.36 \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[y=0.55cm, x=0.068cm]
+% Grouped bar chart: Recall by condition for 3 attack types
+% Conditions: Full, No DA, No Temp, No Stat, 2-Agent, 4-Agent
+% Data:
+% FTP:  100, 100, 94, 100, 12, 100
+% SSH:  98, 100, 54, 100, 0, 98
+% HOIC: 58, 98, 22, 84, 10, 90
+
+\def\barw{0.45}
+\def\gapw{0.15}
+
+% Group positions
+\foreach \gname/\gy in {DDoS-HOIC/0, SSH-Bruteforce/5, FTP-BruteForce/10} {
+  \node[left, font=\scriptsize, text width=25mm, align=right] at (-2,\gy+2.5) {\gname};
+}
+
+% Legend
+\node[font=\scriptsize\bfseries] at (50,15.5) {Recall by Ablation Condition};
+\fill[RoyalBlue!70] (5,14.5) rectangle (8,15); \node[right, font=\tiny] at (8.5,14.75) {Full (6 agents)};
+\fill[RedOrange!70] (30,14.5) rectangle (33,15); \node[right, font=\tiny] at (33.5,14.75) {No DA};
+\fill[Maroon!50] (50,14.5) rectangle (53,15); \node[right, font=\tiny] at (53.5,14.75) {No Temporal};
+\fill[ForestGreen!60] (5,13.5) rectangle (8,14); \node[right, font=\tiny] at (8.5,13.75) {No Statistical};
+\fill[gray!50] (30,13.5) rectangle (33,14); \node[right, font=\tiny] at (33.5,13.75) {2-Agent};
+\fill[Purple!50] (50,13.5) rectangle (53,14); \node[right, font=\tiny] at (53.5,13.75) {4-Agent};
+
+% FTP data
+\foreach \val/\col/\idx in {100/RoyalBlue!70/0, 100/RedOrange!70/1, 94/Maroon!50/2, 100/ForestGreen!60/3, 12/gray!50/4, 100/Purple!50/5} {
+  \pgfmathsetmacro{\yy}{10+\idx*(\barw+\gapw)}
+  \fill[\col] (0,\yy) rectangle (\val,\yy+\barw);
+  \node[right, font=\tiny] at (\val+0.5,\yy+0.22) {\val\%};
+}
+
+% SSH data
+\foreach \val/\col/\idx in {98/RoyalBlue!70/0, 100/RedOrange!70/1, 54/Maroon!50/2, 100/ForestGreen!60/3, 0/gray!50/4, 98/Purple!50/5} {
+  \pgfmathsetmacro{\yy}{5+\idx*(\barw+\gapw)}
+  \fill[\col] (0,\yy) rectangle (\val,\yy+\barw);
+  \ifnum\val>0
+    \node[right, font=\tiny] at (\val+0.5,\yy+0.22) {\val\%};
+  \else
+    \node[right, font=\tiny, text=red] at (0.5,\yy+0.22) {0\%};
+  \fi
+}
+
+% HOIC data
+\foreach \val/\col/\idx in {58/RoyalBlue!70/0, 98/RedOrange!70/1, 22/Maroon!50/2, 84/ForestGreen!60/3, 10/gray!50/4, 90/Purple!50/5} {
+  \pgfmathsetmacro{\yy}{0+\idx*(\barw+\gapw)}
+  \fill[\col] (0,\yy) rectangle (\val,\yy+\barw);
+  \node[right, font=\tiny] at (\val+0.5,\yy+0.22) {\val\%};
+}
+
+% Axes
+\draw[thick] (0,-0.5) -- (0,13);
+\draw[thick] (0,-0.5) -- (105,-0.5);
+\foreach \x in {0,20,40,60,80,100} {
+  \draw (\x,-0.5) -- (\x,-0.9);
+  \node[below, font=\scriptsize] at (\x,-0.9) {\x};
+}
+\node[below, font=\small] at (50,-2) {Recall (\%)};
+
+\end{tikzpicture}
+\caption{Agent ablation recall comparison across three attack types. The Devil's Advocate removal (orange) improves DDoS-HOIC recall from 58\% to 98\%, whilst Temporal Agent removal (maroon) degrades recall across all categories.}
+\label{fig:ablation-recall}
+\end{figure}
 
 The DDoS-HOIC ablation results (Table~\ref{tab:ablation-hoic}) reveal a fundamentally different agent contribution profile compared to brute force attacks, and constitute the most significant architectural finding of the ablation study. Removing the Devil's Advocate on HOIC produces a 40 percentage point recall improvement --- from 58\% to 98\% --- and an F1 increase from 72\% to 98\%, whilst the false positive rate remains unchanged at 0.1\%. This result demonstrates that the DA's fixed 30\% adversarial weight, which is benign or beneficial on high-confidence attack types, actively suppresses correct detections on ambiguous attacks. The mechanism is precisely identifiable: HOIC flows generate moderate specialist confidence (typically 0.50--0.65), and the Devil's Advocate --- trained to argue for the benign interpretation --- provides sufficient counter-pressure at 30\% weight to tip the Orchestrator's consensus below the detection threshold on approximately 40\% of genuine attack flows. On brute force attacks, where specialist confidence is uniformly high (0.85--0.95), the same DA weight is easily overruled.
 
