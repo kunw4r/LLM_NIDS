@@ -1,71 +1,74 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { RESULTS_BASE } from "../data/constants";
 import { STAGE1_SUMMARY } from "../data/stage1";
 
+/**
+ * Fetches live experiment status from GitHub (or local backend).
+ *
+ * Performance: All network fetches run in parallel and never block
+ * initial render — the hardcoded STAGE1_SUMMARY is returned immediately.
+ */
 export default function useLiveStatus() {
   const [liveStatus, setLiveStatus] = useState(null);
   const [liveSummary, setLiveSummary] = useState(null);
   const [leakySummary, setLeakySummary] = useState(null);
   const [newResultNotif, setNewResultNotif] = useState(null);
+  const leakyFetched = useRef(false);
 
   useEffect(() => {
     let timer;
     const poll = async () => {
-      try {
-        let data;
-        try {
-          const controller = new AbortController();
-          const timeout = setTimeout(() => controller.abort(), 3000);
-          const resp = await fetch("http://localhost:5001/api/status", { signal: controller.signal });
-          clearTimeout(timeout);
-          if (resp.ok) {
-            const raw = await resp.json();
-            data = raw.status || raw;
-          }
-        } catch (_) {
-          const resp2 = await fetch(`${RESULTS_BASE}/stage1/live_status.json?t=${Date.now()}`);
-          if (resp2.ok) data = await resp2.json();
-        }
-        if (data && (data.status === "running" || data.status === "paused" || data.status === "creating_batch")) {
+      // Try localhost backend first (fast fail — 1.5s timeout, non-blocking)
+      const localPromise = fetchLocal();
+
+      // Fetch all GitHub files in parallel (don't wait for localhost)
+      const [statusData, summData, leakyData] = await Promise.all([
+        localPromise.then(d => d).catch(() =>
+          fetchJSON(`${RESULTS_BASE}/stage1/live_status.json?t=${Date.now()}`)
+        ),
+        fetchJSON(`${RESULTS_BASE}/stage1/running_summary.json?t=${Date.now()}`),
+        leakyFetched.current ? Promise.resolve(null) :
+          fetchJSON(`${RESULTS_BASE}/stage1/running_summary_leaky.json?t=${Date.now()}`),
+      ]);
+
+      // Process live status
+      if (statusData) {
+        const data = statusData.status ? statusData : statusData;
+        if (data.status === "running" || data.status === "paused" || data.status === "creating_batch") {
           setLiveStatus(data);
-        } else if (data && (data.status === "complete" || data.status === "all_done")) {
+        } else if (data.status === "complete" || data.status === "all_done") {
           const updatedAt = data.updated_at ? new Date(data.updated_at).getTime() : 0;
-          if (Date.now() - updatedAt < 10 * 60 * 1000) {
-            setLiveStatus(data);
-          } else {
-            setLiveStatus(null);
-          }
+          setLiveStatus(Date.now() - updatedAt < 10 * 60 * 1000 ? data : null);
         } else {
           setLiveStatus(null);
         }
-        try {
-          const summResp = await fetch(`${RESULTS_BASE}/stage1/running_summary.json?t=${Date.now()}`);
-          if (summResp.ok) {
-            const newSumm = await summResp.json();
-            setLiveSummary(prev => {
-              if (prev && newSumm.experiments && prev.experiments) {
-                const prevTypes = new Set(prev.experiments.map(e => e.attack_type));
-                const added = newSumm.experiments.filter(e => !prevTypes.has(e.attack_type));
-                if (added.length > 0) {
-                  const last = added[added.length - 1];
-                  setNewResultNotif(`New result: ${last.attack_type} — ${last.recall}% recall`);
-                  setTimeout(() => setNewResultNotif(null), 5000);
-                }
-              }
-              return newSumm;
-            });
-          }
-        } catch (_) {}
-        if (!leakySummary) {
-          try {
-            const leakyResp = await fetch(`${RESULTS_BASE}/stage1/running_summary_leaky.json?t=${Date.now()}`);
-            if (leakyResp.ok) setLeakySummary(await leakyResp.json());
-          } catch (_) {}
-        }
-      } catch (_) {
+      } else {
         setLiveStatus(null);
       }
+
+      // Process running summary
+      if (summData?.experiments) {
+        setLiveSummary(prev => {
+          if (prev?.experiments && summData.experiments) {
+            const prevTypes = new Set(prev.experiments.map(e => e.attack_type));
+            const added = summData.experiments.filter(e => !prevTypes.has(e.attack_type));
+            if (added.length > 0) {
+              const last = added[added.length - 1];
+              setNewResultNotif(`New result: ${last.attack_type} — ${last.recall}% recall`);
+              setTimeout(() => setNewResultNotif(null), 5000);
+            }
+          }
+          return summData;
+        });
+      }
+
+      // Process leaky summary (only fetch once)
+      if (leakyData && !leakyFetched.current) {
+        leakyFetched.current = true;
+        setLeakySummary(leakyData);
+      }
     };
+
     poll();
     timer = setInterval(poll, 15000);
     return () => clearInterval(timer);
@@ -94,4 +97,30 @@ export default function useLiveStatus() {
   })();
 
   return { liveStatus, liveSummary, leakySummary, newResultNotif, s1 };
+}
+
+/** Try localhost backend with a short timeout */
+async function fetchLocal() {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1500);
+  try {
+    const resp = await fetch("http://localhost:5001/api/status", { signal: controller.signal });
+    clearTimeout(timeout);
+    if (resp.ok) {
+      const raw = await resp.json();
+      return raw.status || raw;
+    }
+  } catch (_) {
+    clearTimeout(timeout);
+  }
+  return null;
+}
+
+/** Fetch JSON with silent failure */
+async function fetchJSON(url) {
+  try {
+    const resp = await fetch(url);
+    if (resp.ok) return resp.json();
+  } catch (_) {}
+  return null;
 }
