@@ -327,6 +327,76 @@ const EXPERIMENTS = [
       nextId: null,
     },
   },
+  // ── Clustering Experiments ──────────────────────────────────────────────
+  {
+    id: "clustering_a",
+    name: "Clustering A: Enriched Prompt Only",
+    phase: "Clustering",
+    phaseGroup: "Clustering — Infiltration v3",
+    date: "2026-03-02",
+    flows: 1000,
+    cost: 0.0,
+    f1: 0.0,
+    precision: 0,
+    recall: 0.0,
+    accuracy: 0.95,
+    model: "gpt-4o",
+    confusion: { tp: 0, fp: 0, tn: 950, fn: 50 },
+    verdicts: { benign: 1000, suspicious: 0, malicious: 0 },
+    variables: { architecture: "6-agent + Tier-1 RF", model: "gpt-4o", batch_size: 1000, benign_ratio: "95%", da_weight: "30%", tier1_threshold: 0.15, condition: "Enriched prompt only" },
+    narrative: {
+      tried: "Condition A: Added Infiltration/DNS exfiltration attack signatures (T1048.003) to the behavioural agent prompt. No temporal clustering — each flow analysed individually. Tests whether better prompts alone can recover 0% recall.",
+      happened: "0% recall, 0% F1 — zero attacks detected. Tier 1 RF filtered 100% of flows as benign (all 50 attacks + 950 benign). No flows reached the LLM pipeline at all, making the enriched prompt irrelevant.",
+      learned: "Prompt engineering cannot help if flows never reach the LLM. Infiltration attacks are statistically identical to benign DNS — the RF filter cannot distinguish them. The problem is upstream of the LLM.",
+      nextId: "clustering_b",
+    },
+  },
+  {
+    id: "clustering_b",
+    name: "Clustering B: Temporal Clustering",
+    phase: "Clustering",
+    phaseGroup: "Clustering — Infiltration v3",
+    date: "2026-03-02",
+    flows: 1000,
+    cost: 7.24,
+    f1: 0.211,
+    precision: 0.133,
+    recall: 0.52,
+    accuracy: 0.806,
+    model: "gpt-4o",
+    confusion: { tp: 26, fp: 170, tn: 780, fn: 24 },
+    verdicts: { benign: 804, suspicious: 30, malicious: 166 },
+    variables: { architecture: "6-agent + Tier-1 RF + IP clustering", model: "gpt-4o", batch_size: 1000, benign_ratio: "95%", da_weight: "30%", tier1_threshold: 0.15, condition: "Temporal clustering, standard prompts", dns_threshold: 8, clustering_mode: "ip-level" },
+    narrative: {
+      tried: "Condition B: IP-level temporal clustering groups ALL flows per source IP. Clusters with 8+ DNS queries bypass Tier 1 RF filter, sending 222 flows to LLM (vs 0 without clustering). Standard agent prompts with cluster context injected into each flow.",
+      happened: "52% recall — up from 0% baseline. 26/50 attacks detected. But 17.9% FPR (170 false positives) because cluster context biases agents to flag all DNS-heavy traffic. Some API rate-limit errors on ~20 flows depressed recall.",
+      learned: "Temporal clustering solves the Tier 1 bypass problem (39/50 attacks rescued from RF filter). The cluster context successfully gives LLM agents the aggregate pattern visibility they need. FPR is high but expected — tuning needed.",
+      nextId: "clustering_c",
+    },
+  },
+  {
+    id: "clustering_c",
+    name: "Clustering C: Enriched + Clustering",
+    phase: "Clustering",
+    phaseGroup: "Clustering — Infiltration v3",
+    date: "2026-03-02",
+    flows: 1000,
+    cost: 7.79,
+    f1: 0.222,
+    precision: 0.137,
+    recall: 0.58,
+    accuracy: 0.797,
+    model: "gpt-4o",
+    confusion: { tp: 29, fp: 182, tn: 768, fn: 21 },
+    verdicts: { benign: 789, suspicious: 35, malicious: 176 },
+    variables: { architecture: "6-agent + Tier-1 RF + IP clustering + enriched prompt", model: "gpt-4o", batch_size: 1000, benign_ratio: "95%", da_weight: "30%", tier1_threshold: 0.15, condition: "Enriched prompt + temporal clustering", dns_threshold: 8, clustering_mode: "ip-level" },
+    narrative: {
+      tried: "Condition C: Both improvements combined — enriched behavioural prompt with Infiltration/DNS exfiltration signatures AND IP-level temporal clustering with Tier 1 RF override. 222 flows sent to LLM with cluster context.",
+      happened: "58% recall (best) — 29/50 attacks detected. 19.2% FPR. The enriched prompt added +6% recall over clustering alone (58% vs 52%), suggesting the prompt helps the LLM recognise DNS exfiltration patterns once it has cluster context.",
+      learned: "Clustering is the primary driver (0% to 52%), enriched prompt is additive (+6%). Together they recover 58% of previously invisible attacks. The high FPR reflects the fundamental trade-off: seeing more attacks means more false alarms on similar-looking benign clusters.",
+      nextId: null,
+    },
+  },
 ];
 
 // Stage 1 running summary data
@@ -722,8 +792,23 @@ export default function NIDSDashboard() {
   // ── Leaky RF comparison state ─────────────────────────────────────────────
   const [leakySummary, setLeakySummary] = useState(null);
 
+  // ── Run Log state ───────────────────────────────────────────────────────
+  const [runLogText, setRunLogText] = useState(null);
+  const [runLogLoading, setRunLogLoading] = useState(false);
+  const [runLogSearch, setRunLogSearch] = useState("");
+
   // ── Data fetch timestamp ────────────────────────────────────────────────────
   const [lastFetched, setLastFetched] = useState(null);
+
+  // ── Fetch run log when tab opens ───────────────────────────────────────────
+  useEffect(() => {
+    if (topTab !== "amatas" || amatasTab !== "runlog" || runLogText !== null) return;
+    setRunLogLoading(true);
+    fetch(`${RESULTS_BASE}/stage1/run_log.txt?t=${Date.now()}`)
+      .then(r => r.ok ? r.text() : Promise.reject("Failed"))
+      .then(t => { setRunLogText(t); setRunLogLoading(false); })
+      .catch(() => { setRunLogText("ERROR: Could not load run_log.txt"); setRunLogLoading(false); });
+  }, [topTab, amatasTab, runLogText]);
 
   // ── Keyboard navigation for Story ───────────────────────────────────────────
   useEffect(() => {
@@ -869,6 +954,9 @@ export default function NIDSDashboard() {
         stage1_web: "/results/stage1/Brute_Force_-Web_results.json",
         stage1_xss: "/results/stage1/Brute_Force_-XSS_results.json",
         stage1_sql: "/results/stage1/SQL_Injection_results.json",
+        clustering_a: "/results/infiltration/enriched_prompt_results.json",
+        clustering_b: "/results/infiltration/clustered_results.json",
+        clustering_c: "/results/infiltration/combined_results.json",
       };
       const path = fileMap[sourceId];
       if (!path) { setInspectorError("No flow data available for this experiment"); setInspectorLoading(false); return; }
@@ -1248,6 +1336,7 @@ export default function NIDSDashboard() {
             ["stage1", "Stage 1"],
             ["howitworks", "How It Runs"],
             ["inspector", "Flow Inspector"],
+            ["runlog", "Run Log"],
           ].map(([id, label]) => (
             <button key={id} onClick={() => setAmatasTab(id)} style={{
               padding: "10px 16px", fontSize: 12, fontWeight: amatasTab === id ? 600 : 400,
@@ -2667,6 +2756,64 @@ export default function NIDSDashboard() {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* RUN LOG                                                             */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {topTab === "amatas" && amatasTab === "runlog" && (
+          <div>
+            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, letterSpacing: "-0.02em" }}>Pipeline Run Log</h2>
+            <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 16, maxWidth: 800, lineHeight: 1.7 }}>
+              Full execution log from the Stage 1 pipeline — model validation failures, three-model comparison, batch creation events, and timing data.
+            </p>
+
+            {runLogLoading && <p style={{ color: "#6b7280", fontStyle: "italic" }}>Loading run log...</p>}
+
+            {runLogText && runLogText !== "ERROR: Could not load run_log.txt" && (
+              <>
+                <input
+                  type="text"
+                  placeholder="Search log..."
+                  value={runLogSearch}
+                  onChange={e => setRunLogSearch(e.target.value)}
+                  style={{
+                    padding: "8px 12px", fontSize: 13, border: "1px solid #d1d5db", borderRadius: 6,
+                    width: 320, marginBottom: 12, fontFamily: "monospace",
+                  }}
+                />
+                <div style={{
+                  background: "#1e1e2e", borderRadius: 8, padding: "20px 24px", overflowX: "auto",
+                  maxHeight: 600, overflowY: "auto", border: "1px solid #313244",
+                }}>
+                  <pre style={{ margin: 0, fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace", fontSize: 12, lineHeight: 1.6 }}>
+                    {runLogText.split("\n").filter(line =>
+                      !runLogSearch || line.toLowerCase().includes(runLogSearch.toLowerCase())
+                    ).map((line, i) => {
+                      let color = "#cdd6f4"; // default: light text
+                      let fontWeight = 400;
+                      if (/^[═=]{4,}/.test(line) || /^─{4,}/.test(line)) { color = "#585b70"; }
+                      else if (/^(AMATAS|FINAL SUMMARY|MODEL COMPARISON|WHY GPT|IMPLICATIONS|THREE-MODEL|SONNET)/.test(line)) { color = "#cba6f7"; fontWeight = 700; }
+                      else if (/^\[.*\]/.test(line) && /PASS/.test(line)) { color = "#a6e3a1"; }
+                      else if (/^\[.*\]/.test(line) && /FAIL/.test(line)) { color = "#f38ba8"; }
+                      else if (/VALIDATION FAILED|KILLED|Pipeline stopped/.test(line)) { color = "#f38ba8"; fontWeight = 600; }
+                      else if (/PASS/.test(line)) { color = "#a6e3a1"; }
+                      else if (/FAIL/.test(line)) { color = "#f38ba8"; }
+                      else if (/^\[2026-/.test(line)) { color = "#a6adc8"; }
+                      else if (/^┌|^├|^└|^│/.test(line)) { color = "#89b4fa"; }
+                      else if (/Batch saved|Creating batch|Ordering check/.test(line)) { color = "#94e2d5"; }
+                      else if (/^\s{2,}/.test(line) && /\d/.test(line)) { color = "#bac2de"; }
+                      return <span key={i} style={{ color, fontWeight }}>{line}{"\n"}</span>;
+                    })}
+                  </pre>
+                </div>
+              </>
+            )}
+
+            {runLogText === "ERROR: Could not load run_log.txt" && (
+              <p style={{ color: "#ef4444" }}>Could not load run_log.txt from GitHub. Make sure it has been pushed.</p>
+            )}
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
         {/* MCP EXPERIMENTS                                                    */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {topTab === "mcp" && mcpTab === "overview" && (
@@ -2823,15 +2970,128 @@ export default function NIDSDashboard() {
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {topTab === "clustering" && (
           <div>
-            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, letterSpacing: "-0.02em" }}>Temporal Clustering</h2>
-            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "48px", textAlign: "center" }}>
-              <div style={{ fontSize: 16, color: "#6b7280", marginBottom: 12 }}>Temporal clustering experiment planned</div>
-              <p style={{ fontSize: 13, color: "#9ca3af", maxWidth: 500, margin: "0 auto", lineHeight: 1.6 }}>
-                Will compare isolated flow analysis vs cluster-based analysis.
-                Flows from the same source IP within a time window will be grouped
-                and analysed together, testing whether cluster context improves
-                detection of attacks like Infiltration that mimic benign DNS patterns.
-              </p>
+            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, letterSpacing: "-0.02em" }}>Temporal Clustering — Infiltration Recovery</h2>
+            <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 20, lineHeight: 1.6, maxWidth: 800 }}>
+              Infiltration scored 0% recall in Stage 1 — a double failure where Tier 1 RF filtered all 50 attack flows as benign
+              and the LLM classified the remaining as benign (individual DNS queries are indistinguishable from legitimate traffic).
+              Three conditions tested whether temporal clustering can recover detection.
+            </p>
+
+            {/* Problem diagnosis */}
+            <div style={{ border: "1px solid #fbbf24", borderRadius: 8, padding: 16, marginBottom: 20, background: "#fffbeb" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#92400e", marginBottom: 8 }}>Why Infiltration Failed in Stage 1</div>
+              <div style={{ display: "flex", gap: 24, fontSize: 12, color: "#78350f" }}>
+                <div><strong>46/50</strong> attack flows are DNS queries (port 53, UDP, 1 pkt, 63-457 bytes)</div>
+                <div><strong>40/50</strong> attacks filtered by Tier 1 RF as statistically identical to benign DNS</div>
+                <div><strong>10/50</strong> reached LLM — all classified BENIGN (individually indistinguishable)</div>
+              </div>
+            </div>
+
+            {/* Comparison table */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, overflow: "hidden", marginBottom: 20 }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: "#f9fafb" }}>
+                    <th style={{ padding: "10px 16px", textAlign: "left", borderBottom: "1px solid #e5e7eb", fontWeight: 600 }}>Condition</th>
+                    <th style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #e5e7eb", fontWeight: 600 }}>Recall</th>
+                    <th style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #e5e7eb", fontWeight: 600 }}>FPR</th>
+                    <th style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #e5e7eb", fontWeight: 600 }}>F1</th>
+                    <th style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #e5e7eb", fontWeight: 600 }}>TP/FP/FN</th>
+                    <th style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #e5e7eb", fontWeight: 600 }}>LLM Flows</th>
+                    <th style={{ padding: "10px 16px", textAlign: "right", borderBottom: "1px solid #e5e7eb", fontWeight: 600 }}>Cost</th>
+                    <th style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #e5e7eb", fontWeight: 600 }}>Inspect</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { label: "Baseline (Stage 1)", recall: "0%", fpr: "0%", f1: "0%", tp: 0, fp: 2, fn: 50, llm: "~60", cost: "$0.80", id: "stage1_infilteration", color: "#dc2626" },
+                    { label: "A: Enriched Prompt Only", recall: "0%", fpr: "0%", f1: "0%", tp: 0, fp: 0, fn: 50, llm: "0", cost: "$0.00", id: "clustering_a", color: "#dc2626" },
+                    { label: "B: Temporal Clustering", recall: "52%", fpr: "17.9%", f1: "21.1%", tp: 26, fp: 170, fn: 24, llm: "222", cost: "$7.24", id: "clustering_b", color: "#d97706" },
+                    { label: "C: Enriched + Clustering", recall: "58%", fpr: "19.2%", f1: "22.2%", tp: 29, fp: 182, fn: 21, llm: "222", cost: "$7.79", id: "clustering_c", color: "#16a34a" },
+                  ].map((row, i) => (
+                    <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#f9fafb" }}>
+                      <td style={{ padding: "10px 16px", borderBottom: "1px solid #f3f4f6", fontWeight: 500 }}>{row.label}</td>
+                      <td style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #f3f4f6", color: row.color, fontWeight: 700 }}>{row.recall}</td>
+                      <td style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #f3f4f6" }}>{row.fpr}</td>
+                      <td style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #f3f4f6" }}>{row.f1}</td>
+                      <td style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #f3f4f6", fontFamily: "monospace", fontSize: 12 }}>{row.tp}/{row.fp}/{row.fn}</td>
+                      <td style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #f3f4f6" }}>{row.llm}</td>
+                      <td style={{ padding: "10px 16px", textAlign: "right", borderBottom: "1px solid #f3f4f6" }}>{row.cost}</td>
+                      <td style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #f3f4f6" }}>
+                        <button
+                          onClick={() => { setTopTab("amatas"); setSubTab("inspector"); loadInspectorData(row.id); }}
+                          style={{ background: "none", border: "1px solid #d1d5db", borderRadius: 4, padding: "2px 8px", cursor: "pointer", fontSize: 11, color: "#2563eb" }}
+                        >View</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Recall bar chart */}
+            <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
+              <div style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: 8, padding: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#6b7280", marginBottom: 12 }}>Recall Recovery</div>
+                <div style={{ display: "flex", alignItems: "end", gap: 16, height: 120 }}>
+                  {[
+                    { label: "Baseline", value: 0, color: "#dc2626" },
+                    { label: "A: Prompt", value: 0, color: "#dc2626" },
+                    { label: "B: Cluster", value: 52, color: "#d97706" },
+                    { label: "C: Both", value: 58, color: "#16a34a" },
+                  ].map(b => (
+                    <div key={b.label} style={{ flex: 1, textAlign: "center" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: b.color, marginBottom: 4 }}>{b.value}%</div>
+                      <div style={{ height: Math.max(b.value * 1.2, 3), background: b.color, borderRadius: "4px 4px 0 0", transition: "height 0.3s" }} />
+                      <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 4, lineHeight: 1.2 }}>{b.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ flex: 1, border: "1px solid #e5e7eb", borderRadius: 8, padding: 16 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#6b7280", marginBottom: 12 }}>Cost vs Detection</div>
+                <div style={{ display: "flex", alignItems: "end", gap: 16, height: 120 }}>
+                  {[
+                    { label: "Baseline", cost: 0.80, recall: 0, color: "#dc2626" },
+                    { label: "A: Prompt", cost: 0, recall: 0, color: "#dc2626" },
+                    { label: "B: Cluster", cost: 7.24, recall: 52, color: "#d97706" },
+                    { label: "C: Both", cost: 7.79, recall: 58, color: "#16a34a" },
+                  ].map(b => (
+                    <div key={b.label} style={{ flex: 1, textAlign: "center" }}>
+                      <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 2 }}>${b.cost.toFixed(2)}</div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: b.color, marginBottom: 4 }}>{b.recall}%</div>
+                      <div style={{ height: Math.max(b.cost * 10, 3), background: b.color, borderRadius: "4px 4px 0 0", opacity: 0.7 }} />
+                      <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 4, lineHeight: 1.2 }}>{b.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Key findings */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: 16, marginBottom: 20 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>Key Findings</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, fontSize: 13, color: "#374151", lineHeight: 1.6 }}>
+                <div><strong style={{ color: "#2563eb" }}>1. Clustering is the primary driver.</strong> IP-level clustering recovered recall from 0% to 52% by (a) overriding Tier 1 RF for suspicious clusters (39/50 attacks rescued) and (b) injecting aggregate context so LLM agents see the DNS exfiltration pattern.</div>
+                <div><strong style={{ color: "#2563eb" }}>2. Enriched prompts are additive but insufficient alone.</strong> +6% recall when combined with clustering (52% to 58%), but 0% alone because flows never reach the LLM without clustering override.</div>
+                <div><strong style={{ color: "#2563eb" }}>3. High FPR is the trade-off.</strong> 17.9-19.2% FPR because benign DNS clusters look similar to attack DNS clusters. Cluster context biases all 6 agents toward MALICIOUS for any DNS-heavy cluster.</div>
+                <div><strong style={{ color: "#2563eb" }}>4. Total cost: $15.02</strong> across all 3 conditions ($0.00 + $7.24 + $7.79). 222 flows analysed by LLM per clustering condition (vs ~60 in baseline).</div>
+              </div>
+            </div>
+
+            {/* How clustering works */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: 16 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12 }}>How Temporal Clustering Works</div>
+              <pre style={{ fontSize: 11, color: "#374151", lineHeight: 1.6, margin: 0, whiteSpace: "pre-wrap", fontFamily: "monospace" }}>{`1. Group all flows by source IP address (IP-level clustering)
+2. For each cluster: count DNS queries (port 53), unique ports, total bytes, time span
+3. If cluster has >= 8 DNS queries → flag as suspicious
+4. Suspicious cluster flows BYPASS Tier 1 RF filter → sent to LLM pipeline
+5. Cluster summary injected into each flow's data (all 6 agents see it):
+   "CLUSTER #7: 46 flows from 172.31.69.28 over 5813.0s.
+    DNS queries: 43/46. Unique dst ports: 4.
+    This cluster context is critical — the AGGREGATE PATTERN
+    may indicate DNS exfiltration (T1048.003)."
+6. Agents analyse individual flows BUT with cluster-level awareness`}</pre>
             </div>
           </div>
         )}
@@ -3345,10 +3605,10 @@ export default function NIDSDashboard() {
                 },
                 {
                   title: "Infiltration Clustering (v3)",
-                  desc: "Testing whether temporal clustering of flows by source IP and time window can detect DNS exfiltration attacks that are invisible at the individual flow level. Infiltration achieved 0% recall in Stage 1 — all 50 attack flows were filtered by Tier 1 RF as statistically identical to legitimate DNS queries.",
-                  status: "In Progress",
-                  statusColor: "#d97706",
-                  icon: "\u25B6",
+                  desc: "IP-level temporal clustering recovered Infiltration recall from 0% to 58%. Three conditions tested: enriched prompt only (0%), clustering only (52%), both combined (58%). Clustering overrides Tier 1 RF for suspicious DNS clusters, injecting aggregate context into LLM pipeline. Cost: $15.02 total.",
+                  status: "Complete",
+                  statusColor: "#16a34a",
+                  icon: "\u2713",
                 },
                 {
                   title: "Test Set Final Evaluation",
