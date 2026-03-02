@@ -1,0 +1,63 @@
+{
+  "experiment": "infilteration_clustering",
+  "timestamp": "2026-03-02T04:52:42.369604+00:00",
+  "model": "gpt-4o",
+  "batch": "/Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/Infilteration",
+  "total_cost": 15.024762500000001,
+  "conditions": {
+    "A": {
+      "label": "Enriched Prompt Only",
+      "metrics": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 50,
+        "tn": 950,
+        "n_attack": 50,
+        "n_benign": 950,
+        "precision": 0,
+        "recall": 0.0,
+        "f1": 0,
+        "false_positive_rate": 0.0,
+        "total_cost": 0.0,
+        "total_tokens": 0,
+        "flows_analyzed_by_llm": 0
+      }
+    },
+    "B": {
+      "label": "Temporal Clustering",
+      "metrics": {
+        "tp": 26,
+        "fp": 170,
+        "fn": 24,
+        "tn": 780,
+        "n_attack": 50,
+        "n_benign": 950,
+        "precision": 0.1327,
+        "recall": 0.52,
+        "f1": 0.2114,
+        "false_positive_rate": 0.1789,
+        "total_cost": 7.2365,
+        "total_tokens": 2029651,
+        "flows_analyzed_by_llm": 222
+      }
+    },
+    "C": {
+      "label": "Enriched + Clustering",
+      "metrics": {
+        "tp": 29,
+        "fp": 182,
+        "fn": 21,
+        "tn": 768,
+        "n_attack": 50,
+        "n_benign": 950,
+        "precision": 0.1374,
+        "recall": 0.58,
+        "f1": 0.2222,
+        "false_positive_rate": 0.1916,
+        "total_cost": 7.7883,
+        "total_tokens": 2181337,
+        "flows_analyzed_by_llm": 222
+      }
+    }
+  }
+}
