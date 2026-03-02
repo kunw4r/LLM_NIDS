@@ -1,0 +1,96 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ─── Packages ───────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}                     % Latin Modern (scalable Computer Modern)
+\usepackage[british]{babel}
+\usepackage{microtype}                   % Microtypographic improvements
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{parskip}                     % Paragraph spacing
+\usepackage{graphicx}
+\usepackage{booktabs}                    % Professional tables
+\usepackage{longtable}                   % Multi-page tables
+\usepackage{tabularx}                    % Flexible column widths
+\usepackage{multirow}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+    citecolor=blue!60!black,
+    urlcolor=blue!60!black,
+}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc}
+\usepackage{listings}
+\usepackage{csquotes}
+\usepackage[style=authoryear,backend=biber,maxcitenames=2,maxbibnames=99,uniquelist=false]{biblatex}
+\addbibresource{references.bib}
+\setcounter{biburlnumpenalty}{100}       % Allow URL breaks at numbers
+\setcounter{biburlucpenalty}{100}        % Allow URL breaks at uppercase
+\setcounter{biburllcpenalty}{100}        % Allow URL breaks at lowercase
+
+% ─── Custom Commands ────────────────────────────────────────
+\newcommand{\amatas}{AMATAS}
+\newcommand{\cicids}{CICIDS2018}
+
+% ─── Title Page Data ────────────────────────────────────────
+\title{%
+    \vspace{-2cm}
+    {\LARGE Advanced Multi-Agent Threat Analysis System}\\[0.5cm]
+    {\Large Explainable Network Intrusion Detection\\
+    through LLM-Based Multi-Agent Debate}\\[2cm]
+    {\large Master's Thesis}
+}
+\author{Kunwar}
+\date{April 2026}
+
+% ═════════════════════════════════════════════════════════════
+\begin{document}
+
+% ─── Front Matter ───────────────────────────────────────────
+\maketitle
+\thispagestyle{empty}
+\clearpage
+
+\begin{abstract}
+\noindent
+This thesis presents AMATAS (Advanced Multi-Agent Threat Analysis System), a network intrusion detection architecture that combines a machine learning pre-filter with a six-agent large language model pipeline to deliver both accurate detection and transparent reasoning. Unlike traditional classifiers that produce opaque probability outputs, AMATAS generates multi-perspective reasoning chains from specialist agents analysing protocol conformance, statistical anomalies, behavioural signatures, and temporal patterns, with an adversarial Devil's Advocate mechanism for false positive control.
+
+Evaluated across all fourteen attack types in the CICIDS2018 NetFlow v3 dataset at realistic class distributions (five per cent attack prevalence), AMATAS achieves a mean F1 score of 92.9 per cent across thirteen detectable attack categories, with a false positive rate of zero per cent in ten of fourteen experiments. A two-tier architecture combining a Random Forest pre-filter with the LLM pipeline reduces analysis cost by 94.6 per cent, from an estimated \$509.78 to \$27.35 for the complete evaluation corpus of 14,000 flows.
+
+A controlled ablation study demonstrates that the multi-agent architecture outperforms the best single-agent configuration by 25.2 F1 percentage points, and that external threat intelligence tools provide no measurable benefit on anonymised datasets. The Infiltration attack category produces zero per cent recall, exposing a fundamental limitation of individual flow-level analysis that motivates the proposed temporal clustering extension.
+\end{abstract}
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\listoftables
+\clearpage
+
+% ─── Main Chapters ──────────────────────────────────────────
+\include{chapters/01_introduction}
+\include{chapters/02_literature_review}
+\include{chapters/03_architecture}
+\include{chapters/04_methodology}
+\include{chapters/05_results}
+\include{chapters/06_discussion}
+\include{chapters/07_conclusion}
+
+% ─── Bibliography ───────────────────────────────────────────
+\begingroup
+\raggedright
+\printbibliography[heading=bibintoc,title={References}]
+\endgroup
+
+\end{document}

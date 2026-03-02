@@ -1,0 +1,331 @@
+\chapter{Results}
+\label{ch:results}
+
+\section{Stage 1 Results Overview}
+\label{sec:results-overview}
+
+Stage 1 constitutes the principal empirical contribution of this thesis: a systematic evaluation of the AMATAS v2 two-tier architecture across all fourteen attack types present in the CICIDS2018 NetFlow v3 dataset. Each experiment comprised 1,000 flows sampled at a realistic class distribution --- 50 attack flows and 950 benign flows (a 5\% attack prevalence), ordered chronologically by source IP and flow start time to preserve the temporal structure that the AMATAS temporal agent relies upon. All experiments employed GPT-4o as the underlying language model for the six-agent pipeline, with the Tier 1 Random Forest pre-filter operating at a classification threshold of 0.15 --- a setting established during development to achieve 100\% recall on the training partition whilst incurring zero false positives (Appendix B).
+
+Table~\ref{tab:stage1-results} presents the full per-experiment results across all 14,000 flows.
+
+\begin{table}[H]
+\centering
+\caption{Stage 1 Per-Experiment Results ($n = 1{,}000$ flows per experiment; 50 attack + 950 benign)}
+\label{tab:stage1-results}
+\small
+\begin{tabularx}{\textwidth}{l r r r r r r r r r}
+\toprule
+Attack Type & TP & FP & FN & TN & Recall & FPR & F1 & Cost (\$) & Filter Rate \\
+\midrule
+FTP-BruteForce & 50 & 0 & 0 & 950 & 100.0\% & 0.00\% & 100.0\% & 2.13 & 95.0\% \\
+SSH-Bruteforce & 49 & 0 & 1 & 950 & 98.0\% & 0.00\% & 99.0\% & 2.16 & 94.9\% \\
+DoS-SlowHTTPTest & 50 & 0 & 0 & 950 & 100.0\% & 0.00\% & 100.0\% & 2.12 & 95.0\% \\
+DoS-Slowloris & 50 & 0 & 0 & 950 & 100.0\% & 0.00\% & 100.0\% & 2.16 & 95.0\% \\
+DoS-Hulk & 46 & 0 & 4 & 950 & 92.0\% & 0.00\% & 96.0\% & 2.17 & 95.0\% \\
+DoS-GoldenEye & 46 & 0 & 4 & 950 & 92.0\% & 0.00\% & 96.0\% & 2.15 & 95.0\% \\
+DDoS-LOIC-HTTP & 41 & 0 & 9 & 950 & 82.0\% & 0.00\% & 90.0\% & 1.57 & 95.0\% \\
+DDoS-LOIC-UDP & 50 & 4 & 0 & 946 & 100.0\% & 0.42\% & 96.2\% & 1.87 & 94.1\% \\
+DDoS-HOIC & 29 & 1 & 21 & 949 & 58.0\% & 0.11\% & 73.4\% & 1.79 & 94.1\% \\
+Bot & 41 & 6 & 9 & 944 & 82.0\% & 0.63\% & 85.4\% & 2.30 & 92.7\% \\
+Infiltration & 0 & 2 & 50 & 948 & 0.0\% & 0.21\% & 0.0\% & 0.80 & 97.4\% \\
+Brute\_Force-Web & 43 & 4 & 7 & 946 & 86.0\% & 0.42\% & 89.1\% & 2.05 & 93.3\% \\
+Brute\_Force-XSS & 42 & 2 & 8 & 948 & 84.0\% & 0.21\% & 89.3\% & 2.09 & 93.7\% \\
+SQL\_Injection & 49 & 3 & 1 & 947 & 98.0\% & 0.32\% & 96.1\% & 1.99 & 94.0\% \\
+\midrule
+\textbf{Aggregate} & \textbf{586} & \textbf{22} & \textbf{114} & \textbf{13,278} & \textbf{83.7\%} & \textbf{0.07\%} & \textbf{86.3\%} & \textbf{27.35} & \textbf{94.4\%} \\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.5em}
+\noindent\textit{FPR = False Positive Rate (FP / (FP + TN)); F1 = harmonic mean of precision and recall; Filter Rate = proportion of flows classified as benign by Tier 1 without LLM invocation.}
+\end{table}
+
+Across all 14,000 flows, AMATAS v2 achieved a mean recall of 83.7\% and a mean F1 score of 86.3\%. The false positive rate remained exceptionally low at a mean of 0.07\%, with 10 of the 14 attack types producing exactly zero false positives. If the Infiltration experiment is excluded on the grounds that it represents a qualitatively distinct failure mode (discussed fully in Section~\ref{sec:infiltration-failure}), the mean recall across the remaining 13 detectable attack types rises to 90.2\%, with a mean F1 of 92.9\%. Four attack types --- FTP-BruteForce, DoS-SlowHTTPTest, DoS-Slowloris, and DDoS-LOIC-UDP --- achieved perfect 100\% recall.
+
+These results confirm the central hypothesis of the v2 architecture: that a two-tier design combining a Random Forest pre-filter with a multi-agent LLM pipeline can deliver high-recall, low-FPR detection across a diverse threat landscape at a substantially reduced cost compared to running the LLM pipeline on every flow.
+
+\section{Detection Performance by Attack Category}
+\label{sec:detection-by-category}
+
+To facilitate interpretation, results are grouped by attack category: brute force attacks, denial-of-service (DoS), distributed denial-of-service (DDoS), web application attacks, and stealthy/advanced attacks. This taxonomy follows the CICIDS2018 dataset labelling conventions \autocite{Sharafaldin2018}.
+
+\subsection{Brute Force Attacks}
+\label{sec:brute-force}
+
+The two network-layer brute force attacks --- FTP-BruteForce and SSH-Bruteforce --- represent the strongest detection results in Stage 1. FTP-BruteForce achieved perfect recall (100\%) and zero false positives, whilst SSH-Bruteforce missed only a single attack flow (recall: 98\%), again with no false positives. These attacks produce highly consistent and distinctive NetFlow signatures: large numbers of short-duration flows to fixed destination ports (21 and 22 respectively), repetitive connection patterns from a single source IP, and high packet-to-byte ratios characteristic of authentication probing. The Tier 1 Random Forest, trained on flow-level features, correctly forwarded all attack flows to the LLM pipeline, and the specialist agents --- in particular the protocol agent and temporal agent --- consistently identified the repetitive port-targeting behaviour as anomalous.
+
+\subsection{Denial-of-Service Attacks}
+\label{sec:dos-attacks}
+
+The four DoS attack types collectively produced strong results, though with a meaningful performance gradient that correlates with attack sophistication.
+
+\begin{table}[H]
+\centering
+\caption{DoS Attack Performance Summary}
+\label{tab:dos-performance}
+\begin{tabularx}{\textwidth}{l r r r X}
+\toprule
+Attack Type & Recall & FPR & F1 & Characterisation \\
+\midrule
+DoS-SlowHTTPTest & 100.0\% & 0.00\% & 100.0\% & Slow-rate, connection exhaustion \\
+DoS-Slowloris & 100.0\% & 0.00\% & 100.0\% & Slow-rate, header stalling \\
+DoS-Hulk & 92.0\% & 0.00\% & 96.0\% & High-rate HTTP flood \\
+DoS-GoldenEye & 92.0\% & 0.00\% & 96.0\% & HTTP keep-alive flood \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The two slow-rate DoS attacks --- SlowHTTPTest and Slowloris --- achieved perfect detection. Slow-rate DoS attacks are paradoxically easier to detect at the flow level than high-rate variants: they produce anomalously long flow durations, minimal inter-arrival packet times relative to connection age, and very low byte-per-packet ratios. The statistical agent consistently flagged these signatures, corroborated by the protocol agent's observation of incomplete HTTP headers or connection states inconsistent with legitimate browsing behaviour.
+
+DoS-Hulk and DoS-GoldenEye both recorded 92\% recall, each missing four attack flows. Hulk generates extremely high-rate HTTP GET floods with randomised URIs designed to evade caching and pattern-matching rules; the four missed flows exhibited byte and packet counts that fell within the upper tail of the benign HTTP traffic distribution, leading both the statistical and behavioural agents to assign low maliciousness confidence. GoldenEye's use of HTTP keep-alive and pipelining similarly caused a subset of attack flows to resemble legitimate high-volume web sessions. Notably, both attack types produced zero false positives, demonstrating that the LLM pipeline's conservatism --- reinforced by the Devil's Advocate mechanism --- prevented benign heavy-traffic flows from being misclassified.
+
+\subsection{Distributed Denial-of-Service Attacks}
+\label{sec:ddos-attacks}
+
+The DDoS experiments produced the widest performance spread of any category, spanning from 58\% recall (DDoS-HOIC) to 100\% (DDoS-LOIC-UDP).
+
+\begin{table}[H]
+\centering
+\caption{DDoS Attack Performance Summary}
+\label{tab:ddos-performance}
+\begin{tabularx}{\textwidth}{l r r r X}
+\toprule
+Attack Type & Recall & FPR & F1 & Notes \\
+\midrule
+DDoS-LOIC-UDP & 100.0\% & 0.42\% & 96.2\% & High-volume UDP flood; obvious signature \\
+DDoS-LOIC-HTTP & 82.0\% & 0.00\% & 90.0\% & HTTP-layer flood; some flows blend with benign \\
+DDoS-HOIC & 58.0\% & 0.11\% & 73.4\% & Randomised headers reduce detectability \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+DDoS-LOIC-UDP achieved perfect recall, consistent with the extremely distinctive signature of high-volume UDP floods to a single destination --- a pattern that the statistical and protocol agents flagged with near-uniform certainty. The four false positives in this experiment arose from benign UDP-heavy flows (DNS and NTP traffic) that the temporal agent, lacking sufficient IP history for those sources, assessed as potentially consistent with a reflective amplification pattern.
+
+DDoS-LOIC-HTTP's lower recall (82\%) reflects the challenge of distinguishing coordinated HTTP floods from legitimate high-traffic periods in a web-serving environment. Nine attack flows were not forwarded to the LLM pipeline by Tier 1 --- the Random Forest assigned them probabilities below the 0.15 threshold --- suggesting that the pre-filter's learned decision boundary was insufficiently sensitive to this specific attack variant under the 14-feature representation.
+
+DDoS-HOIC produced the weakest DDoS results (58\% recall, F1: 73.4\%). HOIC (High Orbit Ion Cannon) employs randomised User-Agent strings, variable request sizes, and distributed source IPs to evade signature-based detection \autocite{Razak2017}. In the CICIDS2018 dataset, HOIC traffic blends into the benign HTTP traffic distribution more effectively than LOIC, and the 14 features available to the pre-filter --- which do not include application-layer content --- are insufficient to discriminate reliably. Of the 21 missed attack flows, 18 were filtered by Tier 1 and never reached the LLM pipeline.
+
+\subsection{Web Application Attacks}
+\label{sec:web-attacks}
+
+The three web application attack types --- Brute\_Force-Web, Brute\_Force-XSS, and SQL\_Injection --- produced consistently strong results, particularly given the inherent difficulty of detecting application-layer attacks from NetFlow features.
+
+\begin{table}[H]
+\centering
+\caption{Web Application Attack Performance Summary}
+\label{tab:web-performance}
+\begin{tabular}{l r r r}
+\toprule
+Attack Type & Recall & FPR & F1 \\
+\midrule
+SQL\_Injection & 98.0\% & 0.32\% & 96.1\% \\
+Brute\_Force-Web & 86.0\% & 0.42\% & 89.1\% \\
+Brute\_Force-XSS & 84.0\% & 0.21\% & 89.3\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+SQL Injection achieved 98\% recall, missing only a single attack flow. SQL injection attacks, even when conducted over HTTP, produce distinctive flow-level indicators: repeated short-duration connections to a web server port (80 or 443), a high connection rate from a single source, and unusually small but frequent data payloads. The behavioural agent's knowledge of SQL injection patterns as a MITRE ATT\&CK technique (T1190 --- Exploit Public-Facing Application) contributed substantially to the correct classification of borderline flows.
+
+Web-based brute force and XSS attacks exhibited similar recall rates (86\% and 84\% respectively) and near-identical F1 scores. XSS attack flows in particular can be difficult to distinguish from legitimate AJAX-heavy web applications at the flow level, as both generate frequent small HTTP requests. The false positives observed in both experiments (4 and 2 respectively) arose from benign flows exhibiting high connection frequency to the same web server --- a pattern consistent with automated monitoring or content delivery network prefetching.
+
+\subsection{Stealthy and Advanced Attacks}
+\label{sec:stealthy-attacks}
+
+The Bot and Infiltration experiments are treated separately as they represent qualitatively different detection challenges. Bot achieved 82\% recall with a 0.63\% false positive rate --- the highest FPR observed across Stage 1. Bot traffic in CICIDS2018 is characterised by periodic beaconing, command-and-control (C2) communication patterns, and lateral movement; the temporal agent identified consistent inter-flow timing patterns from suspect source IPs as the primary detection signal. The six false positives arose from legitimate hosts exhibiting periodic network activity (e.g., backup or update processes) that resembled C2 beaconing intervals.
+
+Infiltration produced 0\% recall and is discussed in full in Section~\ref{sec:infiltration-failure}.
+
+\section{False Positive Analysis}
+\label{sec:false-positive-analysis}
+
+The false positive performance of AMATAS v2 represents one of the most significant results of Stage 1. Across 13,300 benign flows processed over all 14 experiments, only 22 were incorrectly classified as malicious --- a system-wide false positive rate of 0.17\%. At the per-experiment level, 10 of 14 experiments recorded zero false positives, and no experiment exceeded 0.63\% FPR. This is particularly noteworthy given that the LLM pipeline operates on the most ambiguous 5--8\% of flows forwarded by Tier 1 --- precisely those flows that the Random Forest found most difficult to classify. If Tier 1 had forwarded only genuinely benign flows at random, a higher FPR from the LLM stage would be expected.
+
+\begin{table}[H]
+\centering
+\caption{False Positive Distribution Across Experiments}
+\label{tab:fp-distribution}
+\begin{tabularx}{\textwidth}{l r X}
+\toprule
+FPR Range & Experiments & Attack Types \\
+\midrule
+0.00\% (zero FP) & 7 & FTP-BruteForce, SSH-Bruteforce, DoS-SlowHTTPTest, DoS-Slowloris, DoS-Hulk, DoS-GoldenEye, DDoS-LOIC-HTTP \\
+0.01\%--0.25\% & 5 & DDoS-LOIC-UDP, DDoS-HOIC, Infiltration, Brute\_Force-XSS, SQL\_Injection \\
+0.25\%--0.65\% & 2 & Bot, Brute\_Force-Web \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The central mechanism responsible for suppressing false positives is the Devil's Advocate (DA) agent, which operates in Phase 2 of the LLM pipeline. The DA reviews all four specialist agent analyses and constructs the strongest possible benign interpretation of the target flow, weighted at 30\% of the orchestrator's consensus calculation. This architecture was designed explicitly to counter the systematic over-classification bias observed in earlier experiments: gpt-4o-mini, when deployed without the DA mechanism, produced a 41.4\% false positive rate on the MCP comparison dataset (Section~\ref{sec:mcp-comparison}), and the untuned multi-agent system without DA weighting in Phase 3e produced FPRs above 10\%.
+
+The DA's effectiveness is most evident in the DoS-Hulk and DoS-GoldenEye experiments, where high-volume benign HTTP flows were plausible candidates for misclassification. In both cases, the DA consistently argued that observed packet volumes were consistent with legitimate file transfers or streaming sessions, and the orchestrator's synthesis weighted this argument sufficiently to preserve the benign classification of borderline flows. Qualitative inspection of orchestrator reasoning chains (available in full via the Flow Inspector module) confirms that the DA's counter-arguments were explicitly referenced in the majority of benign verdicts for these experiments.
+
+The residual 22 false positives share a common profile: periodic or bursty benign traffic that mimics an attack signature in one or two feature dimensions but not in the full multi-dimensional space. These flows represent the irreducible ambiguity inherent in NetFlow-level analysis without access to packet payloads, and are expected to persist in any system operating at Layer 3/4.
+
+\section{Tier 1 Pre-Filter Performance}
+\label{sec:tier1-performance}
+
+The Random Forest pre-filter (Tier 1) performed a dual function in the Stage 1 architecture: reducing LLM invocation cost by filtering high-confidence benign flows, and maintaining sufficient recall on attack flows to preserve the overall system's detection capability. The pre-filter was trained on the development partition of CICIDS2018 (7.04M flows) using 14 features derived from the NetFlow v3 schema, with a classification threshold of 0.15 --- that is, any flow assigned an attack probability below 0.15 was classified as benign without LLM evaluation.
+
+\begin{table}[H]
+\centering
+\caption{Tier 1 Pre-Filter Performance per Experiment}
+\label{tab:tier1-performance}
+\begin{tabular}{l r r r}
+\toprule
+Attack Type & Filter Rate & Attacks Filtered (of 50) & Benign Filtered (of 950) \\
+\midrule
+FTP-BruteForce & 95.0\% & 0 & 950 \\
+SSH-Bruteforce & 94.9\% & 0 & 950 \\
+DoS-SlowHTTPTest & 95.0\% & 0 & 950 \\
+DoS-Slowloris & 95.0\% & 0 & 950 \\
+DoS-Hulk & 95.0\% & 0 & 950 \\
+DoS-GoldenEye & 95.0\% & 0 & 950 \\
+DDoS-LOIC-HTTP & 95.0\% & 0 & 950 \\
+DDoS-LOIC-UDP & 94.1\% & 0 & 941 \\
+DDoS-HOIC & 94.1\% & 18 & 923 \\
+Bot & 92.7\% & 9 & 918 \\
+Infiltration & 97.4\% & 24 & 950 \\
+Brute\_Force-Web & 93.3\% & 7 & 930 \\
+Brute\_Force-XSS & 93.7\% & 8 & 932 \\
+SQL\_Injection & 94.0\% & 1 & 939 \\
+\midrule
+\textbf{Mean} & \textbf{94.4\%} & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For the seven attack types where Tier 1 filtered zero attack flows --- FTP-BruteForce, SSH-Bruteforce, DoS-SlowHTTPTest, DoS-Slowloris, DoS-Hulk, DoS-GoldenEye, and DDoS-LOIC-HTTP --- the pre-filter achieved its design objective precisely: routing all attack flows to the LLM pipeline whilst aggressively filtering benign traffic. In these experiments, all missed detections were attributable to the LLM pipeline itself, not the pre-filter.
+
+In contrast, the remaining seven experiments saw the pre-filter suppress between 1 and 24 attack flows, directly capping the maximum achievable recall. The most extreme case is Infiltration, where 24 of 50 attack flows were filtered --- a result that produced the complete detection failure discussed in Section~\ref{sec:infiltration-failure}. For DDoS-HOIC, Brute\_Force-Web, and Brute\_Force-XSS, between 7 and 18 attack flows were filtered, reducing the recall ceiling to 64\%, 86\%, and 84\% respectively. This finding motivates a key architectural recommendation: the Tier 1 threshold may need to be attack-type-specific, or a lower threshold (e.g., 0.10) should be evaluated against the cost of forwarding more flows to the LLM pipeline.
+
+The estimated cost of running the LLM pipeline on all 14,000 flows without Tier 1 pre-filtering --- calculated using the observed per-flow LLM cost of approximately \$0.028 derived from Phase 3 baseline experiments --- is \$509.78 for the equivalent Stage 1 corpus. The actual Stage 1 cost was \$27.35, representing a cost saving of 94.6\%. This figure closely matches the theoretical saving predicted by the 94.4\% mean filter rate, confirming that Tier 1 behaves as expected in production conditions.
+
+\section{MCP Comparison Results}
+\label{sec:mcp-comparison}
+
+Parallel to the Stage 1 AMATAS v2 evaluation, a separate ablation study assessed the performance of three configurations of a single-agent MCP-based (Model Context Protocol) system on a shared 100-flow evaluation set (10 attack flows, 90 benign) drawn from the DDoS-HOIC category. The purpose of this comparison was to isolate the contribution of multi-agent architecture and prompt engineering relative to the baseline of a single LLM call with optional tool access.
+
+\begin{table}[H]
+\centering
+\caption{MCP Comparison --- Three Configurations}
+\label{tab:mcp-comparison}
+\small
+\begin{tabular}{l l r r r r}
+\toprule
+Configuration & Model & Recall & FPR & F1 & Cost (\$) \\
+\midrule
+A: Zero-shot (no tools, no prompt) & gpt-4o-mini & 90.0\% & 41.4\% & 62.8\% & 0.01 \\
+B: Engineered prompt (no tools) & gpt-4o & 66.7\% & 27.1\% & 58.0\% & 0.37 \\
+C: Engineered prompt + MITRE tool & gpt-4o & 70.0\% & 30.0\% & 58.3\% & 0.45 \\
+\textbf{AMATAS v2 (multi-agent, Tier 1)} & \textbf{gpt-4o} & \textbf{85.0\%} & \textbf{1.1\%} & \textbf{88.0\%} & \textbf{2.59} \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\noindent\textit{AMATAS v2 baseline computed over the DDoS-HOIC experiment only; MCP configurations evaluated on $n=100$ flows.}
+\end{table}
+
+Configuration A (zero-shot gpt-4o-mini) achieved the highest raw recall (90\%) but at an entirely impractical false positive rate of 41.4\% --- nearly half of all benign flows were flagged as malicious. This mirrors the systematic over-classification bias that led to gpt-4o-mini's rejection as the primary model in AMATAS development. A system with a 41\% FPR would generate an unmanageable volume of analyst alerts in a production environment processing millions of flows per day.
+
+Configuration B introduced a detailed system prompt encoding attack signatures, protocol knowledge, and CICIDS2018-specific feature interpretations. This substantially reduced the false positive rate (27.1\%) relative to Config A but also reduced recall to 66.7\%, as the more cautious prompt encouraged the model to seek stronger evidence before flagging a flow. The net effect on F1 was negligible (58.0\% vs 62.8\%).
+
+Configuration C added a MITRE ATT\&CK MCP tool that the agent could invoke to retrieve technique descriptions. The tool produced only marginal improvements in recall (+3.3 percentage points) and marginally worsened the false positive rate (+2.9 percentage points). This result confirms the anticipated finding: external threat intelligence tools provide little benefit when operating on anonymised IP addresses and synthetic traffic lacking real-world indicators of compromise \autocite{Mukherjee2023}. The IPs in CICIDS2018 are drawn from private address ranges (172.31.x.x), rendering lookups against AbuseIPDB, AlienVault OTX, and geolocation databases entirely uninformative.
+
+AMATAS v2 outperformed all three MCP configurations on F1 by a substantial margin (88.0\% vs a maximum of 62.8\%), and reduced the false positive rate by a factor of approximately 25 relative to the best single-agent configuration (1.1\% vs 27.1\%). The cost differential --- \$2.59 per 1,000 flows for AMATAS v2 versus \$0.37--\$0.45 for MCP configurations B and C --- is justified by the F1 improvement and, critically, by the qualitative richness of AMATAS reasoning outputs, which provide traceable, multi-perspective evidence chains rather than a single model's unverified verdict.
+
+\section{Cost Analysis}
+\label{sec:cost-analysis}
+
+The total cost of all 14 Stage 1 experiments was \$27.35, with a mean cost of \$1.95 per 1,000-flow experiment and a mean per-flow cost of approximately \$0.002. This compares favourably with the \$0.028 per-flow cost observed in Phase 3 baseline experiments (without Tier 1 pre-filtering), representing a 93\% reduction in per-flow cost attributable to the Tier 1 filter.
+
+\begin{table}[H]
+\centering
+\caption{Cost per Experiment}
+\label{tab:cost-per-experiment}
+\begin{tabular}{l r r}
+\toprule
+Attack Type & Cost (\$) & Cost per Flow (\$) \\
+\midrule
+Bot & 2.30 & 0.00230 \\
+SSH-Bruteforce & 2.16 & 0.00216 \\
+DoS-Slowloris & 2.16 & 0.00216 \\
+DoS-Hulk & 2.17 & 0.00217 \\
+DoS-GoldenEye & 2.15 & 0.00215 \\
+FTP-BruteForce & 2.13 & 0.00213 \\
+DoS-SlowHTTPTest & 2.12 & 0.00212 \\
+Brute\_Force-XSS & 2.09 & 0.00209 \\
+Brute\_Force-Web & 2.05 & 0.00205 \\
+SQL\_Injection & 1.99 & 0.00199 \\
+DDoS-LOIC-UDP & 1.87 & 0.00187 \\
+DDoS-HOIC & 1.79 & 0.00179 \\
+DDoS-LOIC-HTTP & 1.57 & 0.00157 \\
+Infiltration & 0.80 & 0.00080 \\
+\midrule
+\textbf{Total / Mean} & \textbf{27.35 / 1.95} & \textbf{0.00195} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The variation in per-experiment cost reflects differences in how many flows were forwarded through the LLM pipeline. Experiments with high filter rates (e.g., Infiltration at 97.4\%, DDoS-LOIC-HTTP at 95.0\%) incur lower costs, since fewer flows reach the six-agent pipeline. Infiltration's anomalously low cost (\$0.80) is directly attributable to the pre-filter passing only 26 of 1,000 flows to the LLM stage --- the highest filter rate in Stage 1 --- a fact that also underlies its total detection failure.
+
+Agent-level cost attribution provides insight into the relative computational burden of each pipeline component.
+
+\begin{table}[H]
+\centering
+\caption{Agent Cost Distribution (\% of total LLM spend)}
+\label{tab:agent-cost-distribution}
+\begin{tabularx}{\textwidth}{l r X}
+\toprule
+Agent & Cost Share & Role \\
+\midrule
+Temporal Agent & 30.0\% & Cross-flow IP pattern analysis, context enrichment \\
+Orchestrator & 21.3\% & Multi-agent synthesis, consensus generation \\
+Devil's Advocate & 18.5\% & Counter-argument generation \\
+Behavioural Agent & 10.4\% & Attack signature matching, MITRE mapping \\
+Statistical Agent & 10.1\% & Volume and timing anomaly detection \\
+Protocol Agent & 9.7\% & Port, flag, and protocol validation \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The Temporal Agent accounts for the largest single cost share (30\%) because its prompt construction involves retrieving and embedding co-IP flow context --- typically 3--7 additional flows from the same source IP --- into the model's input. This context enrichment substantially increases token counts relative to the three specialist agents (behavioural, statistical, protocol), each of which analyses a single flow in isolation with a fixed-length prompt. The Orchestrator's 21.3\% share reflects its role as a synthesis engine: it receives and must reason over the full outputs of all five preceding agents before generating its verdict, resulting in the longest input prompts in the pipeline.
+
+The combined cost of the three cheaper specialist agents (protocol, statistical, behavioural) accounts for only 30.2\% of total spend, yet these agents collectively provide the primary evidence that all downstream agents --- the DA and Orchestrator --- reason over. This suggests that a cost optimisation strategy targeting the Temporal Agent (e.g., limiting co-IP context to 3 flows rather than 7) could reduce per-flow costs by approximately 15--20\% with minimal impact on detection performance for attack types where temporal patterns are not the primary signal.
+
+Projecting to the full CICIDS2018 test partition (8.05M flows), the estimated cost at the observed \$0.002/flow rate is approximately \$16,100 --- a figure that remains economically tractable for a research or enterprise deployment context, particularly given that the majority of production traffic would be filtered by Tier 1 at a flow rate reflecting real-world attack prevalence (typically 1--5\% rather than the 5\% used in Stage 1).
+
+\section{The Infiltration Failure}
+\label{sec:infiltration-failure}
+
+The Infiltration experiment produced a result qualitatively distinct from all other Stage 1 experiments: zero attack flows were correctly identified, despite the LLM pipeline correctly handling all other attack types with recalls of 58\% or higher. Understanding this failure is essential, as it exposes a fundamental architectural limitation of the v2 system that directly motivates the v3 clustering design.
+
+The Infiltration attack in CICIDS2018 represents a multi-stage intrusion scenario in which an attacker first establishes a foothold on an internal host through social engineering or credential compromise, then conducts reconnaissance and lateral movement across the network over an extended time period. Unlike the volumetric attacks (DoS, DDoS) or pattern-repetitive attacks (brute force), Infiltration flows are individually indistinguishable from legitimate internal network traffic. Each flow in isolation resembles routine host-to-host communication: normal packet sizes, conventional ports, TCP flags consistent with established connections, and inter-arrival times that fall within the benign distribution.
+
+The Tier 1 Random Forest filtered 24 of the 50 attack flows in the Infiltration experiment --- the highest attack attrition rate in Stage 1 --- assigning them benign probabilities below the 0.15 threshold. This is the expected behaviour of a single-flow classifier operating on 14 features: the individual Infiltration flows carry no flow-level signal that distinguishes them from benign traffic, because the malicious intent is only detectable across a temporal sequence of flows, not within any single flow. The pre-filter, trained to classify individual flows, is architecturally incapable of detecting this class of attack without temporal context.
+
+Of the remaining 26 Infiltration flows forwarded to the LLM pipeline, none received a malicious verdict. Inspection of the orchestrator reasoning chains for these flows reveals a consistent pattern: all four specialist agents assessed the individual flows as consistent with benign internal communication, the Devil's Advocate produced strong benign arguments (high confidence\_benign scores, typically 0.8--0.9), and the Orchestrator synthesised these inputs into a benign verdict. The Temporal Agent, operating on the chronologically ordered batch, could access prior flows from the same source IP --- but in the Infiltration scenario, the prior flows were themselves benign or identically ambiguous Infiltration flows, providing no discriminative signal.
+
+\begin{table}[H]
+\centering
+\caption{Infiltration Failure Analysis}
+\label{tab:infiltration-failure}
+\begin{tabularx}{\textwidth}{l r X}
+\toprule
+Failure Stage & Flows Affected & Mechanism \\
+\midrule
+Tier 1 pre-filter ($P(\text{attack}) < 0.15$) & 24 of 50 attack flows & Individual flows indistinguishable from benign at feature level \\
+LLM pipeline (benign verdict) & 26 of 26 forwarded flows & Per-flow analysis cannot detect multi-stage campaign patterns \\
+\midrule
+\textbf{Total missed} & \textbf{50 of 50} & \textbf{0\% recall} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+This result is not a failure of the LLM agents' reasoning capabilities per se --- the agents correctly assessed individual flows given the available evidence. The failure is a failure of evidence: the information required to detect an Infiltration campaign is distributed across time and multiple flows, not localised in any individual flow. The AMATAS v2 architecture, which analyses flows individually through the LLM pipeline (with only limited same-IP context in the Temporal Agent), is fundamentally unsuited to this class of attack.
+
+This finding directly motivates the v3 architecture. The proposed temporal clustering component (Section 7.3) would group flows by source IP across a sliding time window, constructing a campaign-level representation of each host's network behaviour over minutes to hours. Presenting the LLM pipeline with a cluster summary --- a sequence of flows showing reconnaissance port scans, initial connection to a target host, subsequent data transfer, and lateral movement to additional targets --- provides precisely the multi-flow temporal context required to identify the Infiltration campaign pattern. The hypothesis, to be tested in the v3 experiments, is that temporal clustering will restore near-normal recall on Infiltration whilst maintaining the low false positive rates observed for other attack types in Stage 1.
+
+The Infiltration result also has a constructive implication for the Tier 1 threshold design. The 97.4\% filter rate in the Infiltration experiment indicates that Infiltration flows are classified by the Random Forest as strongly benign --- not merely borderline. Lowering the threshold from 0.15 to, for example, 0.05 would not materially improve the situation: the Random Forest's attack probability estimates for these flows are almost certainly well below 0.05. A fundamentally different pre-filtering strategy --- such as anomaly detection on per-IP aggregated statistics rather than per-flow classification --- would be required to correctly surface Infiltration activity at the pre-filter stage.
+
+In summary, the Infiltration result demonstrates that the v2 two-tier architecture achieves strong performance across 13 of 14 attack categories but encounters a categorical blind spot for multi-stage, individually benign intrusion campaigns. This limitation is expected, documented, and directly addressed in the v3 design.

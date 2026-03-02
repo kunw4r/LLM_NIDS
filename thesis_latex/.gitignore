@@ -1,0 +1,21 @@
+# LaTeX build artefacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.log
+*.lot
+*.lof
+*.out
+*.run.xml
+*.toc
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+missfont.log
+
+# Compiled PDF (rebuild from source)
+main.pdf
+
+# Proposal PDF (not thesis source)
+UQ_THESIS_PROPOSAL_METR4912_2_.pdf
