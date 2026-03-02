@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DATA — All experiments, narratives, and result structures
@@ -926,8 +926,10 @@ export default function NIDSDashboard() {
     setInspectorLoading(true);
     setInspectorError(null);
     setSelectedFlowIdx(null);
-    try {
-      const fileMap = {
+    setInspectorPage(0);
+    setInspectorFilter("all");
+    setSearchQuery("");
+    const fileMap = {
         baseline: "/results/final_mcp_evaluation_raw.json",
         iter_1: "/results/phase2_iter1_results.json",
         phase3a: "/results/phase3a_mini_results.json",
@@ -957,9 +959,10 @@ export default function NIDSDashboard() {
         clustering_a: "/results/infiltration/enriched_prompt_results.json",
         clustering_b: "/results/infiltration/clustered_results.json",
         clustering_c: "/results/infiltration/combined_results.json",
-      };
-      const path = fileMap[sourceId];
-      if (!path) { setInspectorError("No flow data available for this experiment"); setInspectorLoading(false); return; }
+    };
+    const path = fileMap[sourceId];
+    if (!path) { setInspectorError("No flow data available for this experiment"); setInspectorLoading(false); return; }
+    try {
       const url = `${RESULTS_BASE.replace("/results", "")}${path}?t=${Date.now()}`;
       const resp = await fetch(url);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -1066,6 +1069,9 @@ export default function NIDSDashboard() {
   }).sort((a, b) => {
     const av = a[compSort.key] ?? 0;
     const bv = b[compSort.key] ?? 0;
+    if (typeof av === "string" && typeof bv === "string") {
+      return compSort.dir === "desc" ? bv.localeCompare(av) : av.localeCompare(bv);
+    }
     return compSort.dir === "desc" ? bv - av : av - bv;
   });
 
@@ -2452,7 +2458,7 @@ export default function NIDSDashboard() {
                           })()}
                         </div>
                         <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}>
-                          Confidence: {(selectedFlow.confidence * 100).toFixed(0)}%
+                          Confidence: {selectedFlow.confidence != null ? `${(selectedFlow.confidence * 100).toFixed(0)}%` : "N/A"}
                           {selectedFlow.cost_usd > 0 && <span> &middot; Cost: ${selectedFlow.cost_usd.toFixed(4)}</span>}
                           {selectedFlow.time_seconds > 0 && <span> &middot; {selectedFlow.time_seconds.toFixed(1)}s</span>}
                         </div>
@@ -2779,14 +2785,18 @@ export default function NIDSDashboard() {
                     width: 320, marginBottom: 12, fontFamily: "monospace",
                   }}
                 />
+                {runLogSearch && (() => {
+                  const count = runLogText.split("\n").filter(l => l.toLowerCase().includes(runLogSearch.toLowerCase())).length;
+                  return <div style={{ fontSize: 12, color: "#6b7280", marginBottom: 8 }}>{count} matching line{count !== 1 ? "s" : ""}</div>;
+                })()}
                 <div style={{
                   background: "#1e1e2e", borderRadius: 8, padding: "20px 24px", overflowX: "auto",
                   maxHeight: 600, overflowY: "auto", border: "1px solid #313244",
                 }}>
                   <pre style={{ margin: 0, fontFamily: "'JetBrains Mono', 'Fira Code', 'Consolas', monospace", fontSize: 12, lineHeight: 1.6 }}>
-                    {runLogText.split("\n").filter(line =>
+                    {runLogText.split("\n").map((line, i) => ({ line, idx: i })).filter(({ line }) =>
                       !runLogSearch || line.toLowerCase().includes(runLogSearch.toLowerCase())
-                    ).map((line, i) => {
+                    ).map(({ line, idx }) => {
                       let color = "#cdd6f4"; // default: light text
                       let fontWeight = 400;
                       if (/^[═=]{4,}/.test(line) || /^─{4,}/.test(line)) { color = "#585b70"; }
@@ -2800,7 +2810,7 @@ export default function NIDSDashboard() {
                       else if (/^┌|^├|^└|^│/.test(line)) { color = "#89b4fa"; }
                       else if (/Batch saved|Creating batch|Ordering check/.test(line)) { color = "#94e2d5"; }
                       else if (/^\s{2,}/.test(line) && /\d/.test(line)) { color = "#bac2de"; }
-                      return <span key={i} style={{ color, fontWeight }}>{line}{"\n"}</span>;
+                      return <span key={idx} style={{ color, fontWeight }}>{line}{"\n"}</span>;
                     })}
                   </pre>
                 </div>
@@ -3019,7 +3029,7 @@ export default function NIDSDashboard() {
                       <td style={{ padding: "10px 16px", textAlign: "right", borderBottom: "1px solid #f3f4f6" }}>{row.cost}</td>
                       <td style={{ padding: "10px 16px", textAlign: "center", borderBottom: "1px solid #f3f4f6" }}>
                         <button
-                          onClick={() => { setTopTab("amatas"); setSubTab("inspector"); loadInspectorData(row.id); }}
+                          onClick={() => { setTopTab("amatas"); setAmatasTab("inspector"); setInspectorSource(row.id); loadInspectorData(row.id); }}
                           style={{ background: "none", border: "1px solid #d1d5db", borderRadius: 4, padding: "2px 8px", cursor: "pointer", fontSize: 11, color: "#2563eb" }}
                         >View</button>
                       </td>
