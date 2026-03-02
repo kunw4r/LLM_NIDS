@@ -1905,6 +1905,122 @@ export default function NIDSDashboard() {
         )}
 
         {/* ═══════════════════════════════════════════════════════════════════ */}
+        {/* AMATAS — HOW IT RUNS                                               */}
+        {/* ═══════════════════════════════════════════════════════════════════ */}
+        {topTab === "amatas" && amatasTab === "howitworks" && (
+          <div>
+            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, letterSpacing: "-0.02em" }}>How AMATAS Runs</h2>
+            <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 32 }}>Complete pipeline from raw data to explainable verdict.</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 24, marginBottom: 40 }}>
+              {[
+                { n: 1, bg: "#eff6ff", bc: "#2563eb", title: "Data Preparation", text: "Network flows from CICIDS2018 NetFlow v3. 1,000 flows per batch: 950 benign + 50 attacks. 15 features selected from 53 available. Flows sorted chronologically by source IP to preserve temporal patterns." },
+                { n: 2, bg: "#f0fdf4", bc: "#16a34a", title: "Tier 1 RF Pre-Filter", text: `A Random Forest classifier (100 trees, trained on 5.63M flows) assigns each flow an attack probability. Flows below threshold 0.15 are auto-classified BENIGN at zero LLM cost. ~${Math.round(AGENT_COST_DATA.totalFiltered / 14000 * 100)}% of flows are filtered here.` },
+                { n: 3, bg: "#fdf4ff", bc: "#ec4899", title: "4 Specialist Agents (parallel)", text: "The remaining flows are sent simultaneously to 4 specialist agents. Each analyses the flow from one perspective and returns a verdict + full reasoning." },
+                { n: 4, bg: "#fef2f2", bc: "#dc2626", title: "Devil's Advocate", text: "Receives all 4 specialist verdicts. Argues the strongest possible case for BENIGN regardless of specialist votes. Designed to reduce false positives by stress-testing the malicious case. Carries 30% weight." },
+                { n: 5, bg: "#ecfdf5", bc: "#10b981", title: "Orchestrator", text: "Receives all 5 agent outputs. Weighs evidence, considers DA counter-argument, produces final verdict: MALICIOUS / SUSPICIOUS / BENIGN plus attack category and full reasoning chain." },
+                { n: 6, bg: "#f9fafb", bc: "#6b7280", title: "Results", text: "Complete reasoning chain stored per flow. Results pushed to GitHub automatically. Thesis draft generated for each experiment." },
+              ].map(step => (
+                <div key={step.n} style={{ display: "flex", gap: 20 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: "50%", background: step.bg, border: `2px solid ${step.bc}`, display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, color: step.bc, fontSize: 16, flexShrink: 0 }}>{step.n}</div>
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 6 }}>{step.title}</h3>
+                    <p style={{ fontSize: 13, color: "#374151", lineHeight: 1.7, margin: 0 }}>{step.text}</p>
+                    {step.n === 2 && (
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "monospace", fontSize: 12, padding: "12px 16px", background: "#f9fafb", borderRadius: 8, border: "1px solid #e5e7eb", marginTop: 12, flexWrap: "wrap" }}>
+                        <span style={{ padding: "4px 10px", background: "#1e40af", color: "#fff", borderRadius: 4, fontWeight: 600 }}>1000 flows</span>
+                        <span style={{ color: "#9ca3af" }}>&rarr;</span>
+                        <span style={{ padding: "4px 10px", background: "#16a34a", color: "#fff", borderRadius: 4 }}>RF filter</span>
+                        <span style={{ color: "#9ca3af" }}>&rarr;</span>
+                        <span style={{ padding: "4px 10px", background: "#2563eb", color: "#fff", borderRadius: 4 }}>{Math.round(AGENT_COST_DATA.totalLlmFlows / 14)} to LLM</span>
+                        <span style={{ color: "#d1d5db" }}>|</span>
+                        <span style={{ padding: "4px 10px", background: "#f0fdf4", color: "#16a34a", borderRadius: 4, border: "1px solid #bbf7d0" }}>{Math.round(AGENT_COST_DATA.totalFiltered / 14)} auto-benign</span>
+                      </div>
+                    )}
+                    {step.n === 3 && (
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginTop: 12 }}>
+                        {[
+                          { name: "Protocol", color: "#3b82f6", desc: "Port/flag/protocol validity" },
+                          { name: "Statistical", color: "#8b5cf6", desc: "Volume/timing anomalies" },
+                          { name: "Behavioural", color: "#f59e0b", desc: "Attack signature matching" },
+                          { name: "Temporal", color: "#ec4899", desc: "Cross-flow IP patterns" },
+                        ].map(a => (
+                          <div key={a.name} style={{ border: "1px solid #e5e7eb", borderRadius: 6, padding: "10px", textAlign: "center" }}>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: a.color }}>{a.name}</div>
+                            <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 2 }}>{a.desc}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Agent Cost Distribution */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "24px", marginBottom: 24 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 20 }}>Agent Cost Distribution (per LLM-analysed flow)</h3>
+              <div style={{ maxWidth: 600 }}>
+                {["orchestrator", "devils_advocate", "temporal", "behavioural", "statistical", "protocol"].map(a => (
+                  <div key={a} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                    <div style={{ width: 120, fontSize: 12, color: "#374151", textAlign: "right" }}>{AGENT_COST_DATA[a].label}</div>
+                    <div style={{ flex: 1, height: 22, background: "#f3f4f6", borderRadius: 4, overflow: "hidden" }}>
+                      <div style={{ width: `${AGENT_COST_DATA[a].pct}%`, height: "100%", background: AGENT_COST_DATA[a].color, borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 8 }}>
+                        <span style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>{AGENT_COST_DATA[a].pct}%</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 20 }}>
+                <div style={{ textAlign: "center", padding: "12px", background: "#f9fafb", borderRadius: 8, border: "1px solid #e5e7eb" }}>
+                  <div style={{ fontSize: 20, fontWeight: 700 }}>${AGENT_COST_DATA.avgPerLlmFlow.toFixed(3)}</div>
+                  <div style={{ fontSize: 11, color: "#6b7280" }}>per flow reaching LLM</div>
+                </div>
+                <div style={{ textAlign: "center", padding: "12px", background: "#f9fafb", borderRadius: 8, border: "1px solid #e5e7eb" }}>
+                  <div style={{ fontSize: 20, fontWeight: 700 }}>${AGENT_COST_DATA.avgPerBatch.toFixed(2)}</div>
+                  <div style={{ fontSize: 11, color: "#6b7280" }}>per 1,000-flow batch</div>
+                </div>
+                <div style={{ textAlign: "center", padding: "12px", background: "#f0fdf4", borderRadius: 8, border: "1px solid #bbf7d0" }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: "#166534" }}>~${(AGENT_COST_DATA.estWithoutTier1 / 14 - AGENT_COST_DATA.avgPerBatch).toFixed(0)}</div>
+                  <div style={{ fontSize: 11, color: "#6b7280" }}>saved per batch by Tier 1</div>
+                </div>
+              </div>
+            </div>
+            {/* Where the Money Goes */}
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "24px" }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Where the Money Goes</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+                  <div style={{ width: 160, fontSize: 12, color: "#374151", textAlign: "right" }}>Tier 1 filtered (free)</div>
+                  <div style={{ flex: 1, height: 22, background: "#f3f4f6", borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ width: `${Math.round(AGENT_COST_DATA.totalFiltered / 14000 * 100)}%`, height: "100%", background: "#16a34a", borderRadius: 4, display: "flex", alignItems: "center", paddingLeft: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>{Math.round(AGENT_COST_DATA.totalFiltered / 14000 * 100)}%</span>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                  <div style={{ width: 160, fontSize: 12, color: "#374151", textAlign: "right" }}>LLM pipeline</div>
+                  <div style={{ flex: 1, height: 22, background: "#f3f4f6", borderRadius: 4, overflow: "hidden" }}>
+                    <div style={{ width: `${Math.round(AGENT_COST_DATA.totalLlmFlows / 14000 * 100)}%`, height: "100%", background: "#2563eb", borderRadius: 4, display: "flex", alignItems: "center", paddingLeft: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#fff" }}>{Math.round(AGENT_COST_DATA.totalLlmFlows / 14000 * 100)}%</span>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ marginLeft: 172, fontSize: 12, color: "#6b7280", marginBottom: 4 }}>LLM cost split by agent:</div>
+                {["protocol", "statistical", "behavioural", "temporal", "devils_advocate", "orchestrator"].map(a => (
+                  <div key={a} style={{ display: "flex", alignItems: "center", gap: 12, marginLeft: 40 }}>
+                    <div style={{ width: 120, fontSize: 11, color: "#6b7280", textAlign: "right" }}>{AGENT_COST_DATA[a].label}</div>
+                    <div style={{ flex: 1, height: 14, background: "#f3f4f6", borderRadius: 3, overflow: "hidden" }}>
+                      <div style={{ width: `${AGENT_COST_DATA[a].pct}%`, height: "100%", background: AGENT_COST_DATA[a].color, borderRadius: 3 }} />
+                    </div>
+                    <span style={{ fontSize: 11, color: "#6b7280", minWidth: 35 }}>{AGENT_COST_DATA[a].pct}%</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════════ */}
         {/* AMATAS — FLOW INSPECTOR                                            */}
         {/* ═══════════════════════════════════════════════════════════════════ */}
         {topTab === "amatas" && amatasTab === "inspector" && (
@@ -2061,26 +2177,17 @@ export default function NIDSDashboard() {
                       costData._tp = metrics.tp || 0;
                     }
                   }
-                  // Fallback to static data
+                  // Fallback to aggregate AGENT_COST_DATA
                   if (!costData) {
-                    const s1exp = STAGE1_SUMMARY.experiments.find(e => {
-                      const idMap = { "FTP-BruteForce": "stage1_ftp", "SSH-Bruteforce": "stage1_ssh", "DDoS_attacks-LOIC-HTTP": "stage1_loic_http", "DoS_attacks-Hulk": "stage1_hulk", "DoS_attacks-SlowHTTPTest": "stage1_slowhttp", "DoS_attacks-GoldenEye": "stage1_goldeneye", "DoS_attacks-Slowloris": "stage1_slowloris", "DDOS_attack-HOIC": "stage1_hoic", "DDOS_attack-LOIC-UDP": "stage1_loic_udp", "Bot": "stage1_bot", "Infilteration": "stage1_infilteration", "Brute_Force_-Web": "stage1_web", "Brute_Force_-XSS": "stage1_xss", "SQL_Injection": "stage1_sql" };
-                      return idMap[e.attack_type] === inspectorSource;
+                    costData = {};
+                    AGENT_KEYS.forEach(k => {
+                      costData[k] = { cost: AGENT_COST_DATA[k].cost / 14, pct: AGENT_COST_DATA[k].pct };
                     });
-                    if (s1exp) {
-                      const perExp = AGENT_COST_PER_EXPERIMENT[s1exp.attack_type];
-                      if (perExp) {
-                        costData = {};
-                        AGENT_KEYS.forEach(k => {
-                          costData[k] = { cost: perExp[k], pct: (perExp[k] / perExp.total * 100) };
-                        });
-                        costData._total = perExp.total;
-                        costData._llmFlows = perExp.llmFlows;
-                        costData._filtered = perExp.filtered;
-                        costData._estWithout = perExp.estWithout;
-                        costData._tp = s1exp.confusion.tp;
-                      }
-                    }
+                    costData._total = AGENT_COST_DATA.avgPerBatch;
+                    costData._llmFlows = Math.round(AGENT_COST_DATA.totalLlmFlows / 14);
+                    costData._filtered = Math.round(AGENT_COST_DATA.totalFiltered / 14);
+                    costData._estWithout = AGENT_COST_DATA.estWithoutTier1 / 14;
+                    costData._tp = 0;
                   }
 
                   if (!costData) return null;
@@ -3224,45 +3331,47 @@ export default function NIDSDashboard() {
               {[
                 {
                   title: "Stage 1: All 14 Attack Types",
-                  desc: "Per-attack evaluation across all 14 CICIDS2018 attack types. 1000 flows each (50 attack + 950 benign) with Tier-1 RF pre-filtering + GPT-4o 6-agent pipeline. 12/14 types detected at 82%+ recall, 0% FPR across the board. Total cost: $27.35.",
+                  desc: "Per-attack evaluation across all 14 CICIDS2018 attack types. 1000 flows each (50 attack + 950 benign) with Tier-1 RF pre-filtering + GPT-4o 6-agent pipeline. 12/14 types detected at 82%+ recall. Total cost: $27.35.",
                   status: "Complete",
                   statusColor: "#16a34a",
+                  icon: "\u2713",
                 },
                 {
                   title: "MCP Comparison Experiment",
-                  desc: "Three single-agent configs vs AMATAS: (A) GPT-4o-mini zero-shot (90% recall, 41% FPR), (B) GPT-4o engineered prompt (67% recall, 27% FPR), (C) GPT-4o + MITRE tool (70% recall, 30% FPR). AMATAS v2 achieves 88% F1 with 1.1% FPR — no single agent comes close.",
+                  desc: "Three single-agent configs tested: zero-shot (90% recall, 41% FPR), engineered prompt (67% recall, 27% FPR), + MITRE tool (70% recall, 30% FPR). AMATAS v2 achieves 88% F1 with 1.1% FPR.",
                   status: "Complete",
                   statusColor: "#16a34a",
+                  icon: "\u2713",
                 },
                 {
-                  title: "Infilteration Deep Dive",
-                  desc: "Infilteration scored 0% recall — attack flows are DNS/NTP/DHCP queries statistically identical to benign traffic. Tier 1 RF filtered 40/50 attacks as benign; the LLM missed the remaining 10. Individual-flow analysis cannot detect this attack; temporal clustering is the hypothesis.",
-                  status: "Investigating",
+                  title: "Infiltration Clustering (v3)",
+                  desc: "Testing whether temporal clustering of flows by source IP and time window can detect DNS exfiltration attacks that are invisible at the individual flow level. Infiltration achieved 0% recall in Stage 1 — all 50 attack flows were filtered by Tier 1 RF as statistically identical to legitimate DNS queries.",
+                  status: "In Progress",
                   statusColor: "#d97706",
-                },
-                {
-                  title: "AMATAS v3: Temporal Clustering",
-                  desc: "Group flows by source IP within time windows before LLM analysis. Hypothesis: clustered context reveals exfiltration patterns (46 DNS queries from one IP) invisible at the individual flow level. Primary target: Infilteration recovery from 0% recall.",
-                  status: "Next Up",
-                  statusColor: "#2563eb",
+                  icon: "\u25B6",
                 },
                 {
                   title: "Test Set Final Evaluation",
-                  desc: "Run the complete AMATAS v2 (and v3 if clustering works) pipeline on the held-out test.csv split (8.05M flows). This is the final evaluation for the thesis — no parameter tuning allowed.",
+                  desc: "Run complete AMATAS v2/v3 pipeline on held-out test.csv (8.05M flows). Final thesis evaluation — no parameter tuning allowed.",
                   status: "Planned",
                   statusColor: "#6b7280",
+                  icon: "\u25CB",
                 },
                 {
                   title: "Thesis Write-Up",
-                  desc: "Compile all experimental results into the formal thesis. Key contributions: two-tier ML+LLM architecture, per-attack-type evaluation at realistic distributions, explainable verdicts via multi-agent reasoning chains, and the role of temporal context in NIDS.",
+                  desc: "Compile all experimental results. Key contributions: two-tier ML+LLM architecture, per-attack-type evaluation, explainable multi-agent reasoning, and the role of temporal context in NIDS. 8 weeks remaining.",
                   status: "In Progress",
                   statusColor: "#2563eb",
+                  icon: "\u25B6",
                 },
               ].map(item => (
                 <div key={item.title} style={{ border: "1px solid #e5e7eb", borderRadius: 8, padding: "20px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                    <h3 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>{item.title}</h3>
-                    <span style={{ padding: "2px 10px", borderRadius: 4, fontSize: 11, fontWeight: 500, color: item.statusColor, border: `1px solid ${item.statusColor}30` }}>
+                    <h3 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>
+                      <span style={{ color: item.statusColor, marginRight: 8 }}>{item.icon}</span>
+                      {item.title}
+                    </h3>
+                    <span style={{ padding: "2px 10px", borderRadius: 4, fontSize: 11, fontWeight: 500, color: item.statusColor, border: `1px solid ${item.statusColor}30`, background: `${item.statusColor}08` }}>
                       {item.status}
                     </span>
                   </div>
