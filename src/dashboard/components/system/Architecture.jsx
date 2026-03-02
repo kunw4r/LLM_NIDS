@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AGENTS } from "../../data/agents";
 import { AGENT_COST_DATA } from "../../data/stage1";
 import { DATASET_SPLITS, RF_TRAINED_TYPES, RF_CAUGHT_UNSEEN, AGENT_KEYS, rfPillColor } from "../../data/constants";
+import RoutingControl from "../results/RoutingControl";
 
 export default function Architecture() {
   const [expandedPrompts, setExpandedPrompts] = useState({});
@@ -304,6 +305,9 @@ export default function Architecture() {
           and required no rerun.
         </p>
       </div>
+
+      {/* Routing validation — random filter control experiment */}
+      <RoutingControl />
     </div>
   );
 }

@@ -17,6 +17,8 @@ import Stage1Results from "./components/results/Stage1Results";
 import ClusteringResults from "./components/results/ClusteringResults";
 import ExperimentDetail from "./components/results/ExperimentDetail";
 import MCPAblation from "./components/comparison/MCPAblation";
+import AblationStudy from "./components/results/AblationStudy";
+import RoutingControl from "./components/results/RoutingControl";
 
 import { STAGE1_ID_MAP } from "./data/constants";
 
@@ -32,6 +34,7 @@ const SUB_TABS = {
   results: [
     ["overview", "Overview"],
     ["stage1", "Stage 1"],
+    ["ablation", "Ablation"],
     ["clustering", "Clustering"],
     ["mcp", "MCP Comparison"],
   ],
@@ -158,6 +161,9 @@ export default function App() {
           inspector={inspector}
           onBack={closeDetailPage}
         />
+      )}
+      {topTab === "results" && subTab === "ablation" && (
+        <AblationStudy />
       )}
       {topTab === "results" && subTab === "clustering" && (
         <ClusteringResults onInspectFlows={openInspector} />

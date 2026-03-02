@@ -1,0 +1,227 @@
+{
+  "experiment": "Agent Ablation Study",
+  "date": "2026-03-03T00:07:01.206607",
+  "description": "Quantify each agent's contribution by systematically disabling agents",
+  "conditions": {
+    "full_amatas": {
+      "label": "Full AMATAS (6 agents)",
+      "attack_type": "FTP-BruteForce",
+      "disabled_agents": [],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "cost": 2.1335225
+    },
+    "no_devils_advocate": {
+      "label": "No Devil's Advocate",
+      "attack_type": "FTP-BruteForce",
+      "disabled_agents": [
+        "devils_advocate"
+      ],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 43,
+        "fp": 0,
+        "tn": 783,
+        "fn": 0
+      },
+      "cost": 1.506555
+    },
+    "no_temporal": {
+      "label": "No Temporal Agent",
+      "attack_type": "FTP-BruteForce",
+      "disabled_agents": [
+        "temporal"
+      ],
+      "recall": 0.94,
+      "precision": 1.0,
+      "f1": 0.9690721649484536,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 47,
+        "fp": 0,
+        "tn": 950,
+        "fn": 3
+      },
+      "cost": 1.2451100000000002
+    },
+    "no_statistical": {
+      "label": "No Statistical Agent",
+      "attack_type": "FTP-BruteForce",
+      "disabled_agents": [
+        "statistical"
+      ],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 39,
+        "fp": 0,
+        "tn": 783,
+        "fn": 0
+      },
+      "cost": 1.5044275
+    },
+    "two_agent": {
+      "label": "2-Agent (Protocol + Orchestrator)",
+      "attack_type": "FTP-BruteForce",
+      "disabled_agents": [
+        "behavioural",
+        "devils_advocate",
+        "statistical",
+        "temporal"
+      ],
+      "recall": 0.12,
+      "precision": 1.0,
+      "f1": 0.21428571428571425,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 6,
+        "fp": 0,
+        "tn": 950,
+        "fn": 44
+      },
+      "cost": 0.4485675
+    },
+    "four_agent": {
+      "label": "4-Agent (no DA + Temporal)",
+      "attack_type": "FTP-BruteForce",
+      "disabled_agents": [
+        "devils_advocate",
+        "temporal"
+      ],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "cost": 0.8747950000000001
+    },
+    "full_amatas_ssh": {
+      "label": "Full AMATAS (6 agents)",
+      "attack_type": "SSH-Bruteforce",
+      "disabled_agents": [],
+      "recall": 0.98,
+      "precision": 1.0,
+      "f1": 0.98989898989899,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 49,
+        "fp": 0,
+        "tn": 950,
+        "fn": 1
+      },
+      "cost": 2.1589525000000003
+    },
+    "no_devils_advocate_ssh": {
+      "label": "No Devil's Advocate",
+      "attack_type": "SSH-Bruteforce",
+      "disabled_agents": [
+        "devils_advocate"
+      ],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 43,
+        "fp": 0,
+        "tn": 29,
+        "fn": 0
+      },
+      "cost": 1.5236025000000002
+    },
+    "no_temporal_ssh": {
+      "label": "No Temporal Agent",
+      "attack_type": "SSH-Bruteforce",
+      "disabled_agents": [
+        "temporal"
+      ],
+      "recall": 0.54,
+      "precision": 0.9642857142857143,
+      "f1": 0.6923076923076923,
+      "fpr": 0.0010526315789473684,
+      "confusion": {
+        "tp": 27,
+        "fp": 1,
+        "tn": 949,
+        "fn": 23
+      },
+      "cost": 1.25546
+    },
+    "no_statistical_ssh": {
+      "label": "No Statistical Agent",
+      "attack_type": "SSH-Bruteforce",
+      "disabled_agents": [
+        "statistical"
+      ],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 39,
+        "fp": 0,
+        "tn": 29,
+        "fn": 0
+      },
+      "cost": 1.5109650000000001
+    },
+    "two_agent_ssh": {
+      "label": "2-Agent (Protocol + Orchestrator)",
+      "attack_type": "SSH-Bruteforce",
+      "disabled_agents": [
+        "behavioural",
+        "devils_advocate",
+        "statistical",
+        "temporal"
+      ],
+      "recall": 0.0,
+      "precision": 0,
+      "f1": 0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 950,
+        "fn": 50
+      },
+      "cost": 0.45462250000000004
+    },
+    "four_agent_ssh": {
+      "label": "4-Agent (no DA + Temporal)",
+      "attack_type": "SSH-Bruteforce",
+      "disabled_agents": [
+        "devils_advocate",
+        "temporal"
+      ],
+      "recall": 0.98,
+      "precision": 0.98,
+      "f1": 0.98,
+      "fpr": 0.0010526315789473684,
+      "confusion": {
+        "tp": 49,
+        "fp": 1,
+        "tn": 949,
+        "fn": 1
+      },
+      "cost": 0.8973325000000001
+    }
+  }
+}
