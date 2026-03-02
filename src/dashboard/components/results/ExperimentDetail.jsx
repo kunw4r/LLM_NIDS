@@ -9,6 +9,7 @@ import { AGENTS } from "../../data/agents";
 // Lib
 import { computeErrorAttribution } from "../../lib/errorAttribution";
 import { computeAgentSummaries, generateAgentNarrative } from "../../lib/agentSummary";
+import { computeMulticlassStats } from "../../lib/multiclass";
 import { dollar, verdictColor, verdictBg } from "../../lib/format";
 
 // Components
@@ -99,6 +100,10 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
   const agentSummaries = useMemo(
     () => inspectorFlows.length > 0 ? computeAgentSummaries(inspectorFlows) : null,
     [inspectorFlows]
+  );
+  const multiclassStats = useMemo(
+    () => inspectorFlows.length > 0 ? computeMulticlassStats(inspectorFlows, attackType) : null,
+    [inspectorFlows, attackType]
   );
 
   const pieTotal = inspectorFlows.length || 1;
@@ -469,7 +474,142 @@ export default function ExperimentDetail({ attackType, inspector, onBack }) {
         </div>
       )}
 
-      {/* ── Section 7: Reasoning Showcase ──────────────────── */}
+      {/* ── Section 7: Multiclass Attack Type Classification ── */}
+      {multiclassStats && multiclassStats.detectedAttackFlows > 0 && (
+        <div className="border border-gray-200 rounded-lg p-4 sm:p-5 mb-5">
+          <div className="text-sm font-semibold mb-1">Attack Type Classification</div>
+          <p className="text-xs text-gray-500 mb-4 m-0 leading-relaxed">
+            Beyond binary detection (benign vs attack), AMATAS predicts the <strong>specific attack type</strong> for
+            each flagged flow. This is multiclass classification — the system doesn't just say "this is malicious,"
+            it says <em>what kind</em> of attack it is and why.
+          </p>
+
+          {/* Orchestrator accuracy summary */}
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="text-center py-3 bg-gray-50 rounded-lg">
+              <div className="text-2xl font-bold" style={{
+                color: multiclassStats.orchestrator.accuracy >= 0.8 ? "#16a34a"
+                  : multiclassStats.orchestrator.accuracy >= 0.5 ? "#d97706" : "#dc2626"
+              }}>
+                {(multiclassStats.orchestrator.accuracy * 100).toFixed(0)}%
+              </div>
+              <div className="text-[10px] text-gray-500">Type accuracy (orchestrator)</div>
+            </div>
+            <div className="text-center py-3 bg-gray-50 rounded-lg">
+              <div className="text-2xl font-bold text-gray-900">
+                {multiclassStats.orchestrator.correctType}/{multiclassStats.detectedAttackFlows}
+              </div>
+              <div className="text-[10px] text-gray-500">Correct type of detected</div>
+            </div>
+            <div className="text-center py-3 bg-gray-50 rounded-lg">
+              <div className="text-2xl font-bold text-gray-900">
+                {multiclassStats.orchestrator.noType}
+              </div>
+              <div className="text-[10px] text-gray-500">No type predicted</div>
+            </div>
+          </div>
+
+          {/* Orchestrator predictions breakdown */}
+          {Object.keys(multiclassStats.orchestrator.predictions).length > 0 && (
+            <div className="mb-4">
+              <div className="text-xs font-semibold text-gray-500 mb-2">Orchestrator Predicted Types (for detected attacks)</div>
+              <div className="flex flex-wrap gap-1.5">
+                {Object.entries(multiclassStats.orchestrator.predictions)
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([type, count]) => {
+                    const isMatch = multiclassStats.orchestrator.matches.some(m => m.predicted === type && m.match);
+                    return (
+                      <span
+                        key={type}
+                        className="px-2.5 py-1 rounded text-[11px] font-medium border"
+                        style={{
+                          color: isMatch ? "#166534" : "#991b1b",
+                          background: isMatch ? "#dcfce7" : "#fee2e2",
+                          borderColor: isMatch ? "#bbf7d0" : "#fecaca",
+                        }}
+                      >
+                        {type} <span className="font-bold">x{count}</span>
+                        {isMatch ? " \u2713" : " \u2717"}
+                      </span>
+                    );
+                  })}
+              </div>
+              <div className="text-[10px] text-gray-400 mt-1.5 italic">
+                Ground truth: <strong>{attackType.replace(/_/g, " ")}</strong>. Matching uses keyword-based fuzzy matching
+                (e.g., "Potential Brute Force" matches "FTP-BruteForce").
+              </div>
+            </div>
+          )}
+
+          {/* Per-specialist accuracy */}
+          <div className="mb-4">
+            <div className="text-xs font-semibold text-gray-500 mb-2">Per-Specialist Type Predictions (on attack flows)</div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {AGENTS.filter(a => ["protocol", "statistical", "behavioural", "temporal"].includes(a.id)).map(agent => {
+                const s = multiclassStats.specialists[agent.id];
+                if (!s) return null;
+                const acc = s.total > 0 ? (s.correct / s.total * 100).toFixed(0) : 0;
+                return (
+                  <div key={agent.id} className="border border-gray-200 rounded-lg p-3">
+                    <div className="text-[11px] font-bold mb-1" style={{ color: agent.color }}>{agent.name}</div>
+                    <div className="text-lg font-bold text-gray-900">{acc}%</div>
+                    <div className="text-[10px] text-gray-500">
+                      {s.correct} correct, {s.wrong} wrong, {s.noType} no type
+                    </div>
+                    {Object.keys(s.predictions).length > 0 && (
+                      <div className="mt-1.5 flex flex-wrap gap-0.5">
+                        {Object.entries(s.predictions).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([type, count]) => (
+                          <span key={type} className="text-[9px] px-1.5 py-0.5 bg-gray-100 rounded text-gray-600 truncate" style={{ maxWidth: "100%" }}>
+                            {type.length > 25 ? type.slice(0, 25) + "\u2026" : type} ({count})
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Why multiclass matters */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div className="text-xs font-semibold text-blue-800 mb-1">Why Multiclass Matters</div>
+            <div className="text-[11px] text-blue-900 leading-relaxed space-y-1">
+              <p className="m-0">
+                Traditional IDS only answers "is this an attack?" AMATAS also answers "what kind of attack?" and "why do we think so?" —
+                each specialist independently predicts the attack type from its analytical perspective, then the orchestrator
+                synthesizes these into a final classification with MITRE ATT&CK technique mapping.
+              </p>
+              <p className="m-0">
+                Correct type identification enables targeted incident response: a brute-force detection triggers credential
+                rotation, a DoS detection triggers rate limiting, an infiltration detection triggers data loss investigation.
+                This is a key advantage over binary classifiers.
+              </p>
+            </div>
+          </div>
+
+          {/* False positive types */}
+          {multiclassStats.falsePositives.count > 0 && Object.keys(multiclassStats.falsePositives.predictions).length > 0 && (
+            <div className="mt-3">
+              <div className="text-xs font-semibold text-gray-500 mb-1.5">
+                False Alarm Type Predictions ({multiclassStats.falsePositives.count} benign flows wrongly flagged)
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {Object.entries(multiclassStats.falsePositives.predictions).sort((a, b) => b[1] - a[1]).map(([type, count]) => (
+                  <span key={type} className="px-2 py-0.5 rounded text-[10px] bg-red-50 text-red-700 border border-red-200">
+                    {type} x{count}
+                  </span>
+                ))}
+              </div>
+              <div className="text-[10px] text-gray-400 mt-1 italic">
+                What the system thought the false alarms were — useful for understanding which attack signatures are too sensitive.
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Section 8: Reasoning Showcase ──────────────────── */}
       {inspectorFlows.length > 0 && (
         <ReasoningShowcase flows={inspectorFlows} />
       )}

@@ -3,6 +3,7 @@ import { AGENTS } from "../../data/agents";
 import { AGENT_COST_DATA } from "../../data/stage1";
 import { AGENT_KEYS } from "../../data/constants";
 import { verdictColor, verdictBg, correctColor, isCorrect } from "../../lib/format";
+import { matchAttackType } from "../../lib/multiclass";
 import AgentCard from "./AgentCard";
 
 export default function FlowDetail({ flow, expandedPrompts, setExpandedPrompts }) {
@@ -28,6 +29,30 @@ export default function FlowDetail({ flow, expandedPrompts, setExpandedPrompts }
             {correct ? "Correct" : "Incorrect"}
           </span>
         </div>
+        {/* Attack type match indicator */}
+        {flow.label_actual === 1 && (flow.attack_type_predicted || flow.attack_category) && (() => {
+          const predicted = flow.attack_type_predicted || flow.attack_category;
+          const actual = flow.attack_type_actual;
+          const result = matchAttackType(actual, predicted);
+          return (
+            <div className="flex items-center gap-2 mt-1 text-xs">
+              <span className="text-gray-500">Predicted type:</span>
+              <span
+                className="px-2 py-0.5 rounded font-medium"
+                style={{
+                  color: result.match ? "#166534" : "#991b1b",
+                  background: result.match ? "#dcfce7" : "#fee2e2",
+                }}
+              >
+                {predicted} {result.match ? "\u2713" : "\u2717"}
+              </span>
+              {!result.match && (
+                <span className="text-gray-400 text-[10px]">expected: {actual}</span>
+              )}
+            </div>
+          );
+        })()}
+
         <div className="text-xs text-gray-400 mt-0.5">
           Confidence: {flow.confidence != null ? `${(flow.confidence * 100).toFixed(0)}%` : "N/A"}
           {flow.cost_usd > 0 && <span> &middot; Cost: ${flow.cost_usd.toFixed(4)}</span>}

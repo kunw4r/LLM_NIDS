@@ -1,5 +1,6 @@
 import React from "react";
 import { verdictColor, verdictBg, correctColor, isCorrect } from "../../lib/format";
+import { matchAttackType } from "../../lib/multiclass";
 
 export default function FlowTable({ flows, page, setPage, pageSize, selectedFlowIdx, setSelectedFlowIdx }) {
   const totalPages = Math.ceil(flows.length / pageSize);
@@ -12,7 +13,7 @@ export default function FlowTable({ flows, page, setPage, pageSize, selectedFlow
       <table className="w-full border-collapse text-xs">
         <thead className="sticky top-0 bg-gray-50 z-[1]">
           <tr>
-            {["#", "Actual", "Verdict", "Correct?", "Conf"].map(h => (
+            {["#", "Actual", "Verdict", "Predicted Type", "Correct?", "Conf"].map(h => (
               <th
                 key={h}
                 className="text-left px-3 py-2.5 font-semibold text-gray-500 text-[11px] border-b border-gray-200"
@@ -53,6 +54,23 @@ export default function FlowTable({ flows, page, setPage, pageSize, selectedFlow
                   >
                     {displayVerdict}
                   </span>
+                </td>
+                <td className="px-3 py-2 text-[10px] max-w-[120px] truncate">
+                  {(() => {
+                    if (f.tier1_filtered) return <span className="text-gray-400">—</span>;
+                    const pred = f.attack_type_predicted || f.attack_category;
+                    if (!pred) return <span className="text-gray-400">—</span>;
+                    const typeMatch = f.label_actual === 1 ? matchAttackType(f.attack_type_actual, pred) : null;
+                    return (
+                      <span
+                        className="truncate"
+                        title={pred}
+                        style={{ color: typeMatch ? (typeMatch.match ? "#166534" : "#991b1b") : "#6b7280" }}
+                      >
+                        {pred.length > 18 ? pred.slice(0, 18) + "\u2026" : pred}
+                      </span>
+                    );
+                  })()}
                 </td>
                 <td className="px-3 py-2 text-[11px] font-semibold" style={{ color: correctColor(correct) }}>
                   {correct ? "Yes" : "No"}
