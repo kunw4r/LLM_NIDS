@@ -256,3 +256,707 @@ THREE-MODEL COMPARISON (same 100-flow validation batch)
 [2026-03-01T09:14:17Z]   Attack source: master CSV (split files unavailable)
 [2026-03-01T09:14:32Z]   Ordering check for SQL_Injection: 0 violations
 [2026-03-01T09:14:32Z]   Batch saved: 1000 flows to /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/SQL_Injection
+
+======================================================================
+EXPERIMENT EXECUTION LOG
+======================================================================
+Generated from result files for verification.
+Log generated: 2026-03-02 12:57:08 UTC
+
+######################################################################
+[2026-03-01 18:28:14 UTC] MCP COMPARISON EXPERIMENT
+######################################################################
+  Batch: 100 flows (30 attack + 70 benign)
+  Attack types: FTP-BruteForce, SSH-Bruteforce, DoS_attacks-Hulk
+  Total cost: $0.8300
+
+  ── Config A: gpt-4o-mini ──
+  Recall: 90.0%  |  Precision: 48.2%  |  F1: 62.8%
+  FPR: 41.4%  |  Cost: $0.0084  |  Cost/flow: $0.0001
+  Confusion: TP=27  FP=29  FN=3  TN=41
+
+  ── Config B: gpt-4o ──
+  Recall: 66.7%  |  Precision: 51.3%  |  F1: 58.0%
+  FPR: 27.1%  |  Cost: $0.3679  |  Cost/flow: $0.0037
+  Confusion: TP=20  FP=19  FN=10  TN=51
+
+  ── Config C: gpt-4o ──
+  Recall: 70.0%  |  Precision: 50.0%  |  F1: 58.3%
+  FPR: 30.0%  |  Cost: $0.4537  |  Cost/flow: $0.0045
+  Confusion: TP=21  FP=21  FN=9  TN=49
+
+  ── AMATAS v2 Baseline (for comparison) ──
+  Recall: 85%  |  F1: 88%  |  FPR: 1.1%
+  Architecture: 6-agent + Tier-1 RF
+
+======================================================================
+[2026-03-01 21:08:31 UTC] EXPERIMENT: DDOS_attack-HOIC
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 21:08:31 UTC
+  Completed: 2026-03-01 21:18:37 UTC
+  Duration: 10m 3s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 941 (94.1% filter rate)
+  Flows sent to LLM pipeline:  59
+
+  ── Detection Results ──
+  TP:   29  |  FP:    1  |  FN:   21  |  TN:  949
+  Recall:    58.0%
+  Precision: 96.7%
+  F1 Score:  72.5%
+  FPR:       0.1%
+
+  ── Verdict Distribution ──
+  BENIGN: 970  |  SUSPICIOUS: 30  |  MALICIOUS: 0
+
+  ── Cost Breakdown ──
+  Total cost: $1.7925
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $30.3810
+  ── Per-Agent Costs ──
+    protocol             $0.2069  (52,814 tokens)
+    statistical          $0.2072  (58,020 tokens)
+    behavioural          $0.2172  (61,548 tokens)
+    temporal             $0.3361  (91,689 tokens)
+    devils_advocate      $0.3817  (96,049 tokens)
+    orchestrator         $0.4434  (128,829 tokens)
+
+  ── Verification ──
+  Result file: DDOS_attack-HOIC_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DDOS_attack-HOIC
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-01 21:18:41 UTC] EXPERIMENT: DDOS_attack-LOIC-UDP
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 21:18:41 UTC
+  Completed: 2026-03-01 21:29:32 UTC
+  Duration: 10m 47s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 941 (94.1% filter rate)
+  Flows sent to LLM pipeline:  59
+
+  ── Detection Results ──
+  TP:   50  |  FP:    4  |  FN:    0  |  TN:  946
+  Recall:    100.0%
+  Precision: 92.6%
+  F1 Score:  96.2%
+  FPR:       0.4%
+
+  ── Verdict Distribution ──
+  BENIGN: 946  |  SUSPICIOUS: 41  |  MALICIOUS: 13
+
+  ── Cost Breakdown ──
+  Total cost: $1.8746
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $31.7723
+  ── Per-Agent Costs ──
+    protocol             $0.1980  (52,039 tokens)
+    statistical          $0.2255  (59,971 tokens)
+    behavioural          $0.2220  (62,140 tokens)
+    temporal             $0.3431  (92,694 tokens)
+    devils_advocate      $0.4188  (100,907 tokens)
+    orchestrator         $0.4671  (134,977 tokens)
+
+  ── Verification ──
+  Result file: DDOS_attack-LOIC-UDP_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DDOS_attack-LOIC-UDP
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-01 21:29:35 UTC] EXPERIMENT: Bot
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 21:29:35 UTC
+  Completed: 2026-03-01 21:42:18 UTC
+  Duration: 12m 39s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 927 (92.7% filter rate)
+  Flows sent to LLM pipeline:  73
+
+  ── Detection Results ──
+  TP:   41  |  FP:    6  |  FN:    9  |  TN:  944
+  Recall:    82.0%
+  Precision: 87.2%
+  F1 Score:  84.5%
+  FPR:       0.6%
+
+  ── Verdict Distribution ──
+  BENIGN: 953  |  SUSPICIOUS: 47  |  MALICIOUS: 0
+
+  ── Cost Breakdown ──
+  Total cost: $2.2951
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $31.4400
+  ── Per-Agent Costs ──
+    protocol             $0.2561  (65,360 tokens)
+    statistical          $0.2538  (71,533 tokens)
+    behavioural          $0.2731  (76,584 tokens)
+    temporal             $0.4870  (139,908 tokens)
+    devils_advocate      $0.4738  (119,267 tokens)
+    orchestrator         $0.5513  (159,966 tokens)
+
+  ── Verification ──
+  Result file: Bot_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/Bot
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-01 21:42:44 UTC] EXPERIMENT: Infilteration
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 21:42:44 UTC
+  Completed: 2026-03-01 21:47:15 UTC
+  Duration: 4m 29s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 974 (97.4% filter rate)
+  Flows sent to LLM pipeline:  26
+
+  ── Detection Results ──
+  TP:    0  |  FP:    2  |  FN:   50  |  TN:  948
+  Recall:    0.0%
+  Precision: 0.0%
+  F1 Score:  0.0%
+  FPR:       0.2%
+
+  ── Verdict Distribution ──
+  BENIGN: 998  |  SUSPICIOUS: 2  |  MALICIOUS: 0
+
+  ── Cost Breakdown ──
+  Total cost: $0.8038
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $30.9147
+  ── Per-Agent Costs ──
+    protocol             $0.0870  (22,848 tokens)
+    statistical          $0.0893  (25,363 tokens)
+    behavioural          $0.0935  (26,892 tokens)
+    temporal             $0.1775  (51,580 tokens)
+    devils_advocate      $0.1675  (41,728 tokens)
+    orchestrator         $0.1891  (55,665 tokens)
+
+  ── Verification ──
+  Result file: Infilteration_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/Infilteration
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-01 21:47:20 UTC] EXPERIMENT: Brute_Force_-Web
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 21:47:20 UTC
+  Completed: 2026-03-01 21:59:19 UTC
+  Duration: 11m 56s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 933 (93.3% filter rate)
+  Flows sent to LLM pipeline:  67
+
+  ── Detection Results ──
+  TP:   43  |  FP:    4  |  FN:    7  |  TN:  946
+  Recall:    86.0%
+  Precision: 91.5%
+  F1 Score:  88.7%
+  FPR:       0.4%
+
+  ── Verdict Distribution ──
+  BENIGN: 953  |  SUSPICIOUS: 46  |  MALICIOUS: 1
+
+  ── Cost Breakdown ──
+  Total cost: $2.0464
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $30.5428
+  ── Per-Agent Costs ──
+    protocol             $0.2333  (59,825 tokens)
+    statistical          $0.2449  (66,868 tokens)
+    behavioural          $0.2502  (70,258 tokens)
+    temporal             $0.3514  (95,196 tokens)
+    devils_advocate      $0.4533  (111,188 tokens)
+    orchestrator         $0.5133  (148,874 tokens)
+
+  ── Verification ──
+  Result file: Brute_Force_-Web_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/Brute_Force_-Web
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-01 21:59:23 UTC] EXPERIMENT: Brute_Force_-XSS
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 21:59:23 UTC
+  Completed: 2026-03-01 22:14:19 UTC
+  Duration: 14m 53s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 937 (93.7% filter rate)
+  Flows sent to LLM pipeline:  63
+
+  ── Detection Results ──
+  TP:   42  |  FP:    2  |  FN:    8  |  TN:  948
+  Recall:    84.0%
+  Precision: 95.5%
+  F1 Score:  89.4%
+  FPR:       0.2%
+
+  ── Verdict Distribution ──
+  BENIGN: 956  |  SUSPICIOUS: 44  |  MALICIOUS: 0
+
+  ── Cost Breakdown ──
+  Total cost: $2.0909
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $33.1892
+  ── Per-Agent Costs ──
+    protocol             $0.2184  (56,201 tokens)
+    statistical          $0.2322  (63,115 tokens)
+    behavioural          $0.2342  (66,011 tokens)
+    temporal             $0.5005  (152,472 tokens)
+    devils_advocate      $0.4241  (105,241 tokens)
+    orchestrator         $0.4816  (140,434 tokens)
+
+  ── Verification ──
+  Result file: Brute_Force_-XSS_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/Brute_Force_-XSS
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-01 22:14:23 UTC] EXPERIMENT: SQL_Injection
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 22:14:23 UTC
+  Completed: 2026-03-01 22:26:46 UTC
+  Duration: 12m 20s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 940 (94.0% filter rate)
+  Flows sent to LLM pipeline:  60
+
+  ── Detection Results ──
+  TP:   49  |  FP:    3  |  FN:    1  |  TN:  947
+  Recall:    98.0%
+  Precision: 94.2%
+  F1 Score:  96.1%
+  FPR:       0.3%
+
+  ── Verdict Distribution ──
+  BENIGN: 948  |  SUSPICIOUS: 51  |  MALICIOUS: 1
+
+  ── Cost Breakdown ──
+  Total cost: $1.9892
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $33.1533
+  ── Per-Agent Costs ──
+    protocol             $0.2107  (53,825 tokens)
+    statistical          $0.2213  (60,148 tokens)
+    behavioural          $0.2290  (63,489 tokens)
+    temporal             $0.4539  (136,479 tokens)
+    devils_advocate      $0.4063  (100,962 tokens)
+    orchestrator         $0.4680  (135,260 tokens)
+
+  ── Verification ──
+  Result file: SQL_Injection_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/SQL_Injection
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-01 23:28:02 UTC] EXPERIMENT: FTP-BruteForce
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 23:28:02 UTC
+  Completed: 2026-03-01 23:41:31 UTC
+  Duration: 13m 26s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 950 (95.0% filter rate)
+  Flows sent to LLM pipeline:  50
+
+  ── Detection Results ──
+  TP:   50  |  FP:    0  |  FN:    0  |  TN:  950
+  Recall:    100.0%
+  Precision: 100.0%
+  F1 Score:  100.0%
+  FPR:       0.0%
+
+  ── Verdict Distribution ──
+  BENIGN: 950  |  SUSPICIOUS: 48  |  MALICIOUS: 2
+
+  ── Cost Breakdown ──
+  Total cost: $2.1335
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $42.6705
+  ── Per-Agent Costs ──
+    protocol             $0.1767  (44,854 tokens)
+    statistical          $0.1790  (49,471 tokens)
+    behavioural          $0.1906  (52,775 tokens)
+    temporal             $0.8654  (305,765 tokens)
+    devils_advocate      $0.3307  (83,521 tokens)
+    orchestrator         $0.3911  (112,390 tokens)
+
+  ── Verification ──
+  Result file: FTP-BruteForce_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/FTP-BruteForce
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-01 23:41:36 UTC] EXPERIMENT: SSH-Bruteforce
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 23:41:36 UTC
+  Completed: 2026-03-01 23:55:30 UTC
+  Duration: 13m 53s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 949 (94.9% filter rate)
+  Flows sent to LLM pipeline:  51
+
+  ── Detection Results ──
+  TP:   49  |  FP:    0  |  FN:    1  |  TN:  950
+  Recall:    98.0%
+  Precision: 100.0%
+  F1 Score:  99.0%
+  FPR:       0.0%
+
+  ── Verdict Distribution ──
+  BENIGN: 951  |  SUSPICIOUS: 49  |  MALICIOUS: 0
+
+  ── Cost Breakdown ──
+  Total cost: $2.1590
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $42.3324
+  ── Per-Agent Costs ──
+    protocol             $0.1790  (45,713 tokens)
+    statistical          $0.1833  (50,611 tokens)
+    behavioural          $0.1925  (53,712 tokens)
+    temporal             $0.8832  (311,973 tokens)
+    devils_advocate      $0.3330  (84,582 tokens)
+    orchestrator         $0.3880  (113,074 tokens)
+
+  ── Verification ──
+  Result file: SSH-Bruteforce_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/SSH-Bruteforce
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-01 23:55:34 UTC] EXPERIMENT: DDoS_attacks-LOIC-HTTP
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-01 23:55:34 UTC
+  Completed: 2026-03-02 00:10:46 UTC
+  Duration: 15m 10s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 950 (95.0% filter rate)
+  Flows sent to LLM pipeline:  50
+
+  ── Detection Results ──
+  TP:   41  |  FP:    0  |  FN:    9  |  TN:  950
+  Recall:    82.0%
+  Precision: 100.0%
+  F1 Score:  90.1%
+  FPR:       0.0%
+
+  ── Verdict Distribution ──
+  BENIGN: 959  |  SUSPICIOUS: 41  |  MALICIOUS: 0
+
+  ── Cost Breakdown ──
+  Total cost: $1.5657
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $31.3135
+  ── Per-Agent Costs ──
+    protocol             $0.1769  (45,018 tokens)
+    statistical          $0.1850  (50,215 tokens)
+    behavioural          $0.1882  (52,672 tokens)
+    temporal             $0.2972  (81,373 tokens)
+    devils_advocate      $0.3327  (83,525 tokens)
+    orchestrator         $0.3856  (111,861 tokens)
+
+  ── Verification ──
+  Result file: DDoS_attacks-LOIC-HTTP_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DDoS_attacks-LOIC-HTTP
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-02 00:10:50 UTC] EXPERIMENT: DoS_attacks-Hulk
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-02 00:10:50 UTC
+  Completed: 2026-03-02 00:25:35 UTC
+  Duration: 14m 42s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 950 (95.0% filter rate)
+  Flows sent to LLM pipeline:  50
+
+  ── Detection Results ──
+  TP:   46  |  FP:    0  |  FN:    4  |  TN:  950
+  Recall:    92.0%
+  Precision: 100.0%
+  F1 Score:  95.8%
+  FPR:       0.0%
+
+  ── Verdict Distribution ──
+  BENIGN: 954  |  SUSPICIOUS: 46  |  MALICIOUS: 0
+
+  ── Cost Breakdown ──
+  Total cost: $2.1662
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $43.3231
+  ── Per-Agent Costs ──
+    protocol             $0.1785  (45,227 tokens)
+    statistical          $0.1794  (49,697 tokens)
+    behavioural          $0.1946  (53,360 tokens)
+    temporal             $0.8896  (313,810 tokens)
+    devils_advocate      $0.3355  (84,596 tokens)
+    orchestrator         $0.3885  (112,924 tokens)
+
+  ── Verification ──
+  Result file: DoS_attacks-Hulk_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DoS_attacks-Hulk
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-02 00:25:39 UTC] EXPERIMENT: DoS_attacks-SlowHTTPTest
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-02 00:25:39 UTC
+  Completed: 2026-03-02 03:47:48 UTC
+  Duration: 3h 22m 7s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 950 (95.0% filter rate)
+  Flows sent to LLM pipeline:  50
+
+  ── Detection Results ──
+  TP:   50  |  FP:    0  |  FN:    0  |  TN:  950
+  Recall:    100.0%
+  Precision: 100.0%
+  F1 Score:  100.0%
+  FPR:       0.0%
+
+  ── Verdict Distribution ──
+  BENIGN: 950  |  SUSPICIOUS: 45  |  MALICIOUS: 5
+
+  ── Cost Breakdown ──
+  Total cost: $2.1211
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $42.4213
+  ── Per-Agent Costs ──
+    protocol             $0.1741  (44,595 tokens)
+    statistical          $0.1799  (49,563 tokens)
+    behavioural          $0.1876  (52,470 tokens)
+    temporal             $0.8625  (305,475 tokens)
+    devils_advocate      $0.3310  (83,059 tokens)
+    orchestrator         $0.3861  (111,328 tokens)
+
+  ── Verification ──
+  Result file: DoS_attacks-SlowHTTPTest_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DoS_attacks-SlowHTTPTest
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-02 03:47:53 UTC] EXPERIMENT: DoS_attacks-GoldenEye
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-02 03:47:53 UTC
+  Completed: 2026-03-02 03:59:44 UTC
+  Duration: 11m 48s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 950 (95.0% filter rate)
+  Flows sent to LLM pipeline:  50
+
+  ── Detection Results ──
+  TP:   46  |  FP:    0  |  FN:    4  |  TN:  950
+  Recall:    92.0%
+  Precision: 100.0%
+  F1 Score:  95.8%
+  FPR:       0.0%
+
+  ── Verdict Distribution ──
+  BENIGN: 954  |  SUSPICIOUS: 44  |  MALICIOUS: 2
+
+  ── Cost Breakdown ──
+  Total cost: $2.1520
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $43.0395
+  ── Per-Agent Costs ──
+    protocol             $0.1729  (44,583 tokens)
+    statistical          $0.1829  (49,974 tokens)
+    behavioural          $0.1896  (52,783 tokens)
+    temporal             $0.8842  (310,438 tokens)
+    devils_advocate      $0.3373  (84,563 tokens)
+    orchestrator         $0.3852  (112,385 tokens)
+
+  ── Verification ──
+  Result file: DoS_attacks-GoldenEye_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DoS_attacks-GoldenEye
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+======================================================================
+[2026-03-02 03:59:48 UTC] EXPERIMENT: DoS_attacks-Slowloris
+======================================================================
+  Model: gpt-4o | Provider: openai
+  Architecture: Phase 3: 6-Agent Multi-Agent NIDS
+  DA Weight: 30%
+  Total Flows: 1,000 (50 attack + 950 benign)
+  Started: 2026-03-02 03:59:48 UTC
+  Completed: 2026-03-02 04:13:59 UTC
+  Duration: 14m 8s
+
+  ── Tier 1 Pre-Filter ──
+  Flows filtered (auto-benign): 950 (95.0% filter rate)
+  Flows sent to LLM pipeline:  50
+
+  ── Detection Results ──
+  TP:   50  |  FP:    0  |  FN:    0  |  TN:  950
+  Recall:    100.0%
+  Precision: 100.0%
+  F1 Score:  100.0%
+  FPR:       0.0%
+
+  ── Verdict Distribution ──
+  BENIGN: 950  |  SUSPICIOUS: 48  |  MALICIOUS: 2
+
+  ── Cost Breakdown ──
+  Total cost: $2.1641
+  Cost/flow (all):  $0.0000
+  Cost/flow (LLM):  $0.0000
+  Est. cost without Tier 1: $43.2824
+  ── Per-Agent Costs ──
+    protocol             $0.1732  (44,567 tokens)
+    statistical          $0.1877  (50,407 tokens)
+    behavioural          $0.1862  (52,395 tokens)
+    temporal             $0.8784  (308,515 tokens)
+    devils_advocate      $0.3432  (85,349 tokens)
+    orchestrator         $0.3954  (114,187 tokens)
+
+  ── Verification ──
+  Result file: DoS_attacks-Slowloris_results.json
+  Batch dir: /Users/kunwar/Desktop/Projects/thesis/data/batches/stage1/DoS_attacks-Slowloris
+  Status: COMPLETE (1000/1000 flows evaluated)
+
+######################################################################
+[2026-03-02 04:52:42 UTC] INFILTRATION CLUSTERING EXPERIMENT (v3)
+######################################################################
+  Model: gpt-4o
+  Total cost: $15.0248
+  Batch: 1000 flows (50 attack + 950 benign)
+
+  ── Condition A: Enriched Prompt Only ──
+  TP: 0  |  FP: 0  |  FN: 50  |  TN: 950
+  Recall: 0.0%  |  FPR: 0.0%  |  F1: 0.0%
+  Cost: $0.0000  |  Flows to LLM: 0
+
+  ── Condition B: Temporal Clustering ──
+  TP: 26  |  FP: 170  |  FN: 24  |  TN: 780
+  Recall: 52.0%  |  FPR: 17.9%  |  F1: 21.1%
+  Cost: $7.2365  |  Flows to LLM: 222
+
+  ── Condition C: Enriched + Clustering ──
+  TP: 29  |  FP: 182  |  FN: 21  |  TN: 768
+  Recall: 58.0%  |  FPR: 19.2%  |  F1: 22.2%
+  Cost: $7.7883  |  Flows to LLM: 222
+
+
+######################################################################
+[2026-03-02 22:49:39 UTC] AGENT ABLATION STUDY
+######################################################################
+  Quantify each agent's contribution by systematically disabling agents
+
+  ── Full AMATAS (6 agents) ──
+  Disabled: none
+  TP: 50  |  FP: 0  |  FN: 0  |  TN: 950
+  Recall: 100.0%  |  F1: 100.0%  |  FPR: 0.0%
+  Cost: $2.1335
+
+  ── 4-Agent (no DA + Temporal) ──
+  Disabled: devils_advocate, temporal
+  TP: 50  |  FP: 0  |  FN: 0  |  TN: 950
+  Recall: 100.0%  |  F1: 100.0%  |  FPR: 0.0%
+  Cost: $0.8748
+
+
+======================================================================
+STAGE 1 AGGREGATE SUMMARY
+======================================================================
+  Total experiments: 14
+  Total flows: 14,000
+  Total cost: $27.35
+  Best detected: FTP-BruteForce (F1=100%)
+  Hardest: Infilteration (Recall=0%)
+  Average FPR: 0%
+
+  ┌─────────────────────────┬────────┬────────┬────────┬──────────┐
+  │ Attack Type             │ Recall │ FPR    │ F1     │ Cost     │
+  ├─────────────────────────┼────────┼────────┼────────┼──────────┤
+  │ FTP-BruteForce          │ 100.0% │   0.0% │ 100.0% │ $   2.13 │
+  │ DoS_attacks-SlowHTTPTes │ 100.0% │   0.0% │ 100.0% │ $   2.12 │
+  │ DoS_attacks-Slowloris   │ 100.0% │   0.0% │ 100.0% │ $   2.16 │
+  │ SSH-Bruteforce          │  98.0% │   0.0% │  99.0% │ $   2.16 │
+  │ DDOS_attack-LOIC-UDP    │ 100.0% │   0.0% │  96.0% │ $   1.87 │
+  │ SQL_Injection           │  98.0% │   0.0% │  96.0% │ $   1.99 │
+  │ DoS_attacks-Hulk        │  92.0% │   0.0% │  96.0% │ $   2.17 │
+  │ DoS_attacks-GoldenEye   │  92.0% │   0.0% │  96.0% │ $   2.15 │
+  │ DDoS_attacks-LOIC-HTTP  │  82.0% │   0.0% │  90.0% │ $   1.57 │
+  │ Brute_Force_-Web        │  86.0% │   0.0% │  89.0% │ $   2.05 │
+  │ Brute_Force_-XSS        │  84.0% │   0.0% │  89.0% │ $   2.09 │
+  │ Bot                     │  82.0% │   1.0% │  85.0% │ $   2.30 │
+  │ DDOS_attack-HOIC        │  58.0% │   0.0% │  72.0% │ $   1.79 │
+  │ Infilteration           │   0.0% │   0.0% │   0.0% │ $   0.80 │
+  └─────────────────────────┴────────┴────────┴────────┴──────────┘
