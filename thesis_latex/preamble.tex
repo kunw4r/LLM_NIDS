@@ -1,0 +1,97 @@
+% ─── Document Class ─────────────────────────────────────
+\documentclass[12pt,openany,a4paper,oneside]{book}
+
+% ─── Core Packages (from UQ template) ────────────────────
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{graphicx,pifont,amssymb,rotating,lscape,multirow,lmodern,microtype,enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[T1]{fontenc}
+
+% ─── Document Settings (from UQ template) ────────────────
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\pagestyle{headings}
+\raggedbottom
+\setlength{\topmargin}{-5mm}
+\setlength{\oddsidemargin}{10mm}
+\setlength{\evensidemargin}{0mm}
+\setlength{\textwidth}{150mm}
+\setlength{\textheight}{240mm}
+
+\renewcommand{\baselinestretch}{1.2}
+\renewcommand{\textfraction}{0.25}
+\renewcommand{\topfraction}{0.75}
+\renewcommand{\bottomfraction}{0.75}
+\renewcommand{\floatpagefraction}{0.75}
+
+% ─── Additional Packages for Thesis Content ──────────────
+\usepackage[british]{babel}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf,format=hang}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, fit, patterns, decorations.pathreplacing}
+\usepackage{listings}
+\usepackage{csquotes}
+
+% ─── Cross-references and Links ──────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks  = true,
+    linkcolor   = black,
+    citecolor   = blue!50!black,
+    urlcolor    = blue!50!black,
+    pdfauthor   = {Kunwar Singh},
+    pdftitle    = {Advanced Multi-Agent Threat Analysis System},
+    pdfsubject  = {METR4912 Thesis},
+}
+
+% ─── Citations ───────────────────────────────────────────
+\usepackage[
+  style=numeric,
+  sorting=none,
+  backend=biber,
+  maxbibnames=99,
+  giveninits=true,
+  doi=true,
+  url=false,
+  isbn=false,
+]{biblatex}
+\setcounter{biburlnumpenalty}{100}
+\setcounter{biburlucpenalty}{100}
+\setcounter{biburllcpenalty}{100}
+
+% ─── Subfiles Package ─────────────────────────────────────
+\usepackage{subfiles}
+
+% ─── Bibliography Resource (after subfiles for \subfix support) ──
+% \subfix adjusts path for standalone subfile compilation
+\addbibresource{\subfix{references.bib}}
+
+% ─── Convenience Commands (from UQ template) ─────────────
+\newcommand{\eref}[1]{(\ref{#1})}
+\newcommand{\fig}[1]{Fig.\,\ref{#1}}
+\newcommand{\tab}[1]{Table~\ref{#1}}
+\newcommand{\chap}[1]{Chapter~\ref{#1}}
+\newcommand{\secn}[1]{Section~\ref{#1}}
+\newcommand{\cmark}{\ding{51}}
+
+% ─── Custom Commands ────────────────────────────────────
+\newcommand{\amatas}{AMATAS}
+\newcommand{\cicids}{CICIDS2018}
+
+% ─── Standalone Compilation Support ──────────────────────
+% When compiled as part of main.tex, \onlystandalone is a no-op.
+% When a chapter is compiled standalone (via subfiles class),
+% \onlystandalone executes its argument (e.g. \printbibliography).
+\ifSubfilesClassLoaded{%
+  \newcommand{\onlystandalone}[1]{#1}%
+}{%
+  \newcommand{\onlystandalone}[1]{}%
+}

@@ -1,0 +1,71 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Background and Motivation}
+\label{sec:background-motivation}
+
+The volume and sophistication of cyber threats targeting modern enterprise networks have grown at a pace that traditional security infrastructure struggles to match. In 2024, the global average cost of a data breach exceeded four million US dollars, and the median dwell time for advanced persistent threats remained measured in weeks rather than hours \autocite{IBM2024}. Network Intrusion Detection Systems sit at the centre of this defensive landscape, monitoring traffic flows for signatures of malicious activity. Yet the fundamental approaches underpinning most deployed systems have changed remarkably little since the 1990s. Signature-based engines such as Snort and Suricata remain effective against known attack patterns but are blind to novel threats, whilst anomaly-based classifiers built on machine learning achieve strong detection rates on benchmark datasets only to suffer from high false positive rates and a complete absence of interpretable reasoning when deployed against real traffic \autocite{Hesford2024}.
+
+This interpretability gap carries practical consequences. When a Random Forest or gradient-boosted ensemble flags a network flow as malicious, it produces a probability and nothing more. The security analyst receiving that alert has no visibility into which features drove the decision, whether the model considered temporal context, or how the flagged flow relates to other traffic from the same source. In high-volume environments processing millions of flows per hour, this opacity transforms intrusion detection into an exercise in alert triage rather than threat understanding. The resulting alert fatigue has been well documented: analysts routinely ignore a substantial fraction of generated alerts because investigating opaque, unexplained detections is prohibitively time-consuming \autocite{Alahmadi2020}.
+
+Large Language Models present a potential solution to this interpretability deficit. Unlike traditional classifiers that map feature vectors to class probabilities through learned but unexplainable decision boundaries, LLMs reason through evidence in natural language, producing explanations that security analysts can read, evaluate, and critique. When an LLM-based system classifies a network flow as suspicious, it can articulate which protocol characteristics triggered concern, what statistical anomalies it observed, how the flow compares to known attack signatures, and what counter-arguments exist for a benign interpretation. Providing transparent reasoning outputs offers more than standard usability improvements; it enables analysts to evaluate the specific evidence driving a classification rather than relying solely on opaque probability scores.
+
+However, applying LLMs to network intrusion detection introduces challenges that the natural language processing community has not traditionally faced. Network flows are not sentences; they are structured records of numerical features describing packet counts, byte volumes, port numbers, protocol flags, and timing intervals. The translation from structured telemetry to natural language reasoning requires careful prompt engineering and domain knowledge injection. Furthermore, individual LLM calls carry non-trivial computational costs, and processing millions of flows through a full LLM pipeline would be economically prohibitive at current API pricing. A production-viable LLM-based NIDS must therefore solve two problems simultaneously: it must achieve detection accuracy competitive with traditional classifiers, and it must do so at a cost per flow that scales to enterprise traffic volumes.
+
+The architecture presented in this thesis evolved substantially from its original design. The initial proposal envisioned the Model Context Protocol \autocite{Anthropic2024} as the primary orchestration layer, connecting a single LLM agent to seven external threat intelligence tools (including AbuseIPDB, AlienVault OTX, and geolocation services) under the hypothesis that tool-augmented reasoning would outperform standalone classification. Early experiments revealed two findings that redirected the architectural trajectory. First, external threat intelligence tools returned no actionable information on the anonymised private IP addresses that constitute the CICIDS2018 address space, rendering the tool-augmentation strategy ineffective on this benchmark. Second, evaluations demonstrated that a single LLM agent's capacity for multi-dimensional flow analysis is strictly limited, regardless of prompt complexity or external tool access, necessitating a distributed approach. These findings motivated the pivot to a multi-agent debate architecture, where the diversity of specialist analytical perspectives and adversarial argumentation replaced external tool access as the mechanism for improving detection quality. The MCP framework was retained as a comparison baseline rather than discarded, enabling a controlled ablation study that quantifies the contribution of multi-agent debate relative to tool augmentation.
+
+\section{Research Questions}
+\label{sec:research-questions}
+
+This thesis investigates the following research questions:
+
+\textbf{RQ1: Can a multi-agent LLM architecture achieve detection accuracy comparable to traditional machine learning classifiers on a standardised intrusion detection benchmark?}
+
+Traditional ML classifiers achieve high accuracy on the CICIDS2018 dataset but provide no reasoning. Single LLM agents, as demonstrated by \textcite{Houssel2024}, struggle with direct flow classification. This question examines whether distributing analysis across multiple specialist LLM agents, each focused on a distinct analytical dimension, can overcome the performance limitations observed in single-agent approaches.
+
+\textbf{RQ2: How does a two-tier architecture combining a machine learning pre-filter with a multi-agent LLM pipeline affect the cost-accuracy trade-off for LLM-based intrusion detection?}
+
+The economic viability of LLM-based NIDS depends on reducing the number of flows that require expensive LLM analysis. This question evaluates whether a Random Forest pre-filter can eliminate the vast majority of obviously benign flows without sacrificing detection recall, thereby making LLM-based analysis economically feasible at scale.
+
+\textbf{RQ3: What is the quality and utility of the reasoning chains produced by a multi-agent LLM NIDS compared to the opaque outputs of traditional classifiers?}
+
+Explainability is the central motivation for this work. This question assesses whether the natural language reasoning produced by AMATAS provides actionable insight that traditional classifier outputs cannot, and whether the multi-perspective analysis from specialist agents produces richer explanations than a single-agent approach.
+
+\textbf{RQ4: How does detection performance vary across attack types, and what are the fundamental limitations of flow-level LLM analysis?}
+
+Not all attacks present equally at the flow level. Brute-force attacks produce distinctive port and timing patterns, whilst infiltration attacks may be indistinguishable from benign traffic in individual flows. This question evaluates detection performance across fourteen attack categories to identify the specific threat profiles where LLM-based analysis is effective and to define its functional limitations.
+
+\section{The AMATAS System}
+\label{sec:amatas-system}
+
+This thesis presents AMATAS, the Advanced Multi-Agent Threat Analysis System, a network intrusion detection architecture that combines a machine learning pre-filter with a six-agent LLM pipeline to deliver both accurate detection and transparent reasoning. The system processes network flows through two tiers. The first tier employs a Random Forest classifier trained on the CICIDS2018 development partition to filter flows that are confidently benign, eliminating approximately ninety-five per cent of traffic from further analysis at negligible cost. The remaining flows, those where the Random Forest assigns a non-trivial probability of being malicious, proceed to the second tier.
+
+The second tier consists of six LLM agents organised into three phases. In the first phase, four specialist agents analyse the flow in parallel, each from a distinct analytical perspective: the Protocol Agent validates port assignments, flag combinations, and protocol-level anomalies; the Statistical Agent examines byte volumes, packet counts, and timing characteristics against expected distributions; the Behavioural Agent matches observed patterns against known attack signatures and maps findings to the MITRE ATT\&CK framework; and the Temporal Agent correlates the flow with other traffic from the same source IP address, identifying suspicious clusters and behavioural sequences. In the second phase, a Devil's Advocate agent processes the four specialist analyses and generates a counter-argument hypothesising that the flow is benign, providing an explicit challenge to the initial evidence. In the third phase, an Orchestrator agent synthesises all five preceding analyses into a final verdict of BENIGN, SUSPICIOUS, or MALICIOUS, accompanied by a confidence score, attack type classification, and full reasoning narrative.
+
+This architecture draws theoretical grounding from Minsky's Society of Mind framework \autocite{Minsky1986}, which posits that intelligence emerges from the interaction of many small, specialised agents rather than from a single monolithic reasoning process. The multi-agent debate paradigm has been shown by \textcite{Du2023} to improve factual accuracy and reduce hallucinations in LLM outputs, whilst \textcite{Chan2023} demonstrated that assigning diverse roles to debating agents outperforms uniform-role configurations. The adversarial component introduced by the Devil's Advocate agent finds empirical support in recent work by \textcite{Yin2024}, which showed that LLM-powered devil's advocate roles improve decision quality and reduce inappropriate reliance on AI outputs.
+
+\section{Contributions}
+\label{sec:contributions}
+
+This thesis makes the following contributions to the field of LLM-augmented network security:
+
+First, it presents the first systematic per-attack-type evaluation of a multi-agent LLM intrusion detection system at realistic class distributions. Existing LLM-based NIDS evaluations either use balanced datasets or evaluate on aggregated mixed-attack batches, neither of which reflects the class imbalance encountered in production networks where benign traffic typically exceeds ninety per cent. AMATAS is evaluated across all fourteen attack types in the CICIDS2018 dataset at a five per cent attack prevalence per experiment, providing granular insight into per-category detection performance.
+
+Second, it demonstrates a two-tier ML-plus-LLM architecture that reduces the cost of LLM-based intrusion detection by ninety-five per cent whilst maintaining detection accuracy. The Random Forest pre-filter achieves one hundred per cent recall on attack flows at the operating threshold, ensuring that no attacks are lost to pre-filtering, whilst diverting approximately ninety-five per cent of benign flows away from the expensive LLM pipeline.
+
+Third, it introduces a Devil's Advocate agent as a structural mechanism for false positive control in LLM-based detection. For thirteen of the fourteen evaluated attack types, AMATAS achieved a 0\% false positive rate. This reduction is attributed to the secondary validation phase, in which the Devil's Advocate agent algorithmically challenges the initial malicious classifications to mitigate false positives.
+
+Fourth, it provides a complete explainability framework where every detection decision is accompanied by multi-perspective reasoning chains from six analytical agents, enabling security analysts to trace exactly why a flow was flagged, what evidence was considered, and what counter-arguments were weighed.
+
+Fifth, it conducts a seven-configuration ablation study comparing single-agent approaches with progressively richer tool access (including dataset-compatible tools that return genuinely informative results) against the full multi-agent architecture, quantifying the detection improvement attributable to multi-agent debate and demonstrating that tool augmentation actively degrades single-agent performance even when tools provide accurate, relevant information.
+
+\section{Thesis Structure}
+\label{sec:thesis-structure}
+
+The remainder of this thesis is organised as follows. Chapter~\ref{ch:litreview} reviews related work in machine learning for intrusion detection, LLM applications in cybersecurity, multi-agent LLM systems, and explainable AI for network security. Chapter~\ref{ch:architecture} describes the AMATAS architecture in detail, including the Random Forest pre-filter, agent design, prompt engineering, and consensus mechanism. Chapter~\ref{ch:methodology} presents the experimental methodology, covering dataset preparation, evaluation metrics, and experimental configurations. Chapter~\ref{ch:results} reports the results of the Stage~1 evaluation across all fourteen attack types, the MCP comparison experiments, and the cost analysis. Chapter~\ref{ch:discussion} discusses the implications of these results, analyses failure cases, and identifies the fundamental limitations of flow-level LLM analysis. Chapter~\ref{ch:conclusion} concludes with a summary of contributions and directions for future work.
+
+\onlystandalone{\printbibliography}
+\end{document}

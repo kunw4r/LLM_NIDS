@@ -1,0 +1,69 @@
+\documentclass[../main.tex]{subfiles}
+\begin{document}
+
+\pagenumbering{gobble}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\begin{center}
+{\LARGE \textbf{Thesis Plan}}
+\end{center}
+\vspace{-0.5em}
+
+\subsection*{Administrative Details}
+{\setlength{\parskip}{0.3em}
+\begin{tabular}{@{}l@{\hspace{1.5em}}l@{}}
+\textbf{Student name:}      & Kunwar Singh \\
+\textbf{Student number:}    & 46978107 \\
+\textbf{Program enrolment:} & Bachelor of Engineering (Honours) \\
+\textbf{Course enrolment:}  & METR4912 \\
+\textbf{Number of units:}   & 4 units \\
+\textbf{Expected workload:} & 10 hours per week \\
+\end{tabular}
+}
+
+\subsection*{Supervision Details}
+{\setlength{\parskip}{0.3em}
+\begin{tabular}{@{}l@{\hspace{1.5em}}l@{}}
+\textbf{Primary Supervisor:}  & Dr Siamak Layeghy \\
+\textbf{Other Supervisors:}   & Dr Marius Portmann \\
+\end{tabular}
+
+\medskip
+\textbf{Have you met your supervisor this semester?}\\
+Yes, in person. Most recent meeting: Monday 24 February 2026, 12:00pm in person on campus.
+
+\textbf{Do you have a regular meeting scheduled?}\\
+Weekly, every Monday at 12:00pm, in person on campus.
+}
+
+\subsection*{Thesis Plan (Thesis Draft)}
+The attached thesis skeleton follows the official UQ \LaTeX\ template and contains the full structure of the final thesis, including all chapter and section headings, referenced background and related work, and a complete bibliography. Material from the previously submitted thesis proposal (METR4912, Semester 2 2025) has been reused and updated to reflect what was actually achieved rather than what was originally planned. In particular, the architecture evolved from an MCP-centric tool orchestration approach to a multi-agent LLM debate architecture, as motivated by experimental findings documented in the thesis.
+
+\subsection*{Use of AI Statement}
+\textit{I acknowledge the use of generative AI tools in completing this assessment. Details of which tools were used and how they were used are provided in the table below, along with appropriate in-text and full references. I take responsibility for critically evaluating and integrating the AI-generated content, and ensuring it adheres to academic integrity standards.}
+
+\subsubsection*{Have you used AI in your project?}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.3em]
+  \item \textbf{To explore your topic?} Yes. Claude (Anthropic) and ChatGPT (OpenAI) were used to explore the landscape of LLM applications in cybersecurity, identify relevant sub-areas, and generate initial keywords for literature searches. All identified topics were independently verified through manual database searches.
+
+  \item \textbf{To define your research question?} No. Research questions were defined through supervisor meetings, iterative refinement based on experimental results, and manual review of the literature. The pivot from MCP-centric to multi-agent architecture was driven by empirical findings.
+
+  \item \textbf{To assist with your literature review?} Yes. AI assistants were used to summarise papers already located through manual database searches and to suggest thematic groupings. All references were independently verified against the original papers, and all claims attributed to cited works were checked for accuracy.
+
+  \item \textbf{To assist with formatting?} Yes. AI assistants were used to convert content to \LaTeX\ format, resolve compilation issues, and ensure consistent formatting with the UQ template. The intellectual content, structure, and arguments are the author's own.
+
+  \item \textbf{Did you generate figures using AI?} No. All figures, diagrams, and charts were created manually using Python (matplotlib), TikZ, or the React-based dashboard.
+
+  \item \textbf{Did you analyse data using AI?} Yes. AI assistants (Claude Code) were used to write Python scripts for metrics calculation, result aggregation, and cost analysis. All scripts were reviewed, and results were independently verified against raw experimental data.
+
+  \item \textbf{Did you generate data using AI?} No. All data comes from the CICIDS2018 NetFlow v3 dataset, a publicly available benchmark. No synthetic data was generated.
+
+  \item \textbf{Did you generate text for your thesis using AI?} Yes. AI assistants (Claude) were used to draft sections of this thesis. All AI-generated text was critically reviewed, edited for accuracy and argument coherence, fact-checked against experimental results and cited sources, and revised to reflect the author's own analysis and conclusions. The intellectual structure, arguments, and interpretation of results are the author's own work.
+
+  \item \textbf{For other aspects?} Yes. AI assistants (Claude Code, GitHub Copilot) were used extensively to write the AMATAS system code, including the multi-agent pipeline, MCP server, evaluation dashboard, and experimental scripts. All code was reviewed, tested, and debugged by the author. The architectural decisions (the six-agent design, Devil's Advocate mechanism, two-tier pre-filter, and consensus weighting) were made by the author based on experimental evidence and supervisor guidance. GPT-4o was also used as the underlying LLM within the AMATAS multi-agent pipeline itself (i.e.\ the six agents that analyse network flows are powered by GPT-4o API calls).
+\end{itemize}
+
+\newpage
+
+\end{document}
