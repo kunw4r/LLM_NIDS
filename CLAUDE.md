@@ -47,15 +47,24 @@ richer context. Hypothesis: better context = better recall on hard attacks
 
 ## 3. THE MCP COMPARISON EXPERIMENTS
 
-Separate from AMATAS. Three configurations of a single-agent MCP-based system:
-1. **Zero-shot:** Raw flow → LLM → verdict (no tools, no prompt engineering)
-2. **Engineered prompt:** Detailed system prompt with attack signatures
-3. **+ MITRE ATT&CK tool:** System prompt + MCP tool for MITRE lookups
+Separate from AMATAS. Seven configurations (A–G) of a single-agent MCP-based system:
 
-Expected finding: external tools (AbuseIPDB, OTX, geolocation) are useless on
-synthetic/anonymized IPs. This motivates the multi-agent approach.
+**IP-dependent configs (original 3):**
+1. **A: Zero-shot** — GPT-4o-mini, raw flow → verdict (no tools, no prompt)
+2. **B: Engineered prompt** — GPT-4o, detailed system prompt with attack signatures
+3. **C: + MITRE Tool** — GPT-4o, system prompt + MITRE ATT&CK MCP tool
 
-Results directory: `results/mcp/` (experiments pending)
+**Dataset-compatible configs (extended 4):**
+4. **D: Feature decoders** — GPT-4o, IANA port + protocol + TCP flag decoders
+5. **E: + DShield** — Config D + DShield port intelligence
+6. **F: + CVE lookup** — Config E + CVE vulnerability lookup
+7. **G: Full toolkit** — Config F + MITRE ATT&CK (all 7 tools)
+
+Key finding: tools **hurt** performance — Config B (no tools) F1=58.0% vs
+Config D (3 tools) F1=36.7%. Tools provide true-but-irrelevant context that
+displaces direct feature analysis.
+
+Results directory: `results/mcp/`
 
 ---
 
@@ -125,6 +134,27 @@ Thesis/
 │   ├── data_preparation/            # Dataset splitting scripts
 │   └── testing/                     # Phase 1 batch processor
 │
+├── thesis_latex/                     # LaTeX thesis (subfiles architecture)
+│   ├── main.tex                     #   Master document (slim — just includes)
+│   ├── preamble.tex                 #   Shared preamble (all packages, commands)
+│   ├── references.bib               #   Single shared bibliography
+│   ├── [Thesis] 00a - Thesis Plan/  #   Thesis plan preface + UQ proposal PDF
+│   ├── [Thesis] 00b - Frontmatter/  #   Title, declaration, abstract (subfile)
+│   ├── [Thesis] 01 - Introduction/  #   Each chapter folder contains:
+│   │   ├── chapter.tex              #     Standalone-compilable subfile
+│   │   ├── chapter.pdf              #     Compiled PDF of this chapter
+│   │   └── papers/                  #     Copies of cited paper PDFs
+│   ├── [Thesis] 02 - Literature Review/
+│   ├── [Thesis] 03 - Architecture/
+│   ├── [Thesis] 04 - Methodology/
+│   ├── [Thesis] 05 - Results/
+│   ├── [Thesis] 06 - Discussion/
+│   ├── [Thesis] 07 - Conclusion/
+│   ├── [Thesis] All Papers/         #   Complete collection of all paper PDFs
+│   ├── [Thesis] Final/              #   Full compiled thesis (AMATAS_Thesis.pdf)
+│   └── figures/                     #   Shared figures directory
+│
+├── thesis_papers/                   # Original source PDFs (master copy)
 ├── docs/                            # Planning, guides, analysis reports
 ├── CLAUDE.md                        # THIS FILE
 └── EXPERIMENTS_LOG.md               # Running experiment log
@@ -270,6 +300,31 @@ Raw NetFlow record
 - **Never modify source CSVs** in `data/datasets/`
 - The `data/` directory is gitignored (too large for GitHub)
 
+### LaTeX Workflow Rules
+- **After editing any `.tex` file**, recompile to produce updated PDFs:
+  1. Run `latexmk -pdf main.tex` from `thesis_latex/` to rebuild the full thesis
+  2. Then recompile the affected standalone chapter:
+     `cd "[Thesis] NN - Name" && pdflatex -interaction=nonstopmode chapter.tex && biber chapter && pdflatex -interaction=nonstopmode chapter.tex && pdflatex -interaction=nonstopmode chapter.tex && rm -f *.aux *.bbl *.bcf *.blg *.fls *.log *.out *.run.xml`
+  3. Always verify zero `!` errors in the log before considering compilation complete
+- **When adding a new `\autocite` or `\textcite` reference** to a chapter:
+  1. Add the BibTeX entry to `thesis_latex/references.bib` if not already present
+  2. If the paper PDF exists in `thesis_papers/` or `[Thesis] All Papers/`, copy it into:
+     - The citing chapter's `papers/` folder
+     - `[Thesis] All Papers/` (if not already there)
+  3. If the paper PDF does NOT exist, note it so the user can add it
+- **After compiling main.tex**, copy the updated PDF:
+  `cp main.pdf "[Thesis] Final/AMATAS_Thesis.pdf"`
+- **Chapter folder structure**: each `[Thesis] NN - Name/` folder contains:
+  - `chapter.tex` — the subfile (standalone-compilable)
+  - `chapter.pdf` — compiled standalone PDF (keep up to date)
+  - `papers/` — real copies of cited paper PDFs (not symlinks)
+  - Users may add notes, scratch files, or other materials freely
+- **Special folders**:
+  - `[Thesis] All Papers/` — complete collection of every paper PDF
+  - `[Thesis] Final/` — the compiled full thesis PDF (`AMATAS_Thesis.pdf`)
+- **Standalone compilation** from thesis_latex root:
+  `latexmk -pdf -cd "[Thesis] 02 - Literature Review/chapter.tex"`
+
 ### Environment
 - `OPENAI_API_KEY` — for GPT-4o agent calls
 - `ANTHROPIC_API_KEY` — for Claude-based experiments
@@ -343,9 +398,9 @@ while preserving the explainability advantage.
 - [x] Devil's Advocate agent for false positive control (0% FPR on Stage 1)
 - [x] Temporal context as detection variable (temporal agent most expensive but most informative)
 - [x] Rejection of GPT-4o-mini for NIDS (systematic bias documented)
-- [ ] Complete Stage 1 evaluation across all 14 attack types (3/14 done)
-- [ ] Temporal clustering (v3) — design and implementation
-- [ ] MCP tool ablation study (3 configurations)
+- [x] Complete Stage 1 evaluation across all 14 attack types (14/14 done)
+- [x] Temporal clustering (v3) — Infiltration recovery: 0% → 58% recall
+- [x] MCP tool ablation study (7 configurations A–G)
 - [ ] Explainability demonstration via Flow Inspector dashboard
 - [ ] Final test set evaluation (held-out test.csv)
 
