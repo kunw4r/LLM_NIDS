@@ -4580,15 +4580,15 @@
     },
     {
       "flow_id": "763",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DoS_attacks-Slowloris"
     },
     {
       "flow_id": "764",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DoS_attacks-Slowloris"
     },
     {
       "flow_id": "765",
@@ -4880,15 +4880,15 @@
     },
     {
       "flow_id": "813",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DoS_attacks-Slowloris"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "814",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DoS_attacks-Slowloris"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "815",

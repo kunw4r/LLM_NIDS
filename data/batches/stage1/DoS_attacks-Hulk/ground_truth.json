@@ -4616,15 +4616,15 @@
     },
     {
       "flow_id": "769",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DoS_attacks-Hulk"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "770",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DoS_attacks-Hulk"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "771",
@@ -4916,15 +4916,15 @@
     },
     {
       "flow_id": "819",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DoS_attacks-Hulk"
     },
     {
       "flow_id": "820",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DoS_attacks-Hulk"
     },
     {
       "flow_id": "821",

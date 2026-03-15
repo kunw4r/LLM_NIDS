@@ -4568,189 +4568,189 @@
     },
     {
       "flow_id": "761",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "762",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "763",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "764",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "765",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "766",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "767",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "768",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "769",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "770",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "771",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "772",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "773",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "774",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "775",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "776",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "777",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "778",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "779",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "780",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "781",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "782",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "783",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "784",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "785",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "786",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "787",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "788",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "789",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "790",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "791",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "792",
@@ -4790,9 +4790,9 @@
     },
     {
       "flow_id": "798",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "799",
@@ -4838,207 +4838,207 @@
     },
     {
       "flow_id": "806",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "807",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "808",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "809",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "810",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "811",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "812",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "813",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "814",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "815",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "816",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "817",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "818",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "819",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "820",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "821",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "822",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "823",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "824",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "825",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "826",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "827",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "828",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "829",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "830",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "831",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "832",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "833",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "834",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "835",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "836",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "837",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "838",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "839",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "840",
@@ -5684,15 +5684,15 @@
     },
     {
       "flow_id": "947",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "948",
-      "label": 1,
-      "label_name": "Attack",
-      "attack_type": "DDoS_attacks-LOIC-HTTP"
+      "label": 0,
+      "label_name": "Benign",
+      "attack_type": "Benign"
     },
     {
       "flow_id": "949",
@@ -5744,39 +5744,39 @@
     },
     {
       "flow_id": "957",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "958",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "959",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "960",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "961",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "962",
-      "label": 0,
-      "label_name": "Benign",
-      "attack_type": "Benign"
+      "label": 1,
+      "label_name": "Attack",
+      "attack_type": "DDoS_attacks-LOIC-HTTP"
     },
     {
       "flow_id": "963",

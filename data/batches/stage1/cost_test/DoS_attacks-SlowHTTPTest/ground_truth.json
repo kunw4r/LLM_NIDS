@@ -1,0 +1,404 @@
+{
+  "ground_truth": [
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 1,
+      "attack_type": "DoS_attacks-SlowHTTPTest"
+    },
+    {
+      "label": 1,
+      "attack_type": "DoS_attacks-SlowHTTPTest"
+    },
+    {
+      "label": 1,
+      "attack_type": "DoS_attacks-SlowHTTPTest"
+    },
+    {
+      "label": 1,
+      "attack_type": "DoS_attacks-SlowHTTPTest"
+    },
+    {
+      "label": 1,
+      "attack_type": "DoS_attacks-SlowHTTPTest"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    },
+    {
+      "label": 0,
+      "attack_type": "Benign"
+    }
+  ]
+}
