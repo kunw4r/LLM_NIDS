@@ -5,7 +5,7 @@ import { DIFFICULTY_TIERS, ATTACK_DESCRIPTIONS } from "../../data/attacks";
 import { dollar } from "../../lib/format";
 import AgentHeatmap from "./AgentHeatmap";
 
-export default function Overview({ s1, onNavigateToJourney }) {
+export default function Overview({ s1, onNavigateToJourney, onNavigateToTab }) {
   const totalFP = s1.experiments.reduce((s, e) => s + (e.confusion?.fp || 0), 0);
   const totalTN = s1.experiments.reduce((s, e) => s + (e.confusion?.tn || 0), 0);
   const fpr = ((totalFP / (totalFP + totalTN)) * 100).toFixed(1);
@@ -41,13 +41,60 @@ export default function Overview({ s1, onNavigateToJourney }) {
         </div>
       </div>
 
+      {/* Research Question Summary Cards */}
+      {onNavigateToTab && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { rq: "RQ1", label: "Accuracy", value: "86.3% F1", color: "#16a34a", tab: "stage1" },
+            { rq: "RQ2", label: "Cost", value: "94.6% saved", color: "#2563eb", tab: "overview" },
+            { rq: "RQ3", label: "Reasoning", value: "89.8% faithful", color: "#7c3aed", tab: "faithfulness" },
+            { rq: "RQ4", label: "Variation", value: "0–100% F1", color: "#dc2626", tab: "stage1" },
+          ].map(rq => (
+            <button
+              key={rq.rq}
+              onClick={() => onNavigateToTab(rq.tab)}
+              className="border border-gray-200 rounded-lg p-4 text-left cursor-pointer hover:border-gray-300 transition-colors bg-white"
+            >
+              <div className="text-[10px] font-bold px-1.5 py-0.5 rounded inline-block mb-1" style={{ background: `${rq.color}15`, color: rq.color }}>
+                {rq.rq}: {rq.label}
+              </div>
+              <div className="text-xl font-bold text-gray-900">{rq.value}</div>
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* MCP Callout */}
       <div className="border border-blue-300 rounded-lg p-5 bg-blue-50">
         <div className="text-sm font-bold text-blue-800 mb-2">About MCP in this system</div>
         <div className="text-sm text-blue-900 leading-relaxed space-y-2">
           <p>AMATAS does <strong>not</strong> use MCP tools for detection. The 6 agents reason purely from network flow features using their pre-trained knowledge.</p>
-          <p>MCP was evaluated separately (see MCP Comparison sub-tab) and found to provide minimal uplift on this dataset — external threat intel tools return no useful data on private/anonymised IPs.</p>
-          <p>The multi-agent architecture itself is the contribution — specialised roles + adversarial checking outperforms any single-agent configuration.</p>
+          <p>MCP was evaluated separately in a <strong>7-configuration study</strong> (see MCP Comparison sub-tab). Key finding: tools actively <strong>hurt</strong> single-agent performance — Config B (no tools) F1=58% vs Config D (3 tools) F1=37%. Tools provide true-but-irrelevant context that displaces direct feature analysis.</p>
+          <p>The multi-agent architecture itself is the contribution — specialised roles + adversarial checking outperforms any single-agent configuration, with or without tools.</p>
+        </div>
+      </div>
+
+      {/* vs Literature */}
+      <div className="border border-gray-200 rounded-lg p-6">
+        <h3 className="text-base font-bold tracking-tight mb-3">AMATAS vs Literature</h3>
+        <p className="text-xs text-gray-500 mb-4">How AMATAS compares to other LLM-based NIDS approaches in the literature.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { system: "AMATAS v2", f1: "88%", note: "Multi-agent + explainable reasoning", highlight: true },
+            { system: "Houssel 2024", f1: "~50%", note: "Single LLM, no agent architecture", highlight: false },
+            { system: "IDS-Agent (Li 2024)", f1: "75%", note: "ReAct agent, tool-based", highlight: false },
+            { system: "Gutierrez 2025", f1: "99.8%", note: "LLM-enhanced ML — no reasoning output", highlight: false },
+          ].map(l => (
+            <div key={l.system} className={`border rounded-lg p-3 text-center ${l.highlight ? "border-green-300 bg-green-50" : "border-gray-200"}`}>
+              <div className={`text-xl font-bold ${l.highlight ? "text-green-700" : "text-gray-700"}`}>{l.f1}</div>
+              <div className="text-xs font-semibold text-gray-700 mt-1">{l.system}</div>
+              <div className="text-[10px] text-gray-400 mt-0.5">{l.note}</div>
+            </div>
+          ))}
+        </div>
+        <div className="text-xs text-gray-500 mt-3 leading-relaxed">
+          Gutierrez-Galeano (2025) achieves higher F1 by using LLMs to enhance ML feature engineering — but produces no explanatory reasoning.
+          AMATAS trades peak accuracy for full explainability: every verdict includes traceable reasoning from multiple analytical perspectives.
         </div>
       </div>
 

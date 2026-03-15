@@ -8,8 +8,11 @@ import useLiveStatus from "./hooks/useLiveStatus";
 import useFlowInspector from "./hooks/useFlowInspector";
 import useRunLog from "./hooks/useRunLog";
 
-// Journey
+// Story
 import ResearchJourney from "./components/journey/ResearchJourney";
+
+// Research Questions
+import ResearchQuestions from "./components/journey/ResearchQuestions";
 
 // Results pages
 import Overview from "./components/results/Overview";
@@ -18,9 +21,12 @@ import ClusteringResults from "./components/results/ClusteringResults";
 import ExperimentDetail from "./components/results/ExperimentDetail";
 import MCPAblation from "./components/comparison/MCPAblation";
 import AblationStudy from "./components/results/AblationStudy";
-import RoutingControl from "./components/results/RoutingControl";
 
 import { STAGE1_ID_MAP } from "./data/constants";
+
+// Explainability
+import SHAPComparison from "./components/explainability/SHAPComparison";
+import FaithfulnessAudit from "./components/explainability/FaithfulnessAudit";
 
 // System pages
 import Architecture from "./components/system/Architecture";
@@ -30,13 +36,18 @@ import RunLog from "./components/system/RunLog";
 
 // Sub-tab definitions per top tab
 const SUB_TABS = {
-  journey: [],
+  story: [],
+  questions: [],
   results: [
     ["overview", "Overview"],
     ["stage1", "Stage 1"],
     ["ablation", "Ablation"],
     ["clustering", "Clustering"],
     ["mcp", "MCP Comparison"],
+  ],
+  explainability: [
+    ["shap", "SHAP Comparison"],
+    ["faithfulness", "Faithfulness Audit"],
   ],
   system: [
     ["architecture", "Architecture"],
@@ -47,17 +58,21 @@ const SUB_TABS = {
 };
 
 const TOP_TABS = [
-  ["journey", "Journey"],
+  ["story", "Story"],
+  ["questions", "Research Questions"],
   ["results", "Results"],
+  ["explainability", "Explainability"],
   ["system", "System"],
 ];
 
 export default function App() {
   // Navigation
-  const [topTab, setTopTab] = useState("journey");
+  const [topTab, setTopTab] = useState("story");
   const [subTabs, setSubTabs] = useState({
-    journey: "",
+    story: "",
+    questions: "",
     results: "overview",
+    explainability: "shap",
     system: "architecture",
   });
 
@@ -114,6 +129,22 @@ export default function App() {
     setSubTabs(prev => ({ ...prev, results: "stage1" }));
   }, []);
 
+  // Navigate to a specific results sub-tab (used by Research Questions evidence links)
+  const navigateToSubTab = useCallback((tab) => {
+    // Map evidence linkTab values to actual navigation
+    const tabMap = {
+      overview: () => { setTopTab("results"); setSubTabs(prev => ({ ...prev, results: "overview" })); },
+      stage1: () => { setTopTab("results"); setSubTabs(prev => ({ ...prev, results: "stage1" })); },
+      ablation: () => { setTopTab("results"); setSubTabs(prev => ({ ...prev, results: "ablation" })); },
+      clustering: () => { setTopTab("results"); setSubTabs(prev => ({ ...prev, results: "clustering" })); },
+      mcp: () => { setTopTab("results"); setSubTabs(prev => ({ ...prev, results: "mcp" })); },
+      shap: () => { setTopTab("explainability"); setSubTabs(prev => ({ ...prev, explainability: "shap" })); },
+      faithfulness: () => { setTopTab("explainability"); setSubTabs(prev => ({ ...prev, explainability: "faithfulness" })); },
+    };
+    const fn = tabMap[tab];
+    if (fn) fn();
+  }, []);
+
   return (
     <Shell
       topTab={topTab}
@@ -129,19 +160,25 @@ export default function App() {
       newResultNotif={newResultNotif}
       lastFetched={inspector.lastFetched}
     >
-      {/* -- Journey ------------------------------------------------ */}
-      {topTab === "journey" && (
+      {/* -- Story ------------------------------------------------- */}
+      {topTab === "story" && (
         <ResearchJourney
           onNavigateToDetail={openDetailPage}
           onNavigateToResults={navigateToResults}
         />
       )}
 
-      {/* -- Results -------------------------------------------------- */}
+      {/* -- Research Questions ------------------------------------ */}
+      {topTab === "questions" && (
+        <ResearchQuestions onNavigateToTab={navigateToSubTab} />
+      )}
+
+      {/* -- Results ------------------------------------------------ */}
       {topTab === "results" && subTab === "overview" && (
         <Overview
           s1={s1}
-          onNavigateToJourney={() => setTopTab("journey")}
+          onNavigateToJourney={() => setTopTab("story")}
+          onNavigateToTab={navigateToSubTab}
         />
       )}
       {topTab === "results" && subTab === "stage1" && !detailAttackType && (
@@ -169,10 +206,18 @@ export default function App() {
         <ClusteringResults onInspectFlows={openInspector} />
       )}
       {topTab === "results" && subTab === "mcp" && (
-        <MCPAblation s1={s1} />
+        <MCPAblation s1={s1} onInspectFlows={openInspector} />
       )}
 
-      {/* -- System --------------------------------------------------- */}
+      {/* -- Explainability ---------------------------------------- */}
+      {topTab === "explainability" && subTab === "shap" && (
+        <SHAPComparison />
+      )}
+      {topTab === "explainability" && subTab === "faithfulness" && (
+        <FaithfulnessAudit />
+      )}
+
+      {/* -- System ------------------------------------------------- */}
       {topTab === "system" && subTab === "architecture" && (
         <Architecture />
       )}

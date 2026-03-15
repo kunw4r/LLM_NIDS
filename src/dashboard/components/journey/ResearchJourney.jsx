@@ -65,6 +65,33 @@ export default function ResearchJourney({ onNavigateToDetail, onNavigateToResult
         </p>
       </div>
 
+      {/* Why AMATAS Exists */}
+      <div className="border border-gray-200 rounded-lg p-6 mb-10 bg-gray-50">
+        <h2 className="text-lg font-bold tracking-tight mb-3">Why AMATAS Exists</h2>
+        <div className="text-sm text-gray-700 leading-relaxed space-y-3 max-w-3xl">
+          <p>
+            <strong>The problem:</strong> Network intrusion detection systems face a fundamental trade-off.
+            Traditional ML classifiers (Random Forests, gradient boosting) achieve high accuracy but produce
+            opaque predictions — a security analyst sees "this flow is 87% likely to be an attack" with no
+            explanation of why. Meanwhile, rule-based systems are explainable but brittle. Neither approach
+            scales human-quality reasoning.
+          </p>
+          <p>
+            <strong>The hypothesis:</strong> Large Language Models can reason about network flows the way a
+            human analyst would — recognising attack patterns, weighing evidence, and articulating conclusions.
+            But a single LLM hitting a single prompt faces a precision-recall seesaw: catching more attacks
+            means more false alarms. The hypothesis is that multiple specialist agents, each analysing from a
+            different perspective, can break through this ceiling.
+          </p>
+          <p>
+            <strong>The approach:</strong> AMATAS assigns six specialist roles (protocol, statistical,
+            behavioural, temporal analysis, adversarial counter-argument, and consensus orchestration) to create
+            a deliberation process. A cheap Random Forest pre-filter handles the 95% of traffic that is obviously
+            benign, keeping LLM costs viable. The result: explainable NIDS at scale.
+          </p>
+        </div>
+      </div>
+
       {/* Timeline */}
       <div className="relative">
         {/* Vertical line */}

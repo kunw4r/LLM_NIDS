@@ -1,120 +1,175 @@
-import React from "react";
+import React, { useState } from "react";
+import { MCP_CONFIGS, AMATAS_BASELINE, MCP_TOOL_CATALOG, TOOLS_HURT_NARRATIVE } from "../../data/mcpExtended";
 
-const heroCards = [
-  { label: "A: Zero-Shot", model: "GPT-4o-mini", recall: "90.0%", fpr: "41.4%", f1: "62.8%", cost: "$0.01", border: "#d97706" },
-  { label: "B: Engineered Prompt", model: "GPT-4o", recall: "66.7%", fpr: "27.1%", f1: "58.0%", cost: "$0.37", border: "#3b82f6" },
-  { label: "C: + MITRE Tool", model: "GPT-4o", recall: "70.0%", fpr: "30.0%", f1: "58.3%", cost: "$0.45", border: "#8b5cf6" },
-  { label: "AMATAS v2", model: "GPT-4o (6-agent)", recall: "85%", fpr: "1.1%", f1: "88%", cost: "$2.59/1k", border: "#16a34a" },
-];
-
-const tableRows = [
-  { config: "A: Zero-Shot", model: "GPT-4o-mini", recall: "90.0%", fpr: "41.4%", precision: "48.2%", f1: "62.8%", tp: 27, fp: 29, fn: 3, tn: 41, cost: "$0.01", bg: "#fffbeb" },
-  { config: "B: Engineered", model: "GPT-4o", recall: "66.7%", fpr: "27.1%", precision: "51.3%", f1: "58.0%", tp: 20, fp: 19, fn: 10, tn: 51, cost: "$0.37", bg: "#eff6ff" },
-  { config: "C: + MITRE", model: "GPT-4o", recall: "70.0%", fpr: "30.0%", precision: "50.0%", f1: "58.3%", tp: 21, fp: 21, fn: 9, tn: 49, cost: "$0.45", bg: "#f5f3ff" },
-];
+const ALL_CONFIGS = [...MCP_CONFIGS, { ...AMATAS_BASELINE, metrics: AMATAS_BASELINE.metrics, confusion: null }];
 
 const f1Bars = [
-  { label: "A: Zero-Shot (GPT-4o-mini)", f1: 62.8, color: "#d97706" },
-  { label: "B: Engineered Prompt (GPT-4o)", f1: 58.0, color: "#3b82f6" },
-  { label: "C: + MITRE Tool (GPT-4o)", f1: 58.3, color: "#8b5cf6" },
-  { label: "AMATAS v2 (6-Agent + RF)", f1: 88, color: "#16a34a" },
+  ...MCP_CONFIGS.map(c => ({ label: c.label, f1: c.metrics.f1, color: c.color })),
+  { label: "AMATAS v2 (6-Agent + RF)", f1: AMATAS_BASELINE.metrics.f1, color: AMATAS_BASELINE.color },
 ];
 
-export default function MCPAblation({ s1 }) {
-  return (
-    <div>
-      {/* ── Overview ─────────────────────────────────────────────── */}
-      <h2 className="text-xl font-bold mb-2 tracking-tight">MCP Comparison Experiments</h2>
-      <p className="text-sm text-gray-500 mb-6 max-w-3xl leading-relaxed">
-        Three single-agent configurations tested on the same 100-flow batch (10 FTP + 10 SSH + 10 DoS-Hulk + 70 benign)
-        to isolate the impact of prompt engineering and tool access on NIDS performance.
-      </p>
+export default function MCPAblation({ s1, onInspectFlows }) {
+  const [toolsExpanded, setToolsExpanded] = useState(false);
 
-      {/* Hero comparison cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        {heroCards.map(c => (
-          <div key={c.label} className="rounded-lg p-4 bg-white" style={{ border: `2px solid ${c.border}` }}>
-            <div className="text-xs font-semibold mb-1" style={{ color: c.border }}>{c.label}</div>
-            <div className="text-xs text-gray-400 mb-3">{c.model}</div>
-            <div className="text-3xl font-bold text-gray-900 tracking-tight">{c.f1}</div>
-            <div className="text-xs text-gray-500 mt-0.5">F1 Score</div>
-            <div className="flex justify-between mt-2 text-xs">
-              <span className="text-green-600">R: {c.recall}</span>
-              <span className="text-red-600">FPR: {c.fpr}</span>
-            </div>
-            <div className="text-xs text-gray-400 mt-1">{c.cost}</div>
-          </div>
-        ))}
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h2 className="text-xl font-bold mb-2 tracking-tight">MCP Comparison: 7-Configuration Study</h2>
+        <p className="text-sm text-gray-500 mb-2 max-w-3xl leading-relaxed">
+          Seven single-agent configurations tested on the same 100-flow batch to isolate the impact of prompt engineering,
+          tool access, and tool type on NIDS performance. Configs A-C use IP-dependent tools; D-G use dataset-compatible
+          tools that work on anonymised data.
+        </p>
       </div>
 
-      {/* Key findings */}
-      <div className="border border-gray-200 rounded-lg p-5 mb-6">
-        <div className="text-sm font-semibold mb-3">Key Findings</div>
-        <div className="flex flex-col gap-2 text-sm text-gray-700 leading-relaxed">
-          <div className="flex gap-2"><span className="text-amber-600 font-semibold flex-shrink-0">1.</span> <span><strong>GPT-4o-mini zero-shot</strong> catches the most attacks (90% recall) but flags everything suspicious — 41% FPR makes it unusable in production.</span></div>
-          <div className="flex gap-2"><span className="text-blue-500 font-semibold flex-shrink-0">2.</span> <span><strong>Engineered prompt</strong> reduces FPR to 27% but also cuts recall to 67% — the single-agent precision-recall seesaw in action.</span></div>
-          <div className="flex gap-2"><span className="text-violet-500 font-semibold flex-shrink-0">3.</span> <span><strong>MITRE ATT&CK tool</strong> provides marginal +3.3% recall over engineered prompt at +$0.09 cost — minimal uplift validates Phase 1 finding.</span></div>
-          <div className="flex gap-2"><span className="text-green-600 font-semibold flex-shrink-0">4.</span> <span><strong>AMATAS multi-agent</strong> breaks through the single-agent ceiling: 88% F1 with only 1.1% FPR — specialised roles + adversarial checking beats any single-agent config.</span></div>
+      {/* Hero comparison cards — grouped */}
+      <div>
+        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">IP-Dependent Configurations</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          {MCP_CONFIGS.filter(c => c.category === "ip-dependent").map(c => (
+            <ConfigCard key={c.id} config={c} />
+          ))}
+        </div>
+
+        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Dataset-Compatible Configurations</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          {MCP_CONFIGS.filter(c => c.category === "dataset-compatible").map(c => (
+            <ConfigCard key={c.id} config={c} />
+          ))}
+        </div>
+
+        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Multi-Agent Baseline</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="rounded-lg p-4 bg-white" style={{ border: `2px solid ${AMATAS_BASELINE.color}` }}>
+            <div className="text-xs font-semibold mb-1" style={{ color: AMATAS_BASELINE.color }}>{AMATAS_BASELINE.label}</div>
+            <div className="text-xs text-gray-400 mb-3">{AMATAS_BASELINE.model}</div>
+            <div className="text-3xl font-bold text-gray-900 tracking-tight">{AMATAS_BASELINE.metrics.f1}%</div>
+            <div className="text-xs text-gray-500 mt-0.5">F1 Score</div>
+            <div className="flex justify-between mt-2 text-xs">
+              <span className="text-green-600">R: {AMATAS_BASELINE.metrics.recall}%</span>
+              <span className="text-red-600">FPR: {AMATAS_BASELINE.metrics.fpr}%</span>
+            </div>
+            <div className="text-xs text-gray-400 mt-1">${AMATAS_BASELINE.metrics.cost}/14k flows</div>
+          </div>
         </div>
       </div>
 
-      {/* Batch info */}
-      <div className="text-xs text-gray-400 leading-relaxed mb-8">
-        Batch: 100 flows from dev_eval.csv (RF holdout) &middot; 10 FTP-BruteForce + 10 SSH-Bruteforce + 10 DoS-Hulk + 70 Benign &middot; Total cost: $0.83 / $6.00 budget
+      {/* Key Finding: Tools Hurt */}
+      <div className="border-2 border-red-300 rounded-lg p-6 bg-red-50">
+        <h3 className="text-base font-bold text-red-800 mb-3">{TOOLS_HURT_NARRATIVE.title}</h3>
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="text-center p-3 bg-white rounded-lg border border-red-200">
+            <div className="text-2xl font-bold text-blue-700">{TOOLS_HURT_NARRATIVE.comparison.baseline.f1}%</div>
+            <div className="text-[11px] text-gray-600 font-medium">{TOOLS_HURT_NARRATIVE.comparison.baseline.label}</div>
+            <div className="text-[10px] text-gray-400">Config {TOOLS_HURT_NARRATIVE.comparison.baseline.config}</div>
+          </div>
+          <div className="text-center p-3 bg-white rounded-lg border border-red-200">
+            <div className="text-2xl font-bold text-red-700">{TOOLS_HURT_NARRATIVE.comparison.worst.f1}%</div>
+            <div className="text-[11px] text-gray-600 font-medium">{TOOLS_HURT_NARRATIVE.comparison.worst.label}</div>
+            <div className="text-[10px] text-gray-400">Config {TOOLS_HURT_NARRATIVE.comparison.worst.config}</div>
+          </div>
+          <div className="text-center p-3 bg-white rounded-lg border border-red-200">
+            <div className="text-2xl font-bold text-red-800">{TOOLS_HURT_NARRATIVE.comparison.delta}pp</div>
+            <div className="text-[11px] text-gray-600 font-medium">F1 Delta</div>
+            <div className="text-[10px] text-gray-400">Tools made it worse</div>
+          </div>
+        </div>
+        <p className="text-sm text-red-900 leading-relaxed">{TOOLS_HURT_NARRATIVE.explanation}</p>
       </div>
 
-      {/* ── Results Table ────────────────────────────────────────── */}
-      <h2 className="text-xl font-bold mb-4 tracking-tight">Per-Config Results</h2>
+      {/* Tool Documentation */}
+      <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <button
+          onClick={() => setToolsExpanded(!toolsExpanded)}
+          className="w-full px-5 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between cursor-pointer text-left"
+        >
+          <span className="text-sm font-bold text-gray-900">Tool Documentation ({MCP_TOOL_CATALOG.length} tools)</span>
+          <span className="text-gray-400 text-sm">{toolsExpanded ? "−" : "+"}</span>
+        </button>
+        {toolsExpanded && (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  {["Tool", "Description", "Category", "Works on Anonymised?", "Used In"].map(h => (
+                    <th key={h} className="px-3 py-2 text-left font-semibold text-gray-500 uppercase text-[10px]">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {MCP_TOOL_CATALOG.map(t => (
+                  <tr key={t.name} className="border-b border-gray-100">
+                    <td className="px-3 py-2 font-mono text-[11px]">{t.name}</td>
+                    <td className="px-3 py-2 text-gray-600">{t.description}</td>
+                    <td className="px-3 py-2 text-gray-500">{t.category}</td>
+                    <td className="px-3 py-2">
+                      {t.worksOnAnonymized ? (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-700">Valid data</span>
+                      ) : (
+                        <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-700">Empty on private IPs</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-gray-500">{t.usedIn.length > 0 ? t.usedIn.join(", ") : "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
-      <div className="border border-gray-200 rounded-lg overflow-hidden mb-6">
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              {["Config", "Model", "Recall", "FPR", "Precision", "F1", "TP", "FP", "FN", "TN", "Cost"].map(h => (
-                <th key={h} className="px-3 py-2.5 text-left font-semibold text-xs text-gray-500 uppercase">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {tableRows.map(r => (
-              <tr key={r.config} className="border-b border-gray-100" style={{ background: r.bg }}>
-                <td className="px-3 py-2.5 font-semibold">{r.config}</td>
-                <td className="px-3 py-2.5 text-gray-500">{r.model}</td>
-                <td className="px-3 py-2.5 text-green-600 font-medium">{r.recall}</td>
-                <td className="px-3 py-2.5 text-red-600">{r.fpr}</td>
-                <td className="px-3 py-2.5">{r.precision}</td>
-                <td className="px-3 py-2.5 font-semibold">{r.f1}</td>
-                <td className="px-3 py-2.5">{r.tp}</td>
-                <td className="px-3 py-2.5 text-red-600">{r.fp}</td>
-                <td className="px-3 py-2.5 text-red-600">{r.fn}</td>
-                <td className="px-3 py-2.5">{r.tn}</td>
-                <td className="px-3 py-2.5 text-gray-500">{r.cost}</td>
+      {/* Full Results Table */}
+      <div>
+        <h3 className="text-base font-bold tracking-tight mb-3">Full 7-Configuration Results</h3>
+        <div className="border border-gray-200 rounded-lg overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                {["Config", "Model", "Tools", "Recall", "FPR", "Precision", "F1", "TP", "FP", "FN", "TN", "Cost"].map(h => (
+                  <th key={h} className="px-3 py-2.5 text-left font-semibold text-xs text-gray-500 uppercase whitespace-nowrap">{h}</th>
+                ))}
               </tr>
-            ))}
-            <tr className="bg-green-50" style={{ borderTop: "2px solid #e5e7eb" }}>
-              <td className="px-3 py-2.5 font-bold text-green-800">AMATAS v2</td>
-              <td className="px-3 py-2.5 text-gray-500">GPT-4o (6-agent)</td>
-              <td className="px-3 py-2.5 text-green-600 font-bold">85%</td>
-              <td className="px-3 py-2.5 text-green-600 font-bold">1.1%</td>
-              <td className="px-3 py-2.5 font-semibold">97%</td>
-              <td className="px-3 py-2.5 font-bold text-green-800">88%</td>
-              <td colSpan={4} className="px-3 py-2.5 text-gray-500 text-xs">14,000 flows across 14 attack types</td>
-              <td className="px-3 py-2.5 text-gray-500">$27.35</td>
-            </tr>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {MCP_CONFIGS.map(c => (
+                <tr key={c.id} className="border-b border-gray-100" style={{ background: c.bg }}>
+                  <td className="px-3 py-2.5 font-semibold whitespace-nowrap">{c.label}</td>
+                  <td className="px-3 py-2.5 text-gray-500 text-xs">{c.model}</td>
+                  <td className="px-3 py-2.5 text-gray-500 text-xs">{c.tools.length}</td>
+                  <td className="px-3 py-2.5 text-green-600 font-medium">{c.metrics.recall}%</td>
+                  <td className="px-3 py-2.5 text-red-600">{c.metrics.fpr}%</td>
+                  <td className="px-3 py-2.5">{c.metrics.precision}%</td>
+                  <td className="px-3 py-2.5 font-semibold">{c.metrics.f1}%</td>
+                  <td className="px-3 py-2.5">{c.confusion.tp}</td>
+                  <td className="px-3 py-2.5 text-red-600">{c.confusion.fp}</td>
+                  <td className="px-3 py-2.5 text-red-600">{c.confusion.fn}</td>
+                  <td className="px-3 py-2.5">{c.confusion.tn}</td>
+                  <td className="px-3 py-2.5 text-gray-500">${c.metrics.cost.toFixed(2)}</td>
+                </tr>
+              ))}
+              <tr className="bg-green-50" style={{ borderTop: "2px solid #e5e7eb" }}>
+                <td className="px-3 py-2.5 font-bold text-green-800">AMATAS v2</td>
+                <td className="px-3 py-2.5 text-gray-500 text-xs">GPT-4o (6-agent)</td>
+                <td className="px-3 py-2.5 text-gray-500 text-xs">0 (internal)</td>
+                <td className="px-3 py-2.5 text-green-600 font-bold">{AMATAS_BASELINE.metrics.recall}%</td>
+                <td className="px-3 py-2.5 text-green-600 font-bold">{AMATAS_BASELINE.metrics.fpr}%</td>
+                <td className="px-3 py-2.5 font-semibold">{AMATAS_BASELINE.metrics.precision}%</td>
+                <td className="px-3 py-2.5 font-bold text-green-800">{AMATAS_BASELINE.metrics.f1}%</td>
+                <td colSpan={4} className="px-3 py-2.5 text-gray-500 text-xs">14,000 flows across 14 attack types</td>
+                <td className="px-3 py-2.5 text-gray-500">${AMATAS_BASELINE.metrics.cost}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="text-xs text-gray-400 mt-2">
+          All single-agent configs tested on same 100-flow batch (10 FTP + 10 SSH + 10 DoS-Hulk + 70 benign). AMATAS v2 results are aggregate across 14 x 1,000-flow Stage 1 experiments.
+        </div>
       </div>
 
-      <div className="text-xs text-gray-400 mb-10">
-        All single-agent configs tested on same 100-flow batch. AMATAS v2 results are aggregate across 14 x 1,000-flow Stage 1 experiments.
-      </div>
-
-      {/* ── Single-Agent vs Multi-Agent ──────────────────────────── */}
-      <h2 className="text-xl font-bold mb-4 tracking-tight">Single-Agent vs Multi-Agent</h2>
-
-      {/* Visual F1 bar chart */}
-      <div className="border border-gray-200 rounded-lg p-6 mb-6">
-        <div className="text-xs font-semibold text-gray-500 mb-4">F1 Score Comparison</div>
+      {/* F1 Bar Chart */}
+      <div className="border border-gray-200 rounded-lg p-6">
+        <div className="text-sm font-semibold text-gray-900 mb-4">F1 Score Comparison (All 8 Configurations)</div>
         {f1Bars.map(b => (
           <div key={b.label} className="flex items-center gap-3 mb-2">
             <div className="w-56 text-xs text-gray-700 text-right">{b.label}</div>
@@ -130,25 +185,64 @@ export default function MCPAblation({ s1 }) {
         ))}
       </div>
 
+      {/* Flow Inspector links */}
+      <div className="border border-gray-200 rounded-lg p-5">
+        <div className="text-sm font-semibold mb-3">Inspect Individual Flows</div>
+        <div className="flex flex-wrap gap-2">
+          {MCP_CONFIGS.map(c => {
+            const inspId = `mcp_config_${c.id.toLowerCase()}`;
+            return (
+              <button
+                key={c.id}
+                onClick={() => onInspectFlows && onInspectFlows(inspId)}
+                className="px-3 py-1.5 rounded-md text-xs font-medium border border-gray-200 bg-white hover:border-gray-300 cursor-pointer transition-colors"
+                style={{ color: c.color }}
+              >
+                Inspect {c.label} flows
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Thesis argument */}
       <div className="border border-gray-200 rounded-lg p-5 bg-gray-50">
         <div className="text-sm font-semibold mb-3">Thesis Argument</div>
-        <div className="text-sm text-gray-700 leading-relaxed max-w-3xl">
-          <p className="mb-3">
-            The MCP comparison demonstrates that <strong>no single-agent configuration can match the multi-agent AMATAS architecture</strong>.
-            The best single-agent (Config A: zero-shot GPT-4o-mini) achieves 90% recall but at the cost of 41% FPR — classifying nearly half of benign traffic as suspicious.
-            Prompt engineering (Config B) reduces FPR but simultaneously cuts recall, confirming the precision-recall seesaw inherent to single-agent systems.
-          </p>
-          <p className="mb-3">
-            MITRE ATT&CK tooling (Config C) provides only marginal improvement (+3.3% recall, +$0.09 cost) over the engineered prompt alone.
-            This validates the Phase 1 finding that <strong>external tools are limited by data quality, not tool quality</strong> — on anonymised synthetic data,
-            even comprehensive frameworks like MITRE ATT&CK add little beyond what prompt-encoded attack signatures already provide.
+        <div className="text-sm text-gray-700 leading-relaxed max-w-3xl space-y-3">
+          <p>
+            The 7-configuration MCP comparison demonstrates two things: (1) <strong>no single-agent configuration can match the multi-agent AMATAS architecture</strong>,
+            and (2) <strong>adding tools to a single agent actively degrades performance</strong> on this dataset.
           </p>
           <p>
-            AMATAS v2&apos;s 88% F1 with 1.1% FPR is achieved through <strong>specialised analytical roles</strong> (protocol, statistical, behavioural, temporal analysis),
-            <strong>adversarial cross-checking</strong> (Devil&apos;s Advocate), and <strong>weighted consensus</strong> (Orchestrator) — capabilities fundamentally unavailable to any single-agent approach.
+            The best single-agent (Config A: zero-shot GPT-4o-mini) achieves 90% recall but at 41% FPR.
+            The best tool-equipped config (E: +DShield) only reaches 46.9% F1.
+            Config B with no tools outperforms every tool-equipped variant — prompt-encoded knowledge is more effective
+            than real-time tool access when the data is anonymised.
+          </p>
+          <p>
+            AMATAS v2&apos;s 88% F1 with 1.1% FPR is achieved through <strong>specialised analytical roles</strong>,
+            <strong> adversarial cross-checking</strong>, and <strong>weighted consensus</strong> — capabilities
+            fundamentally unavailable to any single-agent approach, with or without tools.
           </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ConfigCard({ config: c }) {
+  return (
+    <div className="rounded-lg p-4 bg-white" style={{ border: `2px solid ${c.color}` }}>
+      <div className="text-xs font-semibold mb-1" style={{ color: c.color }}>{c.label}</div>
+      <div className="text-xs text-gray-400 mb-3">{c.model}</div>
+      <div className="text-3xl font-bold text-gray-900 tracking-tight">{c.metrics.f1}%</div>
+      <div className="text-xs text-gray-500 mt-0.5">F1 Score</div>
+      <div className="flex justify-between mt-2 text-xs">
+        <span className="text-green-600">R: {c.metrics.recall}%</span>
+        <span className="text-red-600">FPR: {c.metrics.fpr}%</span>
+      </div>
+      <div className="text-xs text-gray-400 mt-1">
+        {c.tools.length} tools &middot; ${c.metrics.cost.toFixed(2)}
       </div>
     </div>
   );
