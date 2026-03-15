@@ -14,6 +14,9 @@ import ResearchJourney from "./components/journey/ResearchJourney";
 // Research Questions
 import ResearchQuestions from "./components/journey/ResearchQuestions";
 
+// Supervisor Briefing
+import SupervisorBriefing from "./components/journey/SupervisorBriefing";
+
 // Results pages
 import Overview from "./components/results/Overview";
 import Stage1Results from "./components/results/Stage1Results";
@@ -60,6 +63,7 @@ const SUB_TABS = {
 };
 
 const TOP_TABS = [
+  ["briefing", "Briefing"],
   ["story", "Story"],
   ["questions", "Research Questions"],
   ["results", "Results"],
@@ -69,8 +73,9 @@ const TOP_TABS = [
 
 export default function App() {
   // Navigation
-  const [topTab, setTopTab] = useState("story");
+  const [topTab, setTopTab] = useState("briefing");
   const [subTabs, setSubTabs] = useState({
+    briefing: "",
     story: "",
     questions: "",
     results: "overview",
@@ -172,6 +177,11 @@ export default function App() {
       newResultNotif={newResultNotif}
       lastFetched={inspector.lastFetched}
     >
+      {/* -- Briefing ------------------------------------------------ */}
+      {topTab === "briefing" && (
+        <SupervisorBriefing onNavigateToTab={navigateToSubTab} />
+      )}
+
       {/* -- Story ------------------------------------------------- */}
       {topTab === "story" && (
         <ResearchJourney
