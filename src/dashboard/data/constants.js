@@ -85,6 +85,13 @@ export const INSPECTOR_FILE_MAP = {
   clustering_a: "/results/infiltration/enriched_prompt_results.json",
   clustering_b: "/results/infiltration/clustered_results.json",
   clustering_c: "/results/infiltration/combined_results.json",
+  mcp_config_a: "/results/mcp/config_a_results.json",
+  mcp_config_b: "/results/mcp/config_b_results.json",
+  mcp_config_c: "/results/mcp/config_c_results.json",
+  mcp_config_d: "/results/mcp/config_d_results.json",
+  mcp_config_e: "/results/mcp/config_e_results.json",
+  mcp_config_f: "/results/mcp/config_f_results.json",
+  mcp_config_g: "/results/mcp/config_g_results.json",
 };
 
 export const STAGE1_ID_MAP = {
