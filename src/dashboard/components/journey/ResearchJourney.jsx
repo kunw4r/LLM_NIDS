@@ -8,26 +8,32 @@ const PHASE_META = {
   "Phase 1 — MCP": {
     color: "#d97706",
     conclusion: "External threat intelligence is useless on anonymized datasets. MCP tools returned no data for any IP address.",
+    linkTab: "mcp", linkLabel: "See MCP Comparison",
   },
   "Phase 2 — Single-Agent": {
     color: "#3b82f6",
     conclusion: "Single-agent prompt engineering is a precision-recall seesaw. No configuration breaks through the ceiling.",
+    linkTab: "mcp", linkLabel: "See MCP Comparison",
   },
   "Phase 3 — Multi-Agent": {
     color: "#8b5cf6",
     conclusion: "Multi-agent specialist deliberation breaks the single-agent ceiling. F1 jumped from 68% to 96% with temporal context.",
+    linkTab: "reasoning", linkLabel: "Inspect Flow Reasoning",
   },
   "Phase 4 — Model Comparison": {
     color: "#ec4899",
     conclusion: "GPT-4o is the production model. Haiku fails completely; GPT-4o-mini is a viable cost alternative.",
+    linkTab: "ablation", linkLabel: "See Ablation Study",
   },
   "Stage 1 — Per-Attack Evaluation": {
     color: "#16a34a",
     conclusion: "Architecture generalizes across 14 attack types. 92.9% mean F1, 0.07% FPR, $27.35 total cost.",
+    linkTab: "stage1", linkLabel: "See Full Results",
   },
   "Clustering — Infiltration v3": {
     color: "#06b6d4",
     conclusion: "Temporal clustering recovers detection of previously invisible attacks. Infiltration went from 0% to 58% recall.",
+    linkTab: "clustering", linkLabel: "See Clustering Results",
   },
 };
 
@@ -46,7 +52,7 @@ const ROADMAP_ITEMS = [
   },
 ];
 
-export default function ResearchJourney({ onNavigateToDetail, onNavigateToResults }) {
+export default function ResearchJourney({ onNavigateToDetail, onNavigateToResults, onNavigateToTab }) {
   const phaseGroups = getPhaseGroups();
 
   return (
@@ -167,8 +173,8 @@ export default function ResearchJourney({ onNavigateToDetail, onNavigateToResult
                     {/* Summary metrics */}
                     <div className="grid grid-cols-4 gap-2 mb-4">
                       {[
-                        { label: "Mean Recall", value: `${Math.round(STAGE1_SUMMARY.experiments.filter(e => e.recall > 0).reduce((s,e) => s+e.recall, 0) / STAGE1_SUMMARY.experiments.filter(e => e.recall > 0).length)}%` },
-                        { label: "Mean F1", value: `${Math.round(STAGE1_SUMMARY.experiments.reduce((s,e) => s+e.f1, 0) / STAGE1_SUMMARY.experiments.length)}%` },
+                        { label: "Mean Recall", value: `${STAGE1_SUMMARY.overall.mean_recall}%` },
+                        { label: "Mean F1", value: `${STAGE1_SUMMARY.overall.mean_f1}%` },
                         { label: "Total Cost", value: dollar(STAGE1_SUMMARY.overall.total_cost) },
                         { label: "14k Flows", value: `${STAGE1_SUMMARY.overall.total_flows.toLocaleString()}` },
                       ].map((m) => (
@@ -221,10 +227,19 @@ export default function ResearchJourney({ onNavigateToDetail, onNavigateToResult
                 {/* Phase conclusion */}
                 {meta.conclusion && (
                   <div
-                    className="rounded-lg px-4 py-3 text-sm leading-relaxed"
+                    className="rounded-lg px-4 py-3 text-sm leading-relaxed flex items-center justify-between gap-3"
                     style={{ background: `${meta.color}08`, borderLeft: `3px solid ${meta.color}`, color: "#374151" }}
                   >
-                    <strong>Conclusion:</strong> {meta.conclusion}
+                    <div><strong>Conclusion:</strong> {meta.conclusion}</div>
+                    {meta.linkTab && onNavigateToTab && (
+                      <button
+                        onClick={() => onNavigateToTab(meta.linkTab)}
+                        className="flex-shrink-0 px-3 py-1.5 rounded-md text-[11px] font-medium border cursor-pointer bg-white hover:border-gray-300 transition-colors"
+                        style={{ borderColor: `${meta.color}40`, color: meta.color }}
+                      >
+                        {meta.linkLabel} &rarr;
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

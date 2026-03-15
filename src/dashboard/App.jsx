@@ -49,6 +49,7 @@ const SUB_TABS = {
   explainability: [
     ["shap", "SHAP Comparison"],
     ["faithfulness", "Faithfulness Audit"],
+    ["reasoning", "Flow Inspector"],
   ],
   system: [
     ["architecture", "Architecture"],
@@ -150,6 +151,7 @@ export default function App() {
       mcp: () => { setTopTab("results"); setSubTabs(prev => ({ ...prev, results: "mcp" })); },
       shap: () => { setTopTab("explainability"); setSubTabs(prev => ({ ...prev, explainability: "shap" })); },
       faithfulness: () => { setTopTab("explainability"); setSubTabs(prev => ({ ...prev, explainability: "faithfulness" })); },
+      reasoning: () => { setTopTab("explainability"); setSubTabs(prev => ({ ...prev, explainability: "reasoning" })); },
     };
     const fn = tabMap[tab];
     if (fn) fn();
@@ -175,6 +177,7 @@ export default function App() {
         <ResearchJourney
           onNavigateToDetail={openDetailPage}
           onNavigateToResults={navigateToResults}
+          onNavigateToTab={navigateToSubTab}
         />
       )}
 
@@ -236,6 +239,9 @@ export default function App() {
       )}
       {topTab === "explainability" && subTab === "faithfulness" && (
         <FaithfulnessAudit />
+      )}
+      {topTab === "explainability" && subTab === "reasoning" && (
+        <FlowInspector inspector={inspector} />
       )}
 
       {/* -- System ------------------------------------------------- */}
