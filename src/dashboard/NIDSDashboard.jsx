@@ -420,6 +420,46 @@ const STAGE1_SUMMARY = {
   overall: { best_f1: 100, total_flows: 14000, total_cost: 27.35, avg_fpr: 0 },
 };
 
+// RF Standalone Baseline — F1 per attack type when RF is used as sole classifier
+const RF_BASELINE = {
+  "FTP-BruteForce": { f1: 100, recall: 100 },
+  "SSH-Bruteforce": { f1: 99, recall: 100 },
+  "DoS_attacks-SlowHTTPTest": { f1: 100, recall: 100 },
+  "DoS_attacks-Slowloris": { f1: 100, recall: 100 },
+  "DoS_attacks-Hulk": { f1: 100, recall: 100 },
+  "DoS_attacks-GoldenEye": { f1: 100, recall: 100 },
+  "DDoS_attacks-LOIC-HTTP": { f1: 100, recall: 100 },
+  "DDOS_attack-HOIC": { f1: 0, recall: 0 },
+  "DDOS_attack-LOIC-UDP": { f1: 100, recall: 100 },
+  "Bot": { f1: 0, recall: 0 },
+  "Infilteration": { f1: 0, recall: 0 },
+  "Brute_Force_-Web": { f1: 0, recall: 0 },
+  "Brute_Force_-XSS": { f1: 0, recall: 0 },
+  "SQL_Injection": { f1: 0, recall: 0 },
+};
+
+// Faithfulness Audit Summary
+const FAITHFULNESS = {
+  totalClaims: 6279,
+  flowsAudited: 758,
+  correct: 5637,
+  incorrect: 642,
+  faithfulnessRate: 89.8,
+  confabulationRate: 10.2,
+  perAgent: {
+    statistical: 93.9, temporal: 91.0, orchestrator: 90.9,
+    protocol: 90.4, behavioural: 84.0, devils_advocate: 80.2,
+  },
+  worstCategories: [
+    { category: "TCP flag names", rate: 77.6 },
+    { category: "Protocol names", rate: 80.6 },
+  ],
+  bestCategories: [
+    { category: "Numeric fields", rate: 98.8 },
+    { category: "Port numbers", rate: 98.1 },
+  ],
+};
+
 // Agent definitions
 const AGENTS = [
   { id: "protocol", name: "Protocol", color: "#3b82f6", desc: "Validates protocol/port/flag consistency",
@@ -1511,10 +1551,20 @@ export default function NIDSDashboard() {
                 </div>
                 {/* Finding 5 */}
                 <div style={{ borderLeft: "3px solid #f59e0b", paddingLeft: 16 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a1a", marginBottom: 6 }}>5. Explainability advantage</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a1a", marginBottom: 6 }}>5. Reasoning is {FAITHFULNESS.faithfulnessRate}% faithful</div>
                   <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.7 }}>
-                    Every detection includes full agent reasoning, connected flow evidence, and attack classification.
-                    Click any flow in the Flow Inspector to see exactly why it was flagged — impossible with traditional ML.
+                    A programmatic audit of {FAITHFULNESS.totalClaims.toLocaleString()} factual claims across {FAITHFULNESS.flowsAudited} flows verified that {FAITHFULNESS.faithfulnessRate}% are
+                    correct against actual flow data. Confabulation ({FAITHFULNESS.confabulationRate}%) concentrates in TCP flag interpretation and protocol
+                    identification — agents infer expected values rather than reading observed ones. Numeric features (ports, bytes, packets) are &gt;98% accurate.
+                  </div>
+                </div>
+                {/* Finding 6 */}
+                <div style={{ borderLeft: "3px solid #9333ea", paddingLeft: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#1a1a1a", marginBottom: 6 }}>6. AMATAS detects what the RF cannot</div>
+                  <div style={{ fontSize: 13, color: "#374151", lineHeight: 1.7 }}>
+                    The RF standalone achieves 57.1% mean F1 — perfect on 7 attack types but 0% on the other 7 (Bot, HOIC, Web attacks, SQL Injection, XSS).
+                    AMATAS detects 5 of those 7 RF-invisible categories at F1 ≥ 72%. Neither component alone covers the full attack taxonomy.
+                    See the <span style={{ color: "#9333ea", fontWeight: 600 }}>RF F1</span> column in the Stage 1 table.
                   </div>
                 </div>
               </div>
@@ -1801,8 +1851,8 @@ export default function NIDSDashboard() {
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                 <thead>
                   <tr style={{ background: "#f9fafb" }}>
-                    {["Attack Type", "Data Split", "Recall", "FPR", "F1", "Cost", "$/TP"].map(h => (
-                      <th key={h} style={{ textAlign: h === "Attack Type" ? "left" : "right", padding: "12px 16px", fontWeight: 600, color: "#6b7280", fontSize: 12, borderBottom: "1px solid #e5e7eb" }}>{h}</th>
+                    {["Attack Type", "Data Split", "Recall", "FPR", "F1", "RF F1", "Cost", "$/TP"].map(h => (
+                      <th key={h} style={{ textAlign: h === "Attack Type" ? "left" : "right", padding: "12px 16px", fontWeight: 600, color: h === "RF F1" ? "#9333ea" : "#6b7280", fontSize: 12, borderBottom: "1px solid #e5e7eb" }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -1842,13 +1892,14 @@ export default function NIDSDashboard() {
                       <td style={{ padding: "12px 16px", textAlign: "right", fontWeight: 600, color: (exp.recall || 0) >= 80 ? "#16a34a" : (exp.recall || 0) >= 50 ? "#d97706" : "#dc2626" }}>{exp.recall}%</td>
                       <td style={{ padding: "12px 16px", textAlign: "right", color: exp.fpr > 5 ? "#dc2626" : "#6b7280" }}>{exp.fpr}%</td>
                       <td style={{ padding: "12px 16px", textAlign: "right", fontWeight: 600, color: "#2563eb" }}>{exp.f1}%</td>
+                      <td style={{ padding: "12px 16px", textAlign: "right", fontWeight: 600, color: (RF_BASELINE[exp.attack_type]?.f1 || 0) === 0 ? "#dc2626" : "#9333ea" }}>{RF_BASELINE[exp.attack_type]?.f1 ?? "—"}%</td>
                       <td style={{ padding: "12px 16px", textAlign: "right", color: "#6b7280" }}>{dollar(exp.cost)}</td>
                       <td style={{ padding: "12px 16px", textAlign: "right", color: "#6b7280" }}>{exp.cost_per_tp === Infinity ? "—" : dollar(exp.cost_per_tp)}</td>
                     </tr>
                     {/* Expanded confusion matrix + cost breakdown */}
                     {isExpanded && (
                       <tr>
-                        <td colSpan={7} style={{ padding: "0 16px 16px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
+                        <td colSpan={8} style={{ padding: "0 16px 16px", background: "#f9fafb", borderBottom: "1px solid #e5e7eb" }}>
                           <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
                             {/* Confusion Matrix */}
                             <div style={{ flex: 1 }}>
@@ -3621,6 +3672,20 @@ export default function NIDSDashboard() {
                   icon: "\u2713",
                 },
                 {
+                  title: "Faithfulness Audit + SHAP Comparison",
+                  desc: `Verified ${FAITHFULNESS.faithfulnessRate}% of ${FAITHFULNESS.totalClaims.toLocaleString()} agent claims are factually correct. 5-flow SHAP vs AMATAS comparison shows SHAP misses Bot traffic (RF P(attack)=0.005) that AMATAS catches through temporal reasoning.`,
+                  status: "Complete",
+                  statusColor: "#16a34a",
+                  icon: "\u2713",
+                },
+                {
+                  title: "RF Standalone Baseline",
+                  desc: "RF achieves 57.1% mean F1 standalone (perfect on 7 types, 0% on 7 others). AMATAS achieves 86.3% mean F1 — detects 5 of 7 RF-invisible categories. Establishes the two-tier rationale: RF handles easy attacks, LLM handles what RF cannot see.",
+                  status: "Complete",
+                  statusColor: "#16a34a",
+                  icon: "\u2713",
+                },
+                {
                   title: "Test Set Final Evaluation",
                   desc: "Run complete AMATAS v2/v3 pipeline on held-out test.csv (8.05M flows). Final thesis evaluation — no parameter tuning allowed.",
                   status: "Planned",
@@ -3629,7 +3694,7 @@ export default function NIDSDashboard() {
                 },
                 {
                   title: "Thesis Write-Up",
-                  desc: "Compile all experimental results. Key contributions: two-tier ML+LLM architecture, per-attack-type evaluation, explainable multi-agent reasoning, and the role of temporal context in NIDS. 8 weeks remaining.",
+                  desc: "All chapters drafted (113 pages). RQ1-RQ4 answered with empirical evidence. Faithfulness audit and RF baseline integrated. Final formatting pass remaining. Submission: April 2026.",
                   status: "In Progress",
                   statusColor: "#2563eb",
                   icon: "\u25B6",
