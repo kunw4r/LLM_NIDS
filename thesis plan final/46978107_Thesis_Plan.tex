@@ -1,0 +1,521 @@
+\documentclass[12pt,openany,oneside,a4paper]{book}
+
+\usepackage[a4paper,margin=25mm]{geometry}
+\usepackage{graphics,makecell,graphicx,pifont,amssymb,rotating,lscape,multirow,adjustbox,lmodern,microtype,enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage[british]{babel}
+\usepackage{booktabs,longtable,tabularx,array}
+\usepackage{csquotes}
+\usepackage[colorlinks=true,citecolor=blue,linkcolor=black,urlcolor=blue]{hyperref}
+\usepackage[style=numeric,sorting=none,backend=biber,maxbibnames=99,doi=true,url=false,isbn=false]{biblatex}
+\addbibresource{references.bib}
+
+% Number subsections but not subsubsections:
+\setcounter{secnumdepth}{2}
+% Show subsections but not subsubsections in table of contents:
+\setcounter{tocdepth}{2}
+\pagestyle{headings}
+\raggedbottom
+
+% Paragraph formatting
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\definecolor{topicpurple}{HTML}{7030A0}
+\definecolor{Purple}{HTML}{7030A0}
+
+\renewcommand{\baselinestretch}{1.2}
+\renewcommand{\textfraction}{0.25}
+\renewcommand{\topfraction}{0.75}
+\renewcommand{\bottomfraction}{0.75}
+\renewcommand{\floatpagefraction}{0.75}
+
+\newcommand{\cmark}{\ding{51}}
+
+\newcommand{\fig}[1]  {Fig.\,\ref{#1}}
+\newcommand{\tab}[1]  {Table~\ref{#1}}
+\newcommand{\chap}[1] {Chapter~\ref{#1}}
+\newcommand{\secn}[1] {Section~\ref{#1}}
+
+\begin{document}
+
+% =========================
+% Thesis Plan Preface
+% =========================
+\pagenumbering{gobble}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\begin{center}
+{\LARGE \textbf{Thesis Plan}}
+\end{center}
+\vspace{-0.5em}
+
+\subsection*{Administrative Details}
+{\setlength{\parskip}{0.3em}
+\begin{tabular}{@{}l@{\hspace{1.5em}}l@{}}
+\textbf{Student name:}      & Kunwar Singh \\
+\textbf{Student number:}    & 46978107 \\
+\textbf{Program enrolment:} & Bachelor of Engineering (Honours) \\
+\textbf{Course enrolment:}  & METR4912 \\
+\textbf{Number of units:}   & 4 units \\
+\textbf{Expected workload:} & 10 hours per week \\
+\end{tabular}
+}
+
+\subsection*{Supervision Details}
+{\setlength{\parskip}{0.3em}
+\begin{tabular}{@{}l@{\hspace{1.5em}}l@{}}
+\textbf{Primary Supervisor:}  & Dr Siamak Layeghy \\
+\textbf{Other Supervisors:}   & Dr Marius Portmann \\
+\end{tabular}
+
+\medskip
+\textbf{Have you met your supervisor this semester?}\\
+Yes, in person. Most recent meeting: 2/03/2026, 12:00pm, in person on campus.
+
+\textbf{Do you have a regular meeting scheduled?}\\
+Weekly, every Monday at 12:00pm, in person on campus.
+}
+
+\subsection*{Thesis Plan (Thesis Draft)}
+The attached thesis draft follows the official UQ \LaTeX\ template and contains the full structure of the final thesis, including all chapter and section headings, referenced background and related work, and a complete bibliography. Material from the previously submitted thesis proposal (METR4912, Semester~2 2025) has been reused and updated to reflect what has actually been achieved rather than what was originally planned. In particular, the architecture has evolved from the originally proposed MCP-centric single-agent tool orchestration approach to a multi-agent LLM debate architecture, as motivated by experimental findings documented in the thesis. The original proposal envisioned a single LLM orchestrator enriching alerts via MCP tools (DNS, GeoIP, reputation checks, ATT\&CK mapping); however, early experiments revealed that external tools provide no measurable benefit on anonymised benchmark datasets. This finding drove the pivot to a six-agent multi-specialist pipeline where detection quality emerges from diverse analytical perspectives rather than external enrichment. The two-tier ML pre-filter concept from the proposal has been retained but refined: the Random Forest now filters 95\% of traffic at a threshold of 0.15, exceeding the originally proposed 70--90\% target. Evaluation has expanded from the proposed three-configuration comparison to a comprehensive 14-attack-type evaluation at realistic class distributions, plus an agent ablation study and temporal clustering extension not anticipated in the proposal.
+
+\subsection*{Use of AI Statement}
+\textit{I acknowledge the use of generative AI tools in completing this assessment. Details of which tools were used and how they were used are provided in the table below, along with appropriate in-text and full references. I take responsibility for critically evaluating and integrating the AI-generated content, and ensuring it adheres to academic integrity standards.}
+
+\subsubsection*{Have you used AI in your project?}
+\begin{itemize}[leftmargin=1.5em, itemsep=0.5em]
+  \item \textbf{To explore your topic?} Yes. I used ChatGPT (OpenAI) and Claude (Anthropic) to map out LLM applications in cybersecurity and brainstorm search terms (e.g.\ ``LLM intrusion detection'', ``multi-agent debate accuracy''). I then ran those terms through IEEE Xplore, ACM Digital Library, and Google Scholar manually. The AI helped me get oriented faster, but the actual research direction came from supervisor discussions and reading the papers.
+
+  \item \textbf{To define your research question?} No. My research questions evolved through supervisor meetings with Dr Layeghy and Dr Portmann. The original proposal focused on MCP tool orchestration, but when early experiments showed external tools provide no signal on anonymised IPs, I pivoted to multi-agent debate. The four research questions were shaped by what I found during experiments, not by AI.
+
+  \item \textbf{To assist with your literature review?} Yes. I found papers through my own searches on IEEE Xplore, ACM Digital Library, Google Scholar, and arXiv. I then used Claude (Anthropic) to help organise them, clustering studies by approach (traditional ML, LLM-based, multi-agent, tool-augmented) and generating initial summaries for each paper. I did not use AI to find references. Before using any AI summary, I checked claims against the original paper and rewrote it in my own words. A few times the AI overstated results or missed key caveats, which I caught and corrected.
+
+  \item \textbf{To assist with formatting the thesis outline presented here?} Yes. I used Claude (Anthropic) and Claude Code to convert content into \LaTeX, debug compilation errors, and match the UQ template. This was mainly mechanical: fixing tables, resolving package conflicts, getting TikZ diagrams working. The chapter structure and arguments are my own.
+
+  \item \textbf{Did you generate figures using AI?} No. I made all figures myself: data plots in Python (matplotlib), architecture diagrams in TikZ, and flow-level visualisations in the React dashboard I built.
+
+  \item \textbf{Did you analyse data using AI?} Yes. I used Claude Code (Anthropic) to help write Python scripts for metrics calculation (recall, F1, FPR), result aggregation, and cost breakdowns. I reviewed the scripts and spot-checked outputs against raw JSON files. The AI helped me code faster, but the interpretation (e.g.\ identifying the Infiltration failure or that the Devil's Advocate hurts recall on DDoS-HOIC) is my own.
+
+  \item \textbf{Did you generate data using AI?} No. All data comes from the CICIDS2018 NetFlow v3 dataset~\autocite{Sharafaldin2018}. No synthetic data was generated. Note: GPT-4o (OpenAI) powers the six AMATAS agents that analyse flows, so it produces the verdicts and reasoning chains, but these are experimental outputs being studied, not generated training data.
+
+  \item \textbf{Did you generate text for your thesis using AI?} Yes. I used Claude (Anthropic) to draft sections, especially the literature review and methodology. My process: outline what a section needs to cover, get a draft from Claude, then rewrite it by cutting filler, fixing inaccuracies, adding my actual numbers, and making the argument flow. Some sections I rewrote almost entirely. Where Claude got things wrong (e.g.\ mischaracterising a paper or making vague claims), I corrected or removed those parts. The thesis structure, arguments, and interpretation are my own.
+
+  \item \textbf{For other aspects of your work?} Yes. I used Claude Code (Anthropic) and GitHub Copilot (Microsoft) to write the AMATAS code, including the multi-agent pipeline, MCP server, dashboard, and evaluation scripts. I reviewed and debugged everything; the AI still produced bugs I had to fix, especially around JSON parsing and cost tracking. The architectural decisions were mine, informed by experiments and supervisor feedback: choosing six agents, adding the Devil's Advocate after seeing high false positives in early runs, setting 30\% DA weight after testing 50\% and finding it too aggressive, and designing the RF pre-filter to solve the cost problem. GPT-4o also powers the AMATAS agents themselves.
+\end{itemize}
+
+\newpage
+
+% =========================
+% Thesis Template (frontmatter begins)
+% =========================
+
+\let\origcleardoublepage\cleardoublepage
+\let\cleardoublepage\clearpage
+\frontmatter
+\let\cleardoublepage\origcleardoublepage
+
+% ─── Title Page ──────────────────────────────────────────
+\begin{titlepage}
+\renewcommand{\baselinestretch}{1.0}
+\begin{center}
+\vspace*{10mm}
+
+\includegraphics[width=0.55\textwidth]{3019.png}
+
+\vspace{15mm}
+
+{\large School of Electrical Engineering and Computer Science}
+
+\vspace{25mm}
+
+{\LARGE\bfseries Advanced Multi-Agent Threat Analysis System:}\\[6pt]
+{\LARGE\bfseries Explainable Network Intrusion Detection}\\[6pt]
+{\LARGE\bfseries through LLM-Based Multi-Agent Debate}
+
+\vspace{20mm}
+
+{\large\sl by}\\[4pt]
+{\Large Kunwar Singh}
+
+\vfill
+
+{\large
+Submitted for the degree of Bachelor of Engineering (Honours)\\[4pt]
+as part of the course METR4912.}
+
+\vspace{15mm}
+
+{\large June 2026}
+
+\vspace{10mm}
+\end{center}
+\end{titlepage}
+
+% ─── Cover Letter ────────────────────────────────────────
+\cleardoublepage
+
+\begin{flushright}
+	s46978107@uq.edu.au\\
+	\medskip
+	\today
+\end{flushright}
+\begin{flushleft}
+  Prof Michael Bruenig\\
+  Head of School\\
+  School of Electrical Engineering and Computer Science\\
+  The University of Queensland\\
+  St Lucia, Q 4072\\
+  \bigskip\bigskip
+  Dear Professor Bruenig,
+\end{flushleft}
+
+In accordance with the requirements of the Degree of Bachelor of Engineering (Honours) in the School of Electrical Engineering and Computer Science, I submit the following thesis entitled ``Advanced Multi-Agent Threat Analysis System: Explainable Network Intrusion Detection through LLM-Based Multi-Agent Debate''. The thesis was performed under the supervision of Dr Siamak Layeghy and Dr Marius Portmann. I declare that the work submitted in the thesis is my own, except as acknowledged in the text and footnotes, and that it has not previously been submitted for a degree at the University of Queensland or any other institution.
+
+\begin{flushright}
+	Yours sincerely,\\
+	\vspace{10mm}
+	Kunwar Singh
+\end{flushright}
+
+% ─── Declaration by Author ──────────────────────────────
+\chapter{Declaration by Author}
+
+This thesis is composed of my original work, and contains no material previously published, written by another person, or generated by artificial intelligence (AI), except where clearly referenced and acknowledged either in the main text or the preliminary pages of this thesis. I have clearly stated the contribution of others to jointly authored works that I have included in my thesis.\\
+
+I have clearly stated the contribution of others to my thesis as a whole, including statistical assistance, survey design, data analysis, significant technical procedures, professional editorial advice, use of AI tools, financial support, and any other original research work used or reported in my thesis. The content of my thesis is the result of work I have carried out since the commencement of my enrollment in the course code indicated on the title page, and does not include a substantial part of work that has been submitted to qualify for the award of any other degree or diploma in any university or other tertiary institution. I have clearly stated which parts of my thesis, if any, have been submitted to qualify for another award.\\
+
+I acknowledge that copyright of all material contained in my thesis resides with the copyright holder(s) of that material. Where appropriate I have obtained copyright permission from the copyright holder to reproduce material in this thesis and have sought permission from co-authors for any jointly authored works included in the thesis.
+
+% ─── Use of AI Statement ────────────────────────────────
+\chapter{Use of AI Statement}
+
+I acknowledge the use of generative AI tools in completing this thesis. Details of which tools were used and how they were used are provided in the table below, along with appropriate in-text and full references. I take responsibility for critically evaluating and integrating the AI-generated content, and ensuring it adheres to academic integrity standards.
+\bigskip
+
+% --- AI Use Table ---
+\noindent
+\begin{footnotesize}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\multirow{2}{*}{\parbox{2.5cm}{\vspace*{\fill}\centering AI Model and date\vspace*{0pt}}}
+ & \multicolumn{12}{c|}{\parbox{11cm}{\centering Artificial Intelligence (AI) tool usage (tick all that apply)}} \\ \cline{2-13}
+ & \adjustbox{rotate=90}{Language Translation}
+ & \adjustbox{rotate=90}{Grammer/style/spelling}
+ & \adjustbox{rotate=90}{Topic exploration}
+ & \adjustbox{rotate=90}{Research questions}
+ & \adjustbox{rotate=90}{Literature review}
+ & \adjustbox{rotate=90}{Data analysis}
+ & \adjustbox{rotate=90}{Generate data}
+ & \adjustbox{rotate=90}{Generate text}
+ & \adjustbox{rotate=90}{Content Creation visual (formatting)}
+ & \adjustbox{rotate=90}{Content Creation (e.g. code)}
+ & \adjustbox{rotate=90}{Feedback}
+ & \adjustbox{rotate=90}{Other (provide details)} \\ \hline
+\makecell{Claude 3.5 Sonnet /\\Claude 4 (Anthropic)\\14/7/25 -- 12/3/26}
+ & & \checkmark & \checkmark & & \checkmark & \checkmark & & \checkmark & \checkmark & \checkmark & \checkmark & \\ \hline
+\makecell{Claude Code\\(Anthropic)\\14/7/25 -- 12/3/26}
+ & & \checkmark & & & & \checkmark & & \checkmark & \checkmark & \checkmark & & \\ \hline
+\makecell{ChatGPT / GPT-4o\\(OpenAI)\\14/7/25 -- 12/3/26}
+ & & & \checkmark & & & & & & & & & \makecell{\scriptsize AMATAS\\[-2pt]\scriptsize agent LLM} \\ \hline
+\makecell{GitHub Copilot\\(Microsoft)\\14/7/25 -- 12/3/26}
+ & & & & & & & & & & \checkmark & & \\ \hline
+\end{tabular}
+\end{footnotesize}
+
+% ─── Acknowledgements ───────────────────────────────────
+\chapter{Acknowledgements}
+
+I would like to thank my supervisors, Dr Siamak Layeghy and Dr Marius Portmann, for their guidance throughout this project. Their expertise in network security and machine learning has informed the architectural decisions that shape AMATAS, and their feedback on experimental methodology ensures the rigour of the evaluation.
+
+% ─── Abstract ────────────────────────────────────────────
+\chapter{Abstract}
+
+Network intrusion detection systems face a persistent trade-off between speed and interpretability. Lightweight machine learning models achieve high accuracy on benchmark NetFlow datasets but are opaque to analysts, while large language models provide rich context yet are too slow and costly for real-time deployment. This thesis presents AMATAS (Advanced Multi-Agent Threat Analysis System), a two-tier architecture that combines a Random Forest pre-filter with a six-agent large language model pipeline to deliver both accurate detection and transparent, multi-perspective reasoning chains.
+
+The system separates a high-throughput fast path, where the Random Forest classifier filters 95\% of flows as benign, from an escalated path where uncertain flows are analysed by four specialist agents (protocol, statistical, behavioural, temporal), a Devil's Advocate agent that argues for benign interpretation, and an orchestrator that synthesises consensus verdicts. Unlike traditional classifiers that produce opaque probability outputs, every AMATAS verdict includes full reasoning chains traceable to specific flow features and evidence.
+
+Evaluated across all fourteen attack types in the CICIDS2018 NetFlow v3 dataset at realistic class distributions (5\% attack prevalence), AMATAS achieves a mean F1 score of 92.9\% across thirteen detectable attack categories, with a false positive rate of 0\% in thirteen of fourteen experiments. The two-tier architecture reduces analysis cost by 94.6\%, from an estimated \$509.78 to \$27.35 for the complete evaluation corpus of 14,000 flows. A controlled ablation study demonstrates that the multi-agent architecture outperforms the best single-agent configuration by 25.2 F1 percentage points, and that external threat intelligence tools (via MCP) provide no measurable benefit on anonymised datasets. A v3 temporal clustering extension recovers 58\% recall on the otherwise undetectable Infiltration attack category by presenting agents with multi-flow clusters grouped by source IP.
+
+% ─── Tables of Contents ─────────────────────────────────
+\tableofcontents
+
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\cleardoublepage
+
+% =========================
+% Main Matter
+% =========================
+\mainmatter
+
+% ═══════════════════════════════════════════════════════════
+\chapter{Introduction}
+\label{ch:introduction}
+% ═══════════════════════════════════════════════════════════
+
+\section{Background and Motivation}
+\label{sec:background-motivation}
+This section establishes the growing volume of cyber threats and the fundamental limitations of current intrusion detection systems. Traditional signature-based systems such as Snort~\autocite{Roesch1999} and Suricata~\autocite{OISF2010} cannot detect novel attacks, while machine learning classifiers achieve high benchmark accuracy but produce opaque outputs that are difficult for analysts to interpret during incident response~\autocite{Hesford2024}. Large language models offer transparent reasoning but are too slow and costly to serve as primary detectors~\autocite{Houssel2024}. This tension between speed and interpretability motivates the hybrid architecture explored in this thesis.
+
+\section{Research Questions}
+\label{sec:research-questions}
+Four research questions guide the investigation:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{RQ1:} Can a multi-agent LLM architecture achieve detection accuracy comparable to traditional ML classifiers while providing transparent reasoning?
+  \item \textbf{RQ2:} How does a two-tier ML pre-filter and LLM pipeline architecture affect the cost--accuracy trade-off?
+  \item \textbf{RQ3:} What is the quality of reasoning chains produced by a multi-agent LLM NIDS compared to opaque ML classifier outputs?
+  \item \textbf{RQ4:} How does detection performance vary across attack types, and what are the fundamental limitations of flow-level LLM analysis?
+\end{itemize}
+
+\section{The AMATAS System}
+\label{sec:amatas-system}
+This section introduces AMATAS (Advanced Multi-Agent Threat Analysis System), a two-tier architecture combining a Random Forest pre-filter with a six-agent LLM pipeline. The system is described at a high level, establishing the three-phase agent execution model (four parallel specialists, Devil's Advocate review, orchestrator consensus) that is detailed in \chap{ch:architecture}.
+
+\section{Contributions}
+\label{sec:contributions}
+Five main contributions are presented: (1)~the first per-attack-type LLM-based NIDS evaluation at realistic class distributions with ablation confirming specialist necessity, (2)~a two-tier architecture achieving 94.6\% cost reduction while maintaining detection accuracy, (3)~a Devil's Advocate mechanism for structural false positive control, (4)~a complete explainability framework with traceable multi-agent reasoning chains, and (5)~a controlled comparison of multi-agent versus single-agent MCP-based detection.
+
+\section{Thesis Structure}
+\label{sec:thesis-structure}
+This section provides a roadmap of the remaining chapters and their coverage, from literature review through architecture, methodology, results, discussion, and conclusion.
+
+
+% ═══════════════════════════════════════════════════════════
+\chapter{Literature Review}
+\label{ch:litreview}
+% ═══════════════════════════════════════════════════════════
+
+\section{Traditional Machine Learning for Intrusion Detection}
+\label{sec:traditional-ml-ids}
+This section reviews the evolution from signature-based detection to machine learning approaches for network intrusion detection, covering benchmark datasets (KDD CUP 99, NSL-KDD, CICIDS2017/2018, NF-UQ-NIDS) and the persistent challenges of class imbalance~\autocite{Haixiang2017}, inflated accuracy claims on non-representative test sets~\autocite{Leevy2020}, and poor cross-dataset transferability~\autocite{Hesford2024}. Deep learning approaches including CNNs, LSTMs, and autoencoders are surveyed~\autocite{Ferrag2020}.
+
+\section{Large Language Models in Cybersecurity}
+\label{sec:llm-cybersecurity}
+This section surveys the application of large language models to cybersecurity tasks, including the dual-use risks identified by Gupta et al.~\autocite{Gupta2023} and the comprehensive survey by Feng and Sakurai~\autocite{FengSakurai2025}. Houssel et al.'s zero-shot evaluation finding approximately 50\% detection accuracy~\autocite{Houssel2024}, Guti\'{e}rrez-Galeano et al.'s fine-tuned T5 work~\autocite{GutierrezGaleano2025}, and Li et al.'s IDS-Agent~\autocite{Li2024} are examined to establish the current performance ceiling for LLM-based NIDS.
+
+\section{Multi-Agent LLM Architectures}
+\label{sec:multi-agent-architectures}
+This section reviews the theoretical foundations and empirical evidence for multi-agent LLM systems, grounded in Minsky's Society of Mind~\autocite{Minsky1986}. Du et al.'s work on improving factuality through multi-agent debate~\autocite{Du2023}, Chan et al.'s ChatEval demonstrating that diverse roles outperform uniform roles~\autocite{Chan2023}, and Yin et al.'s Devil's Advocate prompting for reducing hallucinations~\autocite{Yin2024} provide the direct theoretical basis for the AMATAS architecture.
+
+\section{Tool-Augmented LLMs and the Model Context Protocol}
+\label{sec:tool-augmented-llms}
+This section covers the progression from Chain-of-Thought prompting~\autocite{Wei2022} through ReAct~\autocite{Yao2023} and Toolformer~\autocite{Schick2023} to the Model Context Protocol (MCP)~\autocite{Anthropic2024}. The MCP comparison experiments in this thesis are motivated by the question of whether standardised external tool access improves detection quality on anonymised benchmark data.
+
+\section{Explainable AI for Network Security}
+\label{sec:explainable-ai}
+This section reviews post-hoc explanation methods including SHAP~\autocite{Lundberg2017} and LIME~\autocite{Ribeiro2016}, their limitations in adversarial settings~\autocite{Marino2018}, and how LLM reasoning chains offer a fundamentally different approach to explainability by generating explanations as part of the detection process rather than retrofitting them.
+
+\section{Hybrid Architectures and Cost Optimisation}
+\label{sec:hybrid-architectures}
+This section reviews existing hybrid ML--LLM architectures for network security, including the two-tier SDN/Kubernetes approach by Kalafatidis et al.~\autocite{Kalafatidis2025}, and the NetFlow standardisation work by Sarhan et al.~\autocite{Sarhan2021} that enables cross-dataset benchmarking.
+
+\section{Research Gap}
+\label{sec:research-gap}
+This section synthesises the literature to identify four research gaps: (1)~no prior work integrates multi-agent debate with NIDS, (2)~no existing system provides structural false positive control via adversarial mechanisms, (3)~no hybrid ML--LLM architecture has been evaluated at realistic class distributions across all attack types, and (4)~the marginal value of external tools on anonymised datasets has not been empirically quantified.
+
+
+% ═══════════════════════════════════════════════════════════
+\chapter{System Architecture}
+\label{ch:architecture}
+% ═══════════════════════════════════════════════════════════
+
+\section{Design Philosophy}
+\label{sec:design-philosophy}
+This section explains the multi-agent distributed analysis approach grounded in Minsky's Society of Mind~\autocite{Minsky1986}, with empirical support from Du et al.~\autocite{Du2023} on multi-agent debate and Chan et al.~\autocite{Chan2023} on role diversity. The adversarial Devil's Advocate mechanism is motivated by Sunstein's work on group polarisation~\autocite{Sunstein2002} and Yin et al.'s findings on devil's advocate prompting~\autocite{Yin2024}. A two-tier architecture diagram illustrates the complete system.
+
+\section{Tier 1: Random Forest Pre-Filter}
+\label{sec:tier1-rf}
+This section describes the Random Forest classifier~\autocite{Breiman2001} that serves as the cost-reduction layer, filtering 95\% of traffic as benign before LLM analysis.
+
+\subsection{Feature Set and Training Data}
+\label{sec:feature-set-training}
+The 12 numeric features selected from CICIDS2018 NetFlow v3 are listed and justified. The 80/20 partitioning strategy within the development split is described to address data integrity concerns.
+
+\subsection{Threshold Selection}
+\label{sec:threshold-selection}
+The 0.15 probability threshold is explained: it achieves 100\% recall on attacks in the development set while filtering approximately 95\% of benign flows, prioritising zero missed attacks over minimising false escalations.
+
+\section{Tier 2: Specialist Agents}
+\label{sec:tier2-specialists}
+This section details the four parallel specialist agents: Protocol (port/flag/protocol validation), Statistical (volumetric and timing anomaly detection), Behavioural (attack signature matching and MITRE ATT\&CK mapping), and Temporal (cross-flow IP pattern analysis with co-IP context). Their prompts, JSON output schemas, and model selection rationale (GPT-4o chosen over GPT-4o-mini and Claude Sonnet) are documented.
+
+\section{The Devil's Advocate Mechanism}
+\label{sec:devils-advocate}
+This section describes the adversarial Devil's Advocate agent, grounded in group polarisation literature~\autocite{Sunstein2002}. The agent reviews all specialist findings and constructs the strongest possible argument for benign interpretation, with a calibrated 30\% weight in the consensus calculation.
+
+\section{Orchestrator and Consensus}
+\label{sec:orchestrator-consensus}
+This section describes the orchestrator's consensus rules with Devil's Advocate counterweighting, the three-verdict classification (BENIGN, SUSPICIOUS, MALICIOUS), consensus scoring, MITRE technique consolidation, and reasoning synthesis.
+
+\section{Cost Architecture}
+\label{sec:cost-architecture}
+This section presents the empirical cost breakdown across six agents, highlighting the Temporal Agent's disproportionate cost (approximately 30\% of total) and the blended cost of 0.0014 USD per raw flow after Tier~1 filtering.
+
+\section{Temporal Clustering Module (v3 Extension)}
+\label{sec:temporal-clustering}
+This section describes the v3 extension that groups related flows by source IP within time windows before LLM analysis, hypothesising that richer temporal context improves recall on attack types (Infiltration, DoS-Hulk) where individual flows appear benign.
+
+
+% ═══════════════════════════════════════════════════════════
+\chapter{Experimental Methodology}
+\label{ch:methodology}
+% ═══════════════════════════════════════════════════════════
+
+\section{Dataset Description}
+\label{sec:dataset-description}
+This section describes the CICIDS2018 NetFlow v3 dataset~\autocite{Sharafaldin2018}: 20.12 million flows, 14 attack types, 87\% benign, 53 features. The laboratory generation caveats~\autocite{Kenyon2020, Ring2019} are acknowledged, and the three-way chronological split (7.04M development, 5.03M validation, 8.05M test) is detailed with justification from Cawley and Talbot~\autocite{Cawley2010}.
+
+\section{Batch Construction}
+\label{sec:batch-construction}
+This section describes the construction of 1000-flow evaluation batches (50 attack + 950 benign = 5\% attack prevalence) with seed~42 reproducibility and chronological-by-IP ordering, motivated by Sommer and Paxson's base-rate analysis~\autocite{Sommer2010}.
+
+\section{Evaluation Metrics}
+\label{sec:evaluation-metrics}
+This section defines recall as the primary metric (asymmetric cost of missed attacks), false positive rate as secondary (analyst fatigue), F1 as composite measure, and cost per flow and cost per true positive as economic indicators. A hard limit of \$5.00 per 1000-flow batch is established.
+
+\section{Stage 1 Experimental Protocol}
+\label{sec:stage1-protocol}
+This section describes the 14 independent experiments (one per attack type in the CICIDS2018 dataset), each running 1000 flows through the Tier~1 filter at threshold 0.15 followed by the six-agent LLM pipeline. Pipeline governance via \texttt{control.json} and live progress reporting via \texttt{live\_status.json} are documented.
+
+\section{MCP Comparison Protocol}
+\label{sec:mcp-comparison-protocol}
+This section describes three single-agent configurations evaluated for comparison: (A)~zero-shot with no tools and no prompt engineering, (B)~prompt-engineered with detailed attack signatures, and (C)~prompt-engineered with an MCP tool providing MITRE ATT\&CK lookups. The expected null result on anonymised data is motivated.
+
+\section{Data Integrity and Leakage Mitigation}
+\label{sec:data-integrity}
+This section addresses the potential for data leakage between the Random Forest training set and the evaluation batches, describing the 80/20 re-partitioning solution within the development split and validation on a held-out subset.
+
+\section{Reproducibility Measures}
+\label{sec:reproducibility}
+This section covers the reproducibility infrastructure: global seed~42, model versioning (pickle serialisation for RF, pinned GPT-4o snapshot \texttt{gpt-4o-2024-08-06}), feature set JSON storage, per-agent cost tracking, and timestamped execution logging.
+
+
+% ═══════════════════════════════════════════════════════════
+\chapter{Results}
+\label{ch:results}
+% ═══════════════════════════════════════════════════════════
+
+\section{Stage 1 Results Overview}
+\label{sec:results-overview}
+This section presents the comprehensive results table for all 14 per-attack-type experiments, reporting TP, FP, FN, TN, recall, FPR, F1, cost, and Tier~1 filter rate for each attack type. The aggregate performance is a mean F1 of 92.9\% across 13 detectable attack categories, with 0\% FPR on 13 of 14 experiments.
+
+\section{Cost Analysis}
+\label{sec:cost-analysis}
+This section provides a detailed per-agent cost breakdown, the Tier~1 versus Tier~2 cost distribution, and total Stage~1 expenditure (\$27.35 actual versus \$509.78 estimated for unfiltered analysis), demonstrating the 94.6\% cost reduction.
+
+\section{MCP Comparison Results}
+\label{sec:mcp-results}
+This section presents results for the three single-agent MCP configurations: zero-shot GPT-4o-mini (F1=18\%), prompt-engineered GPT-4o (F1=62\%), and prompt-engineered with MITRE tool (F1=58\%). The multi-agent AMATAS pipeline (F1=88\% on the same batch) is compared, establishing the 25.2 percentage point advantage.
+
+\section{Agent Ablation Study}
+\label{sec:agent-ablation}
+This section presents systematic ablation results showing the contribution of each agent: the Temporal Agent's critical importance (44pp recall drop on SSH-Bruteforce when removed), the two-agent configuration's degradation to 0--12\% recall, and the Devil's Advocate's attack-type-dependent effect (40pp recall gain on DDoS-HOIC when removed, versus 0\% FPR maintenance on other types).
+
+\section{Tier 1 Random Forest Validation}
+\label{sec:tier1-validation}
+This section presents the threshold calibration results on the development holdout set and validation partition performance per attack type, confirming 100\% recall on attacks at the 0.15 threshold. A random filter control experiment demonstrates that trained RF selection (100\% recall at 7\% selection rate) outperforms random selection (0\% recall at 50\% selection rate).
+
+\section{Temporal Clustering (v3) Results}
+\label{sec:v3-results}
+This section presents the v3 temporal clustering results, showing recovery of 58\% recall on the previously undetectable Infiltration attack category when agents analyse multi-flow clusters grouped by source IP, at the cost of an elevated 19.2\% false positive rate.
+
+
+% ═══════════════════════════════════════════════════════════
+\chapter{Discussion}
+\label{ch:discussion}
+% ═══════════════════════════════════════════════════════════
+
+\section{Interpreting the Detection Performance}
+\label{sec:interpreting-performance}
+This section compares AMATAS performance against related work: Houssel et al.'s 50\% recall~\autocite{Houssel2024}, Guti\'{e}rrez-Galeano et al.'s 99.84\% accuracy without reasoning~\autocite{GutierrezGaleano2025}, and Li et al.'s IDS-Agent (F1=0.75)~\autocite{Li2024}. Attack-type variation is analysed: high scores on brute-force and DoS attacks with distinctive signatures, moderate performance on DDoS-HOIC due to feature overlap, and zero recall on Infiltration under per-flow analysis.
+
+\section{The Explainability Advantage}
+\label{sec:explainability-advantage}
+This section provides a detailed walkthrough of a representative example showing six distinct agent analyses converging on a correct verdict, demonstrating the qualitative advantage over SHAP/LIME post-hoc explanations. The reasoning chains are shown to be generated as part of the detection process rather than retrofitted~\autocite{Wei2022}.
+
+\section{The False Positive Problem Resolved}
+\label{sec:fpr-resolved}
+This section discusses the 0\% FPR achievement in the context of alert fatigue~\autocite{Alahmadi2020} and analyses the Devil's Advocate mechanism's calibration, including the finding that it is counterproductive on DDoS-HOIC (reducing recall by 40pp) while essential for false positive control on other attack types.
+
+\section{Limitations and Failure Modes}
+\label{sec:limitations}
+This section analyses the key failure modes and limitations of the system.
+
+\subsection{The Infiltration Failure}
+Individual Infiltration flows are statistically indistinguishable from benign traffic at the per-flow level, producing 0\% recall. This motivates the v3 temporal clustering extension.
+
+\subsection{DDoS-HOIC and Feature Overlap}
+HOIC's traffic randomisation pushes flow features into the legitimate traffic distribution, achieving only 58\% recall (F1=72\%).
+
+\subsection{The Semantic Gap in Flow-Level Analysis}
+The fundamental limitation of analysing individual NetFlow records is discussed in the context of Sommer and Paxson's semantic gap~\autocite{Sommer2010} and the closed-world assumption.
+
+\subsection{MCP Tool Utility on Anonymised Datasets}
+The null tool result (0.3pp F1 difference) validates the design choice to rely on multi-agent reasoning rather than external enrichment on anonymised data, consistent with tool-related risks identified by Maloyan et al.~\autocite{Maloyan2025}.
+
+\subsection{Model Selection Constraints and Generalisability}
+GPT-4o-mini's systematic bias, Claude Sonnet's rate limits, and the CICIDS2018 laboratory generation limitations~\autocite{Kenyon2020, Ring2019} are discussed.
+
+\section{Security Considerations for MCP-Enhanced Detection Systems}
+\label{sec:mcp-security}
+This section discusses tool injection risk, permission escalation, and data exfiltration concerns for MCP-enhanced NIDS, referencing the ATTESTMCP framework~\autocite{Maloyan2025}.
+
+\section{Threats to Validity}
+\label{sec:threats-to-validity}
+Internal threats (single seed, partition bias), construct validity (three-class collapse to binary), and external threats (laboratory dataset, GPT-4o exclusivity, model family homogeneity) are discussed.
+
+
+% ═══════════════════════════════════════════════════════════
+\chapter{Conclusion}
+\label{ch:conclusion}
+% ═══════════════════════════════════════════════════════════
+
+\section{Summary of Contributions}
+\label{sec:summary-contributions}
+This section summarises the five contributions: (1)~the first per-attack-type LLM-based NIDS evaluation at realistic class distributions, (2)~a 94.6\% cost reduction via the two-tier architecture, (3)~a Devil's Advocate mechanism achieving 0\% FPR on 13 of 14 attack types, (4)~a complete explainability framework with traceable multi-agent reasoning, and (5)~a controlled ablation establishing the 25.2pp F1 advantage of multi-agent over single-agent analysis.
+
+\section{Answers to the Research Questions}
+\label{sec:rq-answers}
+Each research question is answered with reference to the experimental evidence:
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{RQ1:} Mean F1 of 92.9\% across 13 detectable types, requiring multi-agent specialisation (two-agent configurations degrade to 0--12\% recall).
+  \item \textbf{RQ2:} 94.6\% cost reduction (\$27.35 vs \$509.78) with 100\% attack recall maintained at the Tier~1 threshold.
+  \item \textbf{RQ3:} Reasoning chains are generated as part of detection, incorporate domain knowledge, and present multi-perspective analysis with explicit counter-arguments.
+  \item \textbf{RQ4:} Performance ranges from F1=100\% (distinctive signatures) to F1=0\% (Infiltration), with v3 clustering recovering 58\% recall at the cost of 19.2\% FPR.
+\end{itemize}
+
+\section{Future Work}
+\label{sec:future}
+Future directions include: v3 temporal clustering refinement (DNS triggers, confidence calibration, Infiltration-specific agent design), adaptive agent weighting (confidence-gated Devil's Advocate weight), evaluation across frontier LLMs (Claude Sonnet 4, Llama-3.3-70B, Gemini 1.5 Pro), production MCP deployment with tool response verification, held-out test partition evaluation, and a formal user study on explainability quality.
+
+
+% =========================
+% Appendices
+% =========================
+\appendix
+
+\chapter{System Prompts and Agent Configuration}
+\label{app:prompts}
+This appendix reproduces the full system prompts for each of the six AMATAS agents, the JSON output schemas, and the orchestrator consensus weighting configuration.
+
+\chapter{Complete Stage 1 Results}
+\label{app:stage1-results}
+This appendix provides the full per-flow results for all 14 Stage~1 experiments, including per-agent verdicts, confidence scores, reasoning chains, and cost breakdowns.
+
+% =========================
+% Bibliography
+% =========================
+\begingroup
+\small
+\setlength{\bibitemsep}{0.5em}
+\printbibliography[heading=bibintoc,title={References}]
+\endgroup
+
+\end{document}
