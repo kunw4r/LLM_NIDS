@@ -71,6 +71,36 @@ const WHAT_WAS_DONE = [
   },
 ];
 
+const ABLATION_FINDINGS = {
+  intro: "Systematically disabled agents one at a time across 3 attack types (FTP-BruteForce, SSH-Bruteforce, DDOS-HOIC) to measure each agent's contribution.",
+  conditions: [
+    { label: "Full AMATAS (6 agents)", ftp: 100, ssh: 99, hoic: 72, color: "#16a34a" },
+    { label: "No Devil's Advocate", ftp: 100, ssh: 100, hoic: 98, color: "#ef4444" },
+    { label: "No Temporal Agent", ftp: 97, ssh: 69, hoic: 35, color: "#ec4899" },
+    { label: "No Statistical Agent", ftp: 100, ssh: 100, hoic: 90, color: "#8b5cf6" },
+    { label: "4-Agent (no DA/Stats)", ftp: 100, ssh: 98, hoic: 94, color: "#f59e0b" },
+    { label: "2-Agent (Protocol+Orch)", ftp: 21, ssh: 0, hoic: 18, color: "#6b7280" },
+  ],
+  keyFindings: [
+    {
+      title: "Temporal agent is the most critical",
+      detail: "Removing it drops SSH from 99% to 69% F1 and HOIC from 72% to 35%. It provides cross-flow pattern analysis that no other agent replicates. It's also the most expensive (30% of cost).",
+    },
+    {
+      title: "Devil's Advocate suppresses HOIC recall",
+      detail: "Removing DA from HOIC increases F1 from 72% to 98%. The DA argues too aggressively that HTTP-like DDoS flows are benign. DA weight (30%) may need per-attack-type calibration.",
+    },
+    {
+      title: "2-agent minimum fails completely",
+      detail: "Protocol + Orchestrator alone: 0% on SSH, 21% on FTP, 18% on HOIC. Multi-agent isn't just a nice-to-have — below 4 agents the system stops working.",
+    },
+    {
+      title: "Statistical agent is redundant on brute-force",
+      detail: "Removing it has zero impact on FTP and SSH (F1 stays 100%). Its value concentrates on ambiguous attacks like HOIC where volume anomalies matter.",
+    },
+  ],
+};
+
 const CRITICAL_QUESTIONS = [
   {
     question: "The thesis proposal was MCP-focused, but the actual contribution is multi-agent architecture. Is this pivot acceptable, or does the thesis need to be reframed around MCP more explicitly?",
@@ -95,6 +125,11 @@ const CRITICAL_QUESTIONS = [
   {
     question: "GPT-4o is the only production model tested. Should I test Claude or other models for comparison, or is the single-model result sufficient?",
     context: "Phase 4 tested Haiku (failed), GPT-4o-mini (too aggressive), and Sonnet (rate-limited). But the production Stage 1 results are all GPT-4o. A reviewer might ask about model dependence.",
+    severity: "medium",
+  },
+  {
+    question: "The ablation shows Devil's Advocate hurts HOIC recall (72% with DA vs 98% without). Should the thesis recommend per-attack-type DA weighting, or does this undermine the 'one architecture fits all' argument?",
+    context: "DA works well on brute-force (prevents false positives) but over-corrects on DDoS that mimics legitimate HTTP. A fixed 30% DA weight may not be optimal. This is either a limitation to acknowledge or future work to propose.",
     severity: "medium",
   },
   {
@@ -199,6 +234,50 @@ export default function SupervisorBriefing({ onNavigateToTab }) {
             <li className="text-sm"><strong>4.</strong> Faithfulness audit (89.8%) + SHAP comparison proves the explanations are real, not hallucinated</li>
             <li className="text-sm"><strong>5.</strong> Ablation + clustering prove which components matter and where the architecture breaks</li>
           </ol>
+        </div>
+      </div>
+
+      {/* Ablation Study */}
+      <div className="border border-gray-200 rounded-lg p-6">
+        <h3 className="text-base font-bold tracking-tight mb-1">Ablation Study: Which Agents Matter?</h3>
+        <p className="text-xs text-gray-500 mb-4">{ABLATION_FINDINGS.intro}</p>
+
+        {/* F1 comparison table */}
+        <div className="border border-gray-200 rounded-lg overflow-hidden mb-4">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="px-3 py-2 text-left font-semibold text-xs text-gray-500">Condition</th>
+                <th className="px-3 py-2 text-center font-semibold text-xs text-gray-500">FTP F1</th>
+                <th className="px-3 py-2 text-center font-semibold text-xs text-gray-500">SSH F1</th>
+                <th className="px-3 py-2 text-center font-semibold text-xs text-gray-500">HOIC F1</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ABLATION_FINDINGS.conditions.map(c => (
+                <tr key={c.label} className="border-b border-gray-100">
+                  <td className="px-3 py-2 font-medium text-sm" style={{ color: c.color }}>{c.label}</td>
+                  {[c.ftp, c.ssh, c.hoic].map((v, i) => (
+                    <td key={i} className="px-3 py-2 text-center">
+                      <span className="font-bold" style={{ color: v >= 90 ? "#16a34a" : v >= 50 ? "#d97706" : "#dc2626" }}>
+                        {v}%
+                      </span>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Key findings */}
+        <div className="space-y-3">
+          {ABLATION_FINDINGS.keyFindings.map((f, i) => (
+            <div key={i} className="border-l-[3px] border-gray-300 pl-4">
+              <div className="text-sm font-bold text-gray-900">{f.title}</div>
+              <div className="text-xs text-gray-600 leading-relaxed">{f.detail}</div>
+            </div>
+          ))}
         </div>
       </div>
 
