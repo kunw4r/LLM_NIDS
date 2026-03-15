@@ -40,14 +40,26 @@ ENV/
 
 # Dataset files (too large for git)
 datasets/*.csv
+data/datasets/
+data/f78acbaa*/
 f78acbaa2afe1595_NFV3DATA-A11964_A11964/data/*.csv
 
 # Keep directory structure but ignore large CSVs
 !datasets/README.md
 
+# Models (large binary files)
+models/
+
+# Node modules
+node_modules/
+
 # OS
 .DS_Store
 Thumbs.db
+
+# LaTeX auxiliary
+*.bbl
+*.blg
 
 # Logs
 *.log
