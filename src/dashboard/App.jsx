@@ -22,6 +22,7 @@ import ExperimentDetail from "./components/results/ExperimentDetail";
 import MCPAblation from "./components/comparison/MCPAblation";
 import AblationStudy from "./components/results/AblationStudy";
 
+import FlowInspector from "./components/results/FlowInspector";
 import { STAGE1_ID_MAP } from "./data/constants";
 
 // Explainability
@@ -78,11 +79,13 @@ export default function App() {
 
   // Experiment detail page state
   const [detailAttackType, setDetailAttackType] = useState(null);
+  const [mcpInspecting, setMcpInspecting] = useState(false);
 
   const subTab = subTabs[topTab] || "";
   const setSubTab = (val) => {
     setSubTabs(prev => ({ ...prev, [topTab]: val }));
     setDetailAttackType(null);
+    setMcpInspecting(false);
   };
 
   // Live status
@@ -121,6 +124,13 @@ export default function App() {
   const openInspector = useCallback((expId) => {
     inspector.setInspectorSource(expId);
     inspector.loadInspectorData(expId);
+  }, [inspector]);
+
+  // Open MCP flow inspector
+  const openMcpInspector = useCallback((expId) => {
+    inspector.setInspectorSource(expId);
+    inspector.loadInspectorData(expId);
+    setMcpInspecting(true);
   }, [inspector]);
 
   // Navigate to Results > Stage 1
@@ -205,8 +215,19 @@ export default function App() {
       {topTab === "results" && subTab === "clustering" && (
         <ClusteringResults onInspectFlows={openInspector} />
       )}
-      {topTab === "results" && subTab === "mcp" && (
-        <MCPAblation s1={s1} onInspectFlows={openInspector} />
+      {topTab === "results" && subTab === "mcp" && !mcpInspecting && (
+        <MCPAblation s1={s1} onInspectFlows={openMcpInspector} />
+      )}
+      {topTab === "results" && subTab === "mcp" && mcpInspecting && (
+        <div>
+          <button
+            onClick={() => setMcpInspecting(false)}
+            className="mb-4 px-3 py-1.5 rounded-md text-xs font-medium border border-gray-200 bg-white hover:border-gray-300 cursor-pointer"
+          >
+            &larr; Back to MCP Comparison
+          </button>
+          <FlowInspector inspector={inspector} />
+        </div>
       )}
 
       {/* -- Explainability ---------------------------------------- */}

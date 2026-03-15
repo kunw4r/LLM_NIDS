@@ -15,7 +15,7 @@ export const STAGE1_SUMMARY = {
     { attack_type: "Brute_Force_-XSS", status: "complete", recall: 84, fpr: 0, f1: 89, cost: 2.09, cost_per_tp: 0.05, confusion: { tp: 42, fp: 2, tn: 948, fn: 8 } },
     { attack_type: "SQL_Injection", status: "complete", recall: 98, fpr: 0, f1: 96, cost: 1.99, cost_per_tp: 0.04, confusion: { tp: 49, fp: 3, tn: 947, fn: 1 } },
   ],
-  overall: { best_f1: 100, total_flows: 14000, total_cost: 27.35, avg_fpr: 0 },
+  overall: { best_f1: 100, best_detected: "FTP-BruteForce (+ 3 others)", total_flows: 14000, total_cost: 27.35, avg_fpr: 0.09 },
 };
 
 export const AGENT_COST_DATA = {
