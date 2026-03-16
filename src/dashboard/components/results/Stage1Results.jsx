@@ -3,6 +3,7 @@ import { AGENT_COST_DATA, AGENT_COST_PER_EXPERIMENT } from "../../data/stage1";
 import { RF_TRAINED_TYPES, RF_CAUGHT_UNSEEN, DATASET_SPLITS, AGENT_KEYS, STAGE1_ID_MAP } from "../../data/constants";
 import { ATTACK_DESCRIPTIONS } from "../../data/attacks";
 import { dollar } from "../../lib/format";
+import ExplainabilityShowcase from "./ExplainabilityShowcase";
 
 export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectFlows, onOpenDetail, showCostBreakdown, setShowCostBreakdown }) {
   const [expandedS1Rows, setExpandedS1Rows] = useState({});
@@ -534,6 +535,11 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
             </div>
           );
         })()}
+
+      {/* ── EXPLAINABILITY SHOWCASE ─────────────────────────── */}
+      <div className="mt-8">
+        <ExplainabilityShowcase />
+      </div>
     </div>
   );
 }

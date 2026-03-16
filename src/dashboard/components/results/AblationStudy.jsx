@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ABLATION_CONDITIONS } from "../../data/ablation";
 import { RESULTS_BASE } from "../../data/constants";
 import RoutingControl from "./RoutingControl";
+import ExplainabilityShowcase from "./ExplainabilityShowcase";
 
 const METRIC_LABELS = { recall: "Recall", fpr: "FPR", f1: "F1", cost: "Cost" };
 
@@ -346,6 +347,16 @@ export default function AblationStudy() {
           </div>
         </>
       )}
+
+      {/* ── EXPLAINABILITY: Why DA Hurts on HOIC ──────────── */}
+      <div className="mt-8 mb-10">
+        <ExplainabilityShowcase filter="DDOS_attack-HOIC" />
+        <p className="text-xs text-gray-500 mt-2 italic">
+          This HOIC example demonstrates exactly why removing the Devil's Advocate improves recall from 58% to 98%:
+          the DA's "normal web browsing" argument is technically correct for each individual flow, but systematically
+          suppresses detection of the coordinated DDoS pattern.
+        </p>
+      </div>
 
       {/* Routing validation — paired experiment */}
       <div className="mt-10">
