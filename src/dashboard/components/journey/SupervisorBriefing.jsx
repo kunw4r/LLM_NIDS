@@ -72,31 +72,32 @@ const WHAT_WAS_DONE = [
 ];
 
 const ABLATION_FINDINGS = {
-  intro: "Systematically disabled agents one at a time across 3 attack types (FTP-BruteForce, SSH-Bruteforce, DDOS-HOIC) to measure each agent's contribution.",
+  intro: "Systematically disabled agents one at a time across 5 attack types (FTP-BruteForce, SSH-Bruteforce, DDOS-HOIC, Bot, DoS-Slowloris) to measure each agent's contribution. 30 conditions total.",
+  attacks: ["FTP", "SSH", "HOIC", "Bot", "Slowloris"],
   conditions: [
-    { label: "Full AMATAS (6 agents)", ftp: 100, ssh: 99, hoic: 72, color: "#16a34a" },
-    { label: "No Devil's Advocate", ftp: 100, ssh: 100, hoic: 98, color: "#ef4444" },
-    { label: "No Temporal Agent", ftp: 97, ssh: 69, hoic: 35, color: "#ec4899" },
-    { label: "No Statistical Agent", ftp: 100, ssh: 100, hoic: 90, color: "#8b5cf6" },
-    { label: "4-Agent (no DA/Stats)", ftp: 100, ssh: 98, hoic: 94, color: "#f59e0b" },
-    { label: "2-Agent (Protocol+Orch)", ftp: 21, ssh: 0, hoic: 18, color: "#6b7280" },
+    { label: "Full AMATAS (6 agents)", ftp: 100, ssh: 99, hoic: 72, bot: 85, slowloris: 100, color: "#16a34a" },
+    { label: "No Devil's Advocate", ftp: 100, ssh: 100, hoic: 98, bot: 92, slowloris: 100, color: "#ef4444" },
+    { label: "No Temporal Agent", ftp: 97, ssh: 69, hoic: 35, bot: 57, slowloris: 78, color: "#ec4899" },
+    { label: "No Statistical Agent", ftp: 100, ssh: 100, hoic: 90, bot: 87, slowloris: 100, color: "#8b5cf6" },
+    { label: "4-Agent (no DA/Temporal)", ftp: 100, ssh: 98, hoic: 94, bot: 85, slowloris: 100, color: "#f59e0b" },
+    { label: "2-Agent (Protocol+Orch)", ftp: 21, ssh: 0, hoic: 18, bot: 11, slowloris: 28, color: "#6b7280" },
   ],
   keyFindings: [
     {
-      title: "Temporal agent is the most critical",
-      detail: "Removing it drops SSH from 99% to 69% F1 and HOIC from 72% to 35%. It provides cross-flow pattern analysis that no other agent replicates. It's also the most expensive (30% of cost).",
+      title: "Temporal agent is critical across ALL attack types",
+      detail: "Removing it drops F1 by 22-37pp on every non-trivial attack: SSH 99%→69%, HOIC 72%→35%, Bot 85%→57%, Slowloris 100%→78%. Even on FTP (easiest) it drops 3pp. Cross-flow pattern analysis is irreplaceable.",
     },
     {
-      title: "Devil's Advocate suppresses HOIC recall",
-      detail: "Removing DA from HOIC increases F1 from 72% to 98%. The DA argues too aggressively that HTTP-like DDoS flows are benign. DA weight (30%) may need per-attack-type calibration.",
+      title: "Devil's Advocate hurts on attacks that mimic legitimate traffic",
+      detail: "Removing DA improves HOIC from 72% to 98% F1 (+26pp) and Bot from 85% to 92% (+7pp). Both attacks use normal-looking protocols (HTTP, port 8080). DA over-argues for benign interpretation. No impact on brute-force or Slowloris.",
     },
     {
-      title: "2-agent minimum fails completely",
-      detail: "Protocol + Orchestrator alone: 0% on SSH, 21% on FTP, 18% on HOIC. Multi-agent isn't just a nice-to-have — below 4 agents the system stops working.",
+      title: "2-agent minimum fails on everything",
+      detail: "Protocol + Orchestrator alone: 0% SSH, 11% Bot, 18% HOIC, 21% FTP, 28% Slowloris. The system needs at least 4 agents to function. Multi-agent isn't incremental — it's qualitative.",
     },
     {
-      title: "Statistical agent is redundant on brute-force",
-      detail: "Removing it has zero impact on FTP and SSH (F1 stays 100%). Its value concentrates on ambiguous attacks like HOIC where volume anomalies matter.",
+      title: "Statistical agent is expendable on most attacks",
+      detail: "Removing it has zero F1 impact on FTP, SSH, and Slowloris. Minor drop on Bot (85%→87%) and moderate on HOIC (72%→90% — actually improves). It's the least critical specialist.",
     },
   ],
 };
@@ -248,16 +249,16 @@ export default function SupervisorBriefing({ onNavigateToTab }) {
             <thead>
               <tr className="bg-gray-50 border-b border-gray-200">
                 <th className="px-3 py-2 text-left font-semibold text-xs text-gray-500">Condition</th>
-                <th className="px-3 py-2 text-center font-semibold text-xs text-gray-500">FTP F1</th>
-                <th className="px-3 py-2 text-center font-semibold text-xs text-gray-500">SSH F1</th>
-                <th className="px-3 py-2 text-center font-semibold text-xs text-gray-500">HOIC F1</th>
+                {ABLATION_FINDINGS.attacks.map(a => (
+                  <th key={a} className="px-3 py-2 text-center font-semibold text-xs text-gray-500">{a} F1</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {ABLATION_FINDINGS.conditions.map(c => (
                 <tr key={c.label} className="border-b border-gray-100">
-                  <td className="px-3 py-2 font-medium text-sm" style={{ color: c.color }}>{c.label}</td>
-                  {[c.ftp, c.ssh, c.hoic].map((v, i) => (
+                  <td className="px-3 py-2 font-medium text-sm whitespace-nowrap" style={{ color: c.color }}>{c.label}</td>
+                  {[c.ftp, c.ssh, c.hoic, c.bot, c.slowloris].map((v, i) => (
                     <td key={i} className="px-3 py-2 text-center">
                       <span className="font-bold" style={{ color: v >= 90 ? "#16a34a" : v >= 50 ? "#d97706" : "#dc2626" }}>
                         {v}%

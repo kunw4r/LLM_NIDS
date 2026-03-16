@@ -1,6 +1,6 @@
 {
   "experiment": "Agent Ablation Study",
-  "date": "2026-03-03T03:59:06.047064",
+  "date": "2026-03-16T13:17:34.055938",
   "description": "Quantify each agent's contribution by systematically disabling agents",
   "conditions": {
     "full_amatas": {
@@ -332,6 +332,226 @@
         "fn": 5
       },
       "cost": 0.8726525
+    },
+    "full_amatas_bot": {
+      "label": "Full AMATAS (6 agents)",
+      "attack_type": "Bot",
+      "disabled_agents": [],
+      "recall": 0.82,
+      "precision": 0.8723404255319149,
+      "f1": 0.8453608247422681,
+      "fpr": 0.00631578947368421,
+      "confusion": {
+        "tp": 41,
+        "fp": 6,
+        "tn": 944,
+        "fn": 9
+      },
+      "cost": 2.2951175000000004
+    },
+    "no_devils_advocate_bot": {
+      "label": "No Devil's Advocate",
+      "attack_type": "Bot",
+      "disabled_agents": [
+        "devils_advocate"
+      ],
+      "recall": 0.98,
+      "precision": 0.8596491228070176,
+      "f1": 0.9158878504672898,
+      "fpr": 0.008421052631578947,
+      "confusion": {
+        "tp": 49,
+        "fp": 8,
+        "tn": 942,
+        "fn": 1
+      },
+      "cost": 1.7691850000000002
+    },
+    "no_temporal_bot": {
+      "label": "No Temporal Agent",
+      "attack_type": "Bot",
+      "disabled_agents": [
+        "temporal"
+      ],
+      "recall": 0.42,
+      "precision": 0.875,
+      "f1": 0.5675675675675675,
+      "fpr": 0.003157894736842105,
+      "confusion": {
+        "tp": 21,
+        "fp": 3,
+        "tn": 947,
+        "fn": 29
+      },
+      "cost": 1.7748575000000002
+    },
+    "no_statistical_bot": {
+      "label": "No Statistical Agent",
+      "attack_type": "Bot",
+      "disabled_agents": [
+        "statistical"
+      ],
+      "recall": 0.88,
+      "precision": 0.8627450980392157,
+      "f1": 0.8712871287128714,
+      "fpr": 0.007368421052631579,
+      "confusion": {
+        "tp": 44,
+        "fp": 7,
+        "tn": 943,
+        "fn": 6
+      },
+      "cost": 2.0146925
+    },
+    "two_agent_bot": {
+      "label": "2-Agent (Protocol + Orchestrator)",
+      "attack_type": "Bot",
+      "disabled_agents": [
+        "behavioural",
+        "devils_advocate",
+        "statistical",
+        "temporal"
+      ],
+      "recall": 0.06,
+      "precision": 0.75,
+      "f1": 0.1111111111111111,
+      "fpr": 0.0010526315789473684,
+      "confusion": {
+        "tp": 3,
+        "fp": 1,
+        "tn": 949,
+        "fn": 47
+      },
+      "cost": 0.6640975
+    },
+    "four_agent_bot": {
+      "label": "4-Agent (no DA + Temporal)",
+      "attack_type": "Bot",
+      "disabled_agents": [
+        "devils_advocate",
+        "temporal"
+      ],
+      "recall": 0.86,
+      "precision": 0.8431372549019608,
+      "f1": 0.8514851485148515,
+      "fpr": 0.008421052631578947,
+      "confusion": {
+        "tp": 43,
+        "fp": 8,
+        "tn": 942,
+        "fn": 7
+      },
+      "cost": 1.2522325
+    },
+    "full_amatas_slowloris": {
+      "label": "Full AMATAS (6 agents)",
+      "attack_type": "DoS_attacks-Slowloris",
+      "disabled_agents": [],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "cost": 2.16412
+    },
+    "no_devils_advocate_slowloris": {
+      "label": "No Devil's Advocate",
+      "attack_type": "DoS_attacks-Slowloris",
+      "disabled_agents": [
+        "devils_advocate"
+      ],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "cost": 1.7775125
+    },
+    "no_temporal_slowloris": {
+      "label": "No Temporal Agent",
+      "attack_type": "DoS_attacks-Slowloris",
+      "disabled_agents": [
+        "temporal"
+      ],
+      "recall": 0.64,
+      "precision": 1.0,
+      "f1": 0.7804878048780487,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 32,
+        "fp": 0,
+        "tn": 950,
+        "fn": 18
+      },
+      "cost": 1.25387
+    },
+    "no_statistical_slowloris": {
+      "label": "No Statistical Agent",
+      "attack_type": "DoS_attacks-Slowloris",
+      "disabled_agents": [
+        "statistical"
+      ],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "cost": 1.9460075000000001
+    },
+    "two_agent_slowloris": {
+      "label": "2-Agent (Protocol + Orchestrator)",
+      "attack_type": "DoS_attacks-Slowloris",
+      "disabled_agents": [
+        "behavioural",
+        "devils_advocate",
+        "statistical",
+        "temporal"
+      ],
+      "recall": 0.16,
+      "precision": 1.0,
+      "f1": 0.2758620689655173,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 8,
+        "fp": 0,
+        "tn": 950,
+        "fn": 42
+      },
+      "cost": 0.4502225
+    },
+    "four_agent_slowloris": {
+      "label": "4-Agent (no DA + Temporal)",
+      "attack_type": "DoS_attacks-Slowloris",
+      "disabled_agents": [
+        "devils_advocate",
+        "temporal"
+      ],
+      "recall": 1.0,
+      "precision": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "cost": 0.8721875000000001
     }
   }
 }
