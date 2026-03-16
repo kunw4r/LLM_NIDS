@@ -98,11 +98,66 @@ export default function AblationStudy() {
         <h2 className="text-xl sm:text-2xl font-bold tracking-tight">Agent Ablation Study</h2>
         <span className="text-xs text-gray-400">Experiment 1</span>
       </div>
-      <p className="text-sm text-gray-500 mb-6 max-w-2xl">
+      <p className="text-sm text-gray-500 mb-5 max-w-2xl">
         Systematic removal of agents to quantify each one's contribution.
         Starting from the full 6-agent configuration with perfect detection,
         any degradation from agent removal reveals that agent's value.
       </p>
+
+      {/* ── EXPERIMENT NARRATIVE — What / Gained / Conclude / Justify ── */}
+      <div className="border border-blue-100 bg-blue-50/30 rounded-lg p-5 mb-6 space-y-4">
+        <div>
+          <h3 className="text-xs font-semibold text-blue-800 uppercase tracking-wide mb-1.5">What We Tested</h3>
+          <p className="text-sm text-gray-700 leading-relaxed m-0">
+            Six configurations across <strong>3 attack types</strong> (FTP-BruteForce, SSH-Bruteforce, DDOS-HOIC) —
+            chosen to represent easy (FTP: clear port signature), moderate (SSH: similar to benign SSH), and hard
+            (HOIC: high-volume but ambiguous flows). Each configuration disables specific agents to measure their
+            individual contribution: full 6-agent, remove DA, remove Temporal, remove Statistical, 4-agent (no DA + Temporal),
+            and 2-agent (Protocol + Orchestrator only). <strong>18 experiments total</strong>, all on 1,000-flow batches at 5% attack prevalence.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-xs font-semibold text-green-800 uppercase tracking-wide mb-1.5">What We Gained</h3>
+          <div className="text-sm text-gray-700 leading-relaxed space-y-1">
+            <p className="m-0">
+              <strong>Temporal agent is the most impactful specialist</strong> — removing it costs 6pp recall on FTP
+              but 44pp on SSH and 36pp on HOIC. Its value scales with how much attacks rely on cross-flow IP patterns
+              rather than single-flow signatures. <strong>Devil's Advocate is a double-edged sword:</strong> on HOIC,
+              removing DA <em>increases</em> recall from 58% to 98% (+40pp) because the 30% adversarial weight
+              successfully argues that ambiguous DDoS flows are benign. The <strong>4-agent configuration</strong> (no DA + Temporal)
+              achieves near-full performance at 59% lower cost ($0.87 vs $2.13).
+            </p>
+            <p className="m-0">
+              <strong>2-agent collapse:</strong> Protocol + Orchestrator alone drops to 12% (FTP), 0% (SSH), 10% (HOIC) —
+              proving that multi-perspective analysis is not optional but architecturally essential.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-xs font-semibold text-purple-800 uppercase tracking-wide mb-1.5">What We Conclude</h3>
+          <p className="text-sm text-gray-700 leading-relaxed m-0">
+            Agent contribution is <strong>attack-type dependent</strong>, not uniform. The temporal agent is critical
+            for attacks where individual flows lack distinctive signatures (SSH, DDoS) but redundant for clear-signal
+            attacks (FTP). The Devil's Advocate is a net negative on ambiguous attacks — its adversarial weight suppresses
+            true positives when the attack/benign boundary is unclear. This motivates an <strong>adaptive agent selection</strong>
+            architecture where the Tier 1 RF confidence score determines which agents are activated per flow.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Justification</h3>
+          <p className="text-sm text-gray-700 leading-relaxed m-0">
+            The ablation study directly addresses the thesis question of whether multi-agent consensus adds value
+            beyond a single classifier. The 2-agent collapse (0-12% recall) vs 6-agent performance (58-100%)
+            proves that <strong>diverse analytical perspectives are architecturally necessary</strong> — not a
+            stylistic choice. The per-agent cost analysis ($0.30-0.40/agent/batch) provides the economic basis for
+            optimizing the pipeline: a dynamic 4-agent configuration could save 59% of LLM cost while maintaining
+            95%+ recall on 12 of 14 attack types.
+          </p>
+        </div>
+      </div>
 
       {/* Attack type toggle */}
       <div className="flex gap-2 mb-6">
