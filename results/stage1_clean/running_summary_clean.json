@@ -1,0 +1,247 @@
+{
+  "experiments": [
+    {
+      "attack_type": "Bot",
+      "status": "complete",
+      "recall": 0,
+      "fpr": 0.0,
+      "f1": 0,
+      "cost": 0.0,
+      "cost_per_tp": null,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 950,
+        "fn": 50
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "Brute_Force_-Web",
+      "status": "complete",
+      "recall": 0,
+      "fpr": 0.0,
+      "f1": 0,
+      "cost": 0.03,
+      "cost_per_tp": null,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 950,
+        "fn": 50
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "Brute_Force_-XSS",
+      "status": "complete",
+      "recall": 0,
+      "fpr": 0.0,
+      "f1": 0,
+      "cost": 0.0,
+      "cost_per_tp": null,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 950,
+        "fn": 50
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "DDOS_attack-HOIC",
+      "status": "complete",
+      "recall": 70,
+      "fpr": 0.0,
+      "f1": 82,
+      "cost": 1.54,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 35,
+        "fp": 0,
+        "tn": 950,
+        "fn": 15
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "DDOS_attack-LOIC-UDP",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.0,
+      "f1": 100,
+      "cost": 1.62,
+      "cost_per_tp": 0.03,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "DDoS_attacks-LOIC-HTTP",
+      "status": "complete",
+      "recall": 88,
+      "fpr": 0.1,
+      "f1": 93,
+      "cost": 1.61,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 44,
+        "fp": 1,
+        "tn": 949,
+        "fn": 6
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "DoS_attacks-GoldenEye",
+      "status": "complete",
+      "recall": 94,
+      "fpr": 0.0,
+      "f1": 97,
+      "cost": 2.16,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 47,
+        "fp": 0,
+        "tn": 950,
+        "fn": 3
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "DoS_attacks-Hulk",
+      "status": "complete",
+      "recall": 80,
+      "fpr": 0.0,
+      "f1": 89,
+      "cost": 2.16,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 40,
+        "fp": 0,
+        "tn": 950,
+        "fn": 10
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "DoS_attacks-SlowHTTPTest",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.0,
+      "f1": 100,
+      "cost": 2.13,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "DoS_attacks-Slowloris",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.0,
+      "f1": 100,
+      "cost": 2.19,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "FTP-BruteForce",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.0,
+      "f1": 100,
+      "cost": 2.12,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "Infilteration",
+      "status": "complete",
+      "recall": 0,
+      "fpr": 0.0,
+      "f1": 0,
+      "cost": 0.0,
+      "cost_per_tp": null,
+      "confusion": {
+        "tp": 0,
+        "fp": 0,
+        "tn": 950,
+        "fn": 50
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "SQL_Injection",
+      "status": "complete",
+      "recall": 4,
+      "fpr": 0.0,
+      "f1": 8,
+      "cost": 0.1,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 2,
+        "fp": 0,
+        "tn": 950,
+        "fn": 48
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    },
+    {
+      "attack_type": "SSH-Bruteforce",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.1,
+      "f1": 99,
+      "cost": 2.16,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 1,
+        "tn": 949,
+        "fn": 0
+      },
+      "attack_source": "validation",
+      "benign_source": "validation"
+    }
+  ],
+  "metadata": {
+    "description": "Stage 1 clean rerun \u2014 no within-distribution benign leakage",
+    "rf_trained_on": "dev_train.csv (80% of development)",
+    "created_at": "2026-03-30T06:13:44.686990+00:00"
+  }
+}

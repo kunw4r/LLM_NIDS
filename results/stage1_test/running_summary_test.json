@@ -1,0 +1,248 @@
+{
+  "experiments": [
+    {
+      "attack_type": "Bot",
+      "status": "complete",
+      "recall": 82,
+      "fpr": 0.4,
+      "f1": 86,
+      "cost": 1.75,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 41,
+        "fp": 4,
+        "tn": 946,
+        "fn": 9
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "Brute_Force_-Web",
+      "status": "complete",
+      "recall": 52,
+      "fpr": 0.1,
+      "f1": 68,
+      "cost": 1.04,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 26,
+        "fp": 1,
+        "tn": 949,
+        "fn": 24
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "Brute_Force_-XSS",
+      "status": "complete",
+      "recall": 86,
+      "fpr": 0.1,
+      "f1": 91,
+      "cost": 1.77,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 43,
+        "fp": 1,
+        "tn": 949,
+        "fn": 7
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "DDOS_attack-HOIC",
+      "status": "complete",
+      "recall": 66,
+      "fpr": 0.0,
+      "f1": 80,
+      "cost": 1.52,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 33,
+        "fp": 0,
+        "tn": 950,
+        "fn": 17
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "DDOS_attack-LOIC-UDP",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.1,
+      "f1": 99,
+      "cost": 1.64,
+      "cost_per_tp": 0.03,
+      "confusion": {
+        "tp": 50,
+        "fp": 1,
+        "tn": 949,
+        "fn": 0
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "DDoS_attacks-LOIC-HTTP",
+      "status": "complete",
+      "recall": 86,
+      "fpr": 0.1,
+      "f1": 91,
+      "cost": 1.62,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 43,
+        "fp": 1,
+        "tn": 949,
+        "fn": 7
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "DoS_attacks-GoldenEye",
+      "status": "complete",
+      "recall": 90,
+      "fpr": 0.0,
+      "f1": 95,
+      "cost": 2.16,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 45,
+        "fp": 0,
+        "tn": 950,
+        "fn": 5
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "DoS_attacks-Hulk",
+      "status": "complete",
+      "recall": 84,
+      "fpr": 0.1,
+      "f1": 90,
+      "cost": 2.18,
+      "cost_per_tp": 0.05,
+      "confusion": {
+        "tp": 42,
+        "fp": 1,
+        "tn": 949,
+        "fn": 8
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "DoS_attacks-SlowHTTPTest",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.1,
+      "f1": 99,
+      "cost": 2.2,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 1,
+        "tn": 949,
+        "fn": 0
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "DoS_attacks-Slowloris",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.0,
+      "f1": 100,
+      "cost": 2.16,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 0,
+        "tn": 950,
+        "fn": 0
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "FTP-BruteForce",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.1,
+      "f1": 99,
+      "cost": 2.16,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 1,
+        "tn": 949,
+        "fn": 0
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "Infilteration",
+      "status": "complete",
+      "recall": 34,
+      "fpr": 0.0,
+      "f1": 51,
+      "cost": 0.64,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 17,
+        "fp": 0,
+        "tn": 950,
+        "fn": 33
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "SQL_Injection",
+      "status": "complete",
+      "recall": 88,
+      "fpr": 0.0,
+      "f1": 94,
+      "cost": 1.71,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 44,
+        "fp": 0,
+        "tn": 950,
+        "fn": 6
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    },
+    {
+      "attack_type": "SSH-Bruteforce",
+      "status": "complete",
+      "recall": 100,
+      "fpr": 0.1,
+      "f1": 99,
+      "cost": 2.2,
+      "cost_per_tp": 0.04,
+      "confusion": {
+        "tp": 50,
+        "fp": 1,
+        "tn": 949,
+        "fn": 0
+      },
+      "source": "test.csv (held-out)",
+      "rf_model": "tier1_rf_allattacks.pkl (dev+val)"
+    }
+  ],
+  "metadata": {
+    "description": "Stage 1 final evaluation \u2014 RF trained on dev+val, evaluated on held-out test",
+    "rf_trained_on": "development.csv + validation.csv (12M flows)",
+    "evaluated_on": "test.csv (8M flows, held-out)",
+    "created_at": "2026-03-30T11:26:59.401795+00:00"
+  }
+}
