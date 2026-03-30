@@ -287,6 +287,42 @@ export default function Pipeline() {
             Academic term: <em>parallel multi-agent deliberation</em> — an ensemble of specialists each contributing a
             unique analytical perspective, inspired by Minsky's Society of Mind.
           </p>
+
+          {/* Data Isolation Callout */}
+          <div className="ml-9 mt-3 border-2 border-amber-300 rounded-lg p-4 bg-amber-50">
+            <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wide mb-2">
+              Methodological Note: Complete Label Isolation
+            </h4>
+            <div className="text-sm text-gray-700 leading-relaxed space-y-2">
+              <p className="m-0">
+                <strong>Agents never see ground truth labels.</strong> The flow data passed to each LLM agent contains
+                only the 14 raw NetFlow features — port numbers, byte counts, packet counts, duration, flags. No
+                <code className="text-xs bg-gray-100 px-1 rounded">label</code>, no
+                <code className="text-xs bg-gray-100 px-1 rounded">attack_type</code>, no indication of whether the flow
+                is benign or malicious.
+              </p>
+              <p className="m-0">
+                Ground truth labels are stored in a <strong>separate file</strong> (<code className="text-xs bg-gray-100 px-1 rounded">ground_truth.json</code>)
+                and are only joined to the agent's output <em>after</em> analysis is complete — solely for computing
+                evaluation metrics (precision, recall, F1). The agents must classify each flow based entirely on the
+                numerical features and their pre-trained knowledge of network protocols and attack patterns.
+              </p>
+              <p className="m-0">
+                The Tier 1 RF pre-filter also operates without labels — it uses the same 12 numeric features to compute
+                P(attack) and decides which flows to route to the LLM pipeline. Filtered flows receive a synthetic
+                result with <code className="text-xs bg-gray-100 px-1 rounded">tier1_filtered: true</code> and no agent reasoning.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 font-mono text-[11px] p-2.5 bg-white rounded border border-amber-200 mt-3 flex-wrap">
+              <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded">flows.json</span>
+              <span className="text-[10px] text-gray-500">(features only)</span>
+              <span className="text-gray-400 mx-1">+</span>
+              <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded">ground_truth.json</span>
+              <span className="text-[10px] text-gray-500">(labels only)</span>
+              <span className="text-gray-400 mx-1">=</span>
+              <span className="text-[10px] text-gray-500">joined <strong>after</strong> analysis for evaluation</span>
+            </div>
+          </div>
         </div>
 
         {/* Verdict System Explainer */}
