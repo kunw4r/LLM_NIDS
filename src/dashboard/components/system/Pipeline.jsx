@@ -271,10 +271,60 @@ export default function Pipeline() {
           </div>
           <p className="text-sm text-gray-700 leading-relaxed mb-3 ml-9 m-0">
             Four specialist agents analyse the same flow <strong>simultaneously</strong> via <code className="text-xs bg-gray-100 px-1 rounded">ThreadPoolExecutor(max_workers=4)</code>.
-            Each agent gets the same 14 NetFlow features plus a role-specific system prompt. Each produces:
-            verdict (BENIGN/SUSPICIOUS/MALICIOUS), confidence (0.0-1.0), attack type prediction, key evidence findings, and
+            Each produces: verdict (BENIGN/SUSPICIOUS/MALICIOUS), confidence (0.0-1.0), attack type prediction, key evidence findings, and
             <strong> full reasoning text</strong> — the complete chain of thought, not just a label.
           </p>
+
+          {/* Agent Input Design */}
+          <div className="ml-9 mb-3 border border-gray-200 rounded-lg p-4 bg-white">
+            <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-2">What Each Agent Sees</h4>
+            <div className="text-sm text-gray-700 leading-relaxed space-y-2 mb-3">
+              <p className="m-0">
+                <strong>Protocol, Statistical, and Behavioural</strong> each see <strong>one flow in isolation</strong> — the
+                14 raw NetFlow features (port, protocol, bytes, packets, duration, flags) with no context about other flows
+                in the batch. This is deliberate: it tests whether each analytical perspective can identify anomalies from
+                a single flow's features alone.
+              </p>
+              <p className="m-0">
+                <strong>Temporal</strong> sees the target flow <strong>plus every other flow from the same source IP</strong> in
+                the batch. For a brute-force attack, this means seeing all 49 other rapid connections to the same port — a pattern
+                invisible to the single-flow agents. The temporal agent sorts these by timestamp and analyses burst patterns,
+                connection frequency, and behavioural uniformity across the group.
+              </p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-xs">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-3 py-2 text-left font-semibold text-gray-500">Agent</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-500">Input</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-500">Why</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    ["Protocol", "1 flow (14 features)", "Port/flag validity is a single-flow property"],
+                    ["Statistical", "1 flow (14 features)", "Anomalous byte/duration ratios are per-flow"],
+                    ["Behavioural", "1 flow (14 features)", "Attack signature matching on individual features"],
+                    ["Temporal", "1 flow + all co-IP flows", "Burst/scanning/beaconing only visible across flows"],
+                    ["Devil's Advocate", "1 flow + 4 specialist verdicts", "Must see what to argue against"],
+                    ["Orchestrator", "1 flow + 4 specialist + DA", "Synthesises all perspectives into consensus"],
+                  ].map(([agent, input, why]) => (
+                    <tr key={agent} className="border-b border-gray-100">
+                      <td className="px-3 py-2 font-medium">{agent}</td>
+                      <td className="px-3 py-2 text-gray-600">{input}</td>
+                      <td className="px-3 py-2 text-gray-500">{why}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-[10px] text-gray-500 mt-2 m-0 italic">
+              This design is validated by the ablation study: removing the Temporal agent drops SSH recall from 98% to 54%
+              and HOIC from 58% to 22% — proving that cross-flow context is essential for attacks that look benign in isolation.
+            </p>
+          </div>
+
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 ml-0 sm:ml-9">
             {specialists.map(a => (
               <div key={a.name} className="border border-gray-200 rounded-md p-3 text-center bg-white">

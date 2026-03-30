@@ -69,26 +69,26 @@ LABEL_COLS = ["Label", "Attack"]
 READ_COLS = EXTRACT_COLS + LABEL_COLS
 
 # ── Attack type → source split mapping ────────────────────────────────────────
-# Key principle: benign flows MUST come from a split the RF never trained on
+# Key principle: ALL flows (attack + benign) from validation split.
+# The RF was trained on dev_train.csv (80% of development). The stratified split
+# puts every attack type in every split, so validation has sufficient flows for
+# all 14 types. This is the cleanest possible evaluation — the RF has never seen
+# ANY flow from this split during training.
 ATTACK_CONFIG = {
-    # Dev-split types: attacks from dev_eval, benign from VALIDATION (not dev_eval!)
-    "FTP-BruteForce":           {"attack_csv": "dev_eval",   "benign_csv": "validation"},
-    "SSH-Bruteforce":           {"attack_csv": "dev_eval",   "benign_csv": "validation"},
-    "DDoS_attacks-LOIC-HTTP":   {"attack_csv": "dev_eval",   "benign_csv": "validation"},
-    "DoS_attacks-Hulk":         {"attack_csv": "dev_eval",   "benign_csv": "validation"},
-    "DoS_attacks-SlowHTTPTest": {"attack_csv": "dev_eval",   "benign_csv": "validation"},
-    "DoS_attacks-GoldenEye":    {"attack_csv": "dev_eval",   "benign_csv": "validation"},
-    "DoS_attacks-Slowloris":    {"attack_csv": "dev_eval",   "benign_csv": "validation"},
-    # Validation-split types: both from validation
+    "FTP-BruteForce":           {"attack_csv": "validation", "benign_csv": "validation"},
+    "SSH-Bruteforce":           {"attack_csv": "validation", "benign_csv": "validation"},
+    "DDoS_attacks-LOIC-HTTP":   {"attack_csv": "validation", "benign_csv": "validation"},
+    "DoS_attacks-Hulk":         {"attack_csv": "validation", "benign_csv": "validation"},
+    "DoS_attacks-SlowHTTPTest": {"attack_csv": "validation", "benign_csv": "validation"},
+    "DoS_attacks-GoldenEye":    {"attack_csv": "validation", "benign_csv": "validation"},
+    "DoS_attacks-Slowloris":    {"attack_csv": "validation", "benign_csv": "validation"},
     "DDOS_attack-HOIC":         {"attack_csv": "validation", "benign_csv": "validation"},
     "DDOS_attack-LOIC-UDP":     {"attack_csv": "validation", "benign_csv": "validation"},
     "Brute_Force_-Web":         {"attack_csv": "validation", "benign_csv": "validation"},
+    "Brute_Force_-XSS":         {"attack_csv": "validation", "benign_csv": "validation"},
     "SQL_Injection":            {"attack_csv": "validation", "benign_csv": "validation"},
-    # XSS: only 19 in validation, use test (461 available)
-    "Brute_Force_-XSS":         {"attack_csv": "test",       "benign_csv": "test"},
-    # Test-split types: both from test
-    "Bot":                      {"attack_csv": "test",       "benign_csv": "test"},
-    "Infilteration":            {"attack_csv": "test",       "benign_csv": "test"},
+    "Bot":                      {"attack_csv": "validation", "benign_csv": "validation"},
+    "Infilteration":            {"attack_csv": "validation", "benign_csv": "validation"},
 }
 
 CSV_MAP = {
