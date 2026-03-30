@@ -29,8 +29,7 @@ import FlowInspector from "./components/results/FlowInspector";
 import { STAGE1_ID_MAP } from "./data/constants";
 
 // Explainability
-import SHAPComparison from "./components/explainability/SHAPComparison";
-import FaithfulnessAudit from "./components/explainability/FaithfulnessAudit";
+import ExplainabilityPage from "./components/explainability/ExplainabilityPage";
 
 // System pages
 import Architecture from "./components/system/Architecture";
@@ -49,11 +48,7 @@ const SUB_TABS = {
     ["clustering", "Clustering"],
     ["mcp", "MCP Comparison"],
   ],
-  explainability: [
-    ["shap", "SHAP Comparison"],
-    ["faithfulness", "Faithfulness Audit"],
-    ["reasoning", "Flow Inspector"],
-  ],
+  explainability: [],
   system: [
     ["architecture", "Architecture"],
     ["pipeline", "Pipeline"],
@@ -154,9 +149,9 @@ export default function App() {
       ablation: () => { setTopTab("results"); setSubTabs(prev => ({ ...prev, results: "ablation" })); },
       clustering: () => { setTopTab("results"); setSubTabs(prev => ({ ...prev, results: "clustering" })); },
       mcp: () => { setTopTab("results"); setSubTabs(prev => ({ ...prev, results: "mcp" })); },
-      shap: () => { setTopTab("explainability"); setSubTabs(prev => ({ ...prev, explainability: "shap" })); },
-      faithfulness: () => { setTopTab("explainability"); setSubTabs(prev => ({ ...prev, explainability: "faithfulness" })); },
-      reasoning: () => { setTopTab("explainability"); setSubTabs(prev => ({ ...prev, explainability: "reasoning" })); },
+      shap: () => { setTopTab("explainability"); },
+      faithfulness: () => { setTopTab("explainability"); },
+      reasoning: () => { setTopTab("explainability"); },
     };
     const fn = tabMap[tab];
     if (fn) fn();
@@ -244,14 +239,8 @@ export default function App() {
       )}
 
       {/* -- Explainability ---------------------------------------- */}
-      {topTab === "explainability" && subTab === "shap" && (
-        <SHAPComparison />
-      )}
-      {topTab === "explainability" && subTab === "faithfulness" && (
-        <FaithfulnessAudit />
-      )}
-      {topTab === "explainability" && subTab === "reasoning" && (
-        <FlowInspector inspector={inspector} />
+      {topTab === "explainability" && (
+        <ExplainabilityPage />
       )}
 
       {/* -- System ------------------------------------------------- */}
