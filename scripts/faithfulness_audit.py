@@ -41,6 +41,7 @@ WELL_KNOWN_PORTS = {
 }
 
 RESULTS_DIR = Path(__file__).parent.parent / "results" / "stage1"
+OUTPUT_DIR = Path(__file__).parent.parent / "results" / "analysis"
 
 # ── Claim extractors ─────────────────────────────────────────────────────────
 
@@ -521,29 +522,119 @@ def main():
             print(f"      Type:  {c['type']}")
             print(f"      Detail: {c['detail']}")
 
-    # ── Save JSON report ──────────────────────────────────────────────────
-    report = {
-        "summary": {
-            "files_audited": len(results_files),
-            "flows_audited": total_flows,
-            "total_claims": total_claims,
-            "verifiable_claims": verifiable,
-            "unverifiable_claims": unverifiable,
+    # ── Map claim types to thesis-friendly category names ──────────────
+    CATEGORY_DISPLAY = {
+        "port": "Port numbers",
+        "port_exact": "Port numbers",
+        "protocol_name": "Protocol names (TCP/UDP)",
+        "protocol_num": "Numeric field references",
+        "tcp_flag_names": "TCP flag names",
+        "tcp_flags_num": "Numeric field references",
+        "numeric_exact": "Numeric field references",
+        "numeric_natural": "Natural language numeric",
+        "ip": "IP addresses",
+        "service_port": "Service-port associations",
+        "ephemeral_port": "Ephemeral port classification",
+    }
+
+    # Aggregate by thesis-friendly category
+    thesis_category_stats = defaultdict(lambda: {"claims": 0, "correct": 0})
+    for c in grand_claims:
+        display = CATEGORY_DISPLAY.get(c["type"], c["type"])
+        thesis_category_stats[display]["claims"] += 1
+        if c["correct"]:
+            thesis_category_stats[display]["correct"] += 1
+
+    per_category_thesis = []
+    for cat, stats in sorted(thesis_category_stats.items(),
+                              key=lambda x: -x[1]["correct"] / max(x[1]["claims"], 1)):
+        pct = 100.0 * stats["correct"] / stats["claims"] if stats["claims"] > 0 else 0
+        per_category_thesis.append({
+            "category": cat,
+            "claims": stats["claims"],
+            "correct": stats["correct"],
+            "faithfulness_pct": round(pct, 1),
+        })
+
+    per_agent_thesis = []
+    for agent in ["statistical", "temporal", "orchestrator", "protocol",
+                   "behavioural", "devils_advocate"]:
+        s = per_agent.get(agent, {"total": 0, "verifiable": 0, "correct": 0, "incorrect": 0})
+        pct = (s["correct"] / s["verifiable"] * 100) if s["verifiable"] > 0 else 0
+        per_agent_thesis.append({
+            "agent": agent,
+            "claims": s["verifiable"],
+            "correct": s["correct"],
+            "faithfulness_pct": round(pct, 1),
+        })
+
+    per_attack_thesis = []
+    for at in sorted(per_attack.keys()):
+        s = per_attack[at]
+        pct = (s["correct"] / s["verifiable"] * 100) if s["verifiable"] > 0 else 0
+        per_attack_thesis.append({
+            "attack_type": at,
+            "claims": s["verifiable"],
+            "correct": s["correct"],
+            "faithfulness_pct": round(pct, 1),
+        })
+
+    # ── Save JSON reports ────────────────────────────────────────────────
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # 1. Full audit: every claim with verification result
+    audit_records = []
+    for c in grand_claims:
+        audit_records.append({
+            "flow_idx": c["flow_idx"],
+            "attack_type": c["attack_type"],
+            "agent_name": c["agent"],
+            "claim_text": c["raw"],
+            "claim_category": CATEGORY_DISPLAY.get(c["type"], c["type"]),
+            "claim_type_raw": c["type"],
+            "claimed_value": c.get("value") or c.get("service") or c.get("claimed_port"),
+            "actual_value": c.get("detail", ""),
+            "is_correct": c["correct"],
+        })
+
+    audit_path = OUTPUT_DIR / "faithfulness_audit.json"
+    with open(audit_path, "w") as f:
+        json.dump(audit_records, f, indent=2, default=str)
+    print(f"\nWrote {len(audit_records)} claims to {audit_path}")
+
+    # 2. Summary matching thesis tables
+    summary = {
+        "overall": {
+            "total_claims": verifiable,
             "correct_claims": correct,
             "incorrect_claims": incorrect,
-            "faithfulness_rate_pct": round(faithfulness_rate, 2),
-            "confabulation_rate_pct": round(confabulation_rate, 2),
+            "faithfulness_pct": round(faithfulness_rate, 1),
+            "confabulation_pct": round(confabulation_rate, 1),
+            "flows_audited": total_flows,
+            "files_audited": len(results_files),
         },
+        "per_category": per_category_thesis,
+        "per_agent": per_agent_thesis,
+        "per_attack_type": per_attack_thesis,
+    }
+
+    summary_path = OUTPUT_DIR / "faithfulness_summary.json"
+    with open(summary_path, "w") as f:
+        json.dump(summary, f, indent=2)
+    print(f"Wrote summary to {summary_path}")
+
+    # Also keep the legacy output location for backward compatibility
+    legacy_report = {
+        "summary": summary["overall"],
         "per_agent": dict(per_agent),
         "per_claim_type": dict(per_type),
         "per_attack_type": per_attack,
         "incorrect_examples": incorrect_examples[:20],
     }
-
-    output_path = RESULTS_DIR / "faithfulness_audit.json"
-    with open(output_path, "w") as f:
-        json.dump(report, f, indent=2, default=str)
-    print(f"\n\nFull report saved to: {output_path}")
+    legacy_path = RESULTS_DIR / "faithfulness_audit.json"
+    with open(legacy_path, "w") as f:
+        json.dump(legacy_report, f, indent=2, default=str)
+    print(f"Wrote legacy report to {legacy_path}")
 
 
 if __name__ == "__main__":

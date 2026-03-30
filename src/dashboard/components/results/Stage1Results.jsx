@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { AGENT_COST_DATA, AGENT_COST_PER_EXPERIMENT } from "../../data/stage1";
 import { RF_TRAINED_TYPES, RF_CAUGHT_UNSEEN, DATASET_SPLITS, AGENT_KEYS, STAGE1_ID_MAP } from "../../data/constants";
-import { ATTACK_DESCRIPTIONS } from "../../data/attacks";
+import { ATTACK_DESCRIPTIONS, DIFFICULTY_TIERS } from "../../data/attacks";
 import { dollar } from "../../lib/format";
 import ExplainabilityShowcase from "./ExplainabilityShowcase";
 
@@ -128,33 +128,49 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
         </div>
       </div>
 
-      {/* ── RECALL BAR CHART ──────────────────────────────────── */}
+      {/* ── RECALL BAR CHART — grouped by difficulty tier ──────── */}
       <div className="border border-gray-200 rounded-lg p-4 sm:p-6 mb-6">
-        <div className="text-sm font-semibold mb-4">Detection Recall by Attack Type</div>
-        {[...s1.experiments].sort((a, b) => (b.recall || 0) - (a.recall || 0)).map(exp => {
-          const recall = exp.recall || 0;
-          const barColor = recall === 0 ? "#dc2626" : recall >= 80 ? "#16a34a" : recall >= 50 ? "#d97706" : "#dc2626";
+        <div className="text-sm font-semibold mb-1">Detection Recall by Attack Type</div>
+        <div className="text-xs text-gray-500 mb-4">Grouped by difficulty — harder attacks mimic legitimate traffic more closely.</div>
+        {Object.entries(DIFFICULTY_TIERS).map(([tier, tierData]) => {
+          const tierExps = tierData.attacks
+            .map(at => s1.experiments.find(e => e.attack_type === at))
+            .filter(Boolean)
+            .sort((a, b) => (b.recall || 0) - (a.recall || 0));
+          if (tierExps.length === 0) return null;
+          const tierAvgRecall = Math.round(tierExps.reduce((s, e) => s + (e.recall || 0), 0) / tierExps.length);
           return (
-            <div key={exp.attack_type} className="flex items-center gap-1.5 sm:gap-2 mb-1.5">
-              <div className="w-24 sm:w-44 text-[10px] sm:text-xs text-gray-700 text-right flex-shrink-0 overflow-hidden text-ellipsis whitespace-nowrap">
-                {exp.attack_type.replace(/_/g, " ")}
+            <div key={tier} className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[11px] font-bold" style={{ color: tierData.color }}>{tierData.label}</span>
+                <span className="text-[10px] text-gray-400">avg recall: {tierAvgRecall}%</span>
               </div>
-              <div className="flex-1 h-[22px] bg-gray-100 rounded overflow-hidden relative">
-                {/* 80% threshold line */}
-                <div className="absolute top-0 bottom-0 border-l-2 border-dashed border-gray-400 z-10" style={{ left: "80%" }} />
-                <div
-                  className="h-full rounded flex items-center justify-end"
-                  style={{
-                    width: `${recall}%`,
-                    background: barColor,
-                    paddingRight: recall > 10 ? 8 : 0,
-                    minWidth: recall > 0 ? 2 : 0,
-                  }}
-                >
-                  {recall >= 15 && <span className="text-xs font-bold text-white">{recall}%</span>}
-                </div>
-              </div>
-              {recall < 15 && <span className="text-xs font-semibold" style={{ color: barColor, minWidth: 35 }}>{recall}%</span>}
+              {tierExps.map(exp => {
+                const recall = exp.recall || 0;
+                const barColor = recall === 0 ? "#dc2626" : recall >= 80 ? "#16a34a" : recall >= 50 ? "#d97706" : "#dc2626";
+                return (
+                  <div key={exp.attack_type} className="flex items-center gap-1.5 sm:gap-2 mb-1.5">
+                    <div className="w-24 sm:w-44 text-[10px] sm:text-xs text-gray-700 text-right flex-shrink-0 overflow-hidden text-ellipsis whitespace-nowrap">
+                      {exp.attack_type.replace(/_/g, " ")}
+                    </div>
+                    <div className="flex-1 h-[22px] bg-gray-100 rounded overflow-hidden relative">
+                      <div className="absolute top-0 bottom-0 border-l-2 border-dashed border-gray-400 z-10" style={{ left: "80%" }} />
+                      <div
+                        className="h-full rounded flex items-center justify-end"
+                        style={{
+                          width: `${recall}%`,
+                          background: barColor,
+                          paddingRight: recall > 10 ? 8 : 0,
+                          minWidth: recall > 0 ? 2 : 0,
+                        }}
+                      >
+                        {recall >= 15 && <span className="text-xs font-bold text-white">{recall}%</span>}
+                      </div>
+                    </div>
+                    {recall < 15 && <span className="text-xs font-semibold" style={{ color: barColor, minWidth: 35 }}>{recall}%</span>}
+                  </div>
+                );
+              })}
             </div>
           );
         })}

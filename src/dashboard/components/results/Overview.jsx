@@ -101,10 +101,10 @@ export default function Overview({ s1, onNavigateToJourney, onNavigateToTab }) {
       {/* Hero Numbers */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { label: "Stage 1 Best F1", value: `${s1.overall.best_f1 || Math.round(bestF1 * 100)}%`, sub: s1.overall.best_detected || "—" },
-          { label: "Stage 1 Flows", value: s1.overall.total_flows.toLocaleString(), sub: `${s1.experiments.length} x 1,000-flow batches` },
-          { label: "Stage 1 Cost", value: dollar(s1.overall.total_cost), sub: `$${s1.overall.total_cost > 0 ? (s1.overall.total_cost / s1.experiments.length).toFixed(2) : '0'}/batch avg` },
-          { label: "Stage 1 Coverage", value: `${s1.experiments.length} / 14`, sub: s1.experiments.length >= 14 ? "All attack types evaluated" : "Attack types evaluated" },
+          { label: "AMATAS F1", value: `${avgF1}%`, sub: `vs 62.8% best single-agent` },
+          { label: "False Positive Rate", value: `${fpr}%`, sub: `across ${(totalFP + totalTN).toLocaleString()} benign flows` },
+          { label: "Evaluation Cost", value: dollar(s1.overall.total_cost), sub: `${s1.overall.total_flows.toLocaleString()} flows, 14 attack types` },
+          { label: "Cost Reduction", value: "94.6%", sub: `RF pre-filter saves ~$${(AGENT_COST_DATA.estWithoutTier1 - s1.overall.total_cost).toFixed(0)}` },
         ].map(h => (
           <div key={h.label} className="border border-gray-200 rounded-lg p-6">
             <div className="text-4xl font-bold tracking-tight text-gray-900">{h.value}</div>
@@ -127,10 +127,16 @@ export default function Overview({ s1, onNavigateToJourney, onNavigateToTab }) {
             </div>
           </div>
           <div className="border-l-[3px] border-violet-600 pl-4">
-            <div className="text-sm font-bold text-gray-900 mb-1">2. External tools provide minimal uplift</div>
+            <div className="text-sm font-bold text-gray-900 mb-1">2. Tools actively hurt single-agent detection</div>
             <div className="text-sm text-gray-700 leading-relaxed">
-              Adding MITRE ATT&CK tool access to a single agent improved recall by only 3.3% at +$0.09 cost.
-              External threat intelligence is ineffective on anonymised dataset IPs.
+              Adding dataset-compatible tools (port decoders, flag decoders, DShield) to a single agent dropped F1 from
+              58% to 37% — a 21pp degradation. SSH-Bruteforce detection collapsed from 10/10 to 1/10 when tools were
+              added. Tools provide a "normalising frame" — decoded features bias the LLM toward benign interpretations.
+              {onNavigateToTab && (
+                <button onClick={() => onNavigateToTab("mcp")} className="text-violet-600 font-semibold ml-1 cursor-pointer bg-transparent border-none p-0 text-sm">
+                  See MCP Comparison &rarr;
+                </button>
+              )}
             </div>
           </div>
           <div className="border-l-[3px] border-blue-600 pl-4">
@@ -172,11 +178,16 @@ export default function Overview({ s1, onNavigateToJourney, onNavigateToTab }) {
             </div>
           </div>
           <div className="border-l-[3px] border-red-600 pl-4">
-            <div className="text-sm font-bold text-gray-900 mb-1">4. Infiltration: flow-level limitation</div>
+            <div className="text-sm font-bold text-gray-900 mb-1">4. Infiltration: flow-level limitation solved by clustering</div>
             <div className="text-sm text-gray-700 leading-relaxed">
-              Infiltration attacks (DNS exfiltration) achieved 0% recall. Individual flows are statistically
-              identical to legitimate DNS queries — undetectable at the NetFlow feature level without temporal
-              clustering. This motivates the v3 clustering contribution.
+              Infiltration attacks (DNS exfiltration) achieved 0% recall — individual flows are statistically
+              identical to legitimate DNS queries. Temporal clustering (v3) recovered detection to 58% by grouping
+              flows per source IP and injecting aggregate context.
+              {onNavigateToTab && (
+                <button onClick={() => onNavigateToTab("clustering")} className="text-red-600 font-semibold ml-1 cursor-pointer bg-transparent border-none p-0 text-sm">
+                  See Clustering Results &rarr;
+                </button>
+              )}
             </div>
           </div>
           <div className="border-l-[3px] border-amber-500 pl-4">

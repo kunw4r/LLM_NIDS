@@ -185,6 +185,44 @@ export default function MCPAblation({ s1, onInspectFlows }) {
         ))}
       </div>
 
+      {/* Per-Attack Detection Breakdown */}
+      <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className="px-5 py-4 bg-gray-50 border-b border-gray-200">
+          <div className="text-sm font-semibold">Per-Attack Detection: Hits Out of 10</div>
+          <div className="text-xs text-gray-500 mt-0.5">How many attacks each config detected, by attack type. SSH collapse is the clearest evidence of tool harm.</div>
+        </div>
+        <table className="w-full border-collapse text-xs">
+          <thead>
+            <tr className="bg-gray-50 border-b border-gray-200">
+              {["Attack Type", "A", "B", "C", "D", "E", "F", "G"].map(h => (
+                <th key={h} className={`px-3 py-2.5 font-semibold text-gray-500 ${h === "Attack Type" ? "text-left" : "text-center"}`}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { type: "SSH-Bruteforce", scores: [10, 10, 10, 1, 5, 1, 2] },
+              { type: "FTP-BruteForce", scores: [10, 10, 10, 10, 10, 10, 10] },
+              { type: "DoS-Hulk", scores: [7, 0, 1, 0, 0, 0, 0] },
+            ].map(row => (
+              <tr key={row.type} className="border-b border-gray-100">
+                <td className="px-3 py-2.5 font-medium">{row.type}</td>
+                {row.scores.map((s, i) => (
+                  <td key={i} className="px-3 py-2.5 text-center font-semibold" style={{
+                    color: s >= 8 ? "#16a34a" : s >= 4 ? "#d97706" : "#dc2626",
+                    background: s <= 2 && i >= 3 ? "#fef2f2" : "transparent",
+                  }}>{s}/10</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className="px-5 py-3 text-[11px] text-gray-500 bg-gray-50 border-t border-gray-200 leading-relaxed">
+          FTP-BruteForce: trivially detectable (1ms connections, port 21) — tools redundant.
+          SSH-Bruteforce: <strong>catastrophic collapse with tools (10/10 &rarr; 1/10)</strong>. DoS-Hulk: undetectable by any single-flow analysis — needs temporal context.
+        </div>
+      </div>
+
       {/* Flow Inspector links */}
       <div className="border border-gray-200 rounded-lg p-5">
         <div className="text-sm font-semibold mb-3">Inspect Individual Flows</div>

@@ -129,7 +129,7 @@ Thesis/
 ├── src/
 │   ├── mcp_server/                  # MCP server (13 tools, STDIO transport)
 │   ├── agent/                       # Phase 1 MCP-based agent (legacy)
-│   ├── dashboard/                   # React dashboard (NIDSDashboard.jsx)
+│   ├── dashboard/                   # React dashboard (App.jsx + components/)
 │   ├── analysis/                    # Metrics calculation
 │   ├── data_preparation/            # Dataset splitting scripts
 │   └── testing/                     # Phase 1 batch processor
@@ -155,6 +155,15 @@ Thesis/
 │   └── figures/                     #   Shared figures directory
 │
 ├── thesis_papers/                   # Original source PDFs (master copy)
+├── thesis plan final/               # SUBMITTED thesis plan (assessment item)
+│   ├── 46978107_Thesis_Plan.tex     #   LaTeX source (standalone, own references.bib)
+│   ├── 46978107_Thesis_Plan.pdf     #   Compiled PDF (submitted to UQ)
+│   └── references.bib              #   Bibliography for thesis plan only
+├── thesis plan support/             # Assessment helper materials
+│   ├── Assessment Helper Thesis plan.pdf  # Marking criteria & AI use declaration guide
+│   ├── Thesis_Plan_Template_2026.tex      # UQ-provided LaTeX template
+│   ├── Thesis_Plan_Template_2026.pdf      # Compiled template
+│   └── image*.png                         # Screenshots of assessment rubric
 ├── docs/                            # Planning, guides, analysis reports
 ├── CLAUDE.md                        # THIS FILE
 └── EXPERIMENTS_LOG.md               # Running experiment log
@@ -333,35 +342,54 @@ Raw NetFlow record
 
 ---
 
-## 9. THE DASHBOARD VISION
+## 9. THE DASHBOARD
 
-### Tabs
-- **AMATAS** — v1/v2/v3 iteration results comparison
-- **MCP Experiments** — zero-shot vs prompt-engineered vs MITRE tool
-- **Clustering** — v3 temporal clustering results
-- **Comparison** — AMATAS vs MCP side-by-side
-- **Architecture** — system diagram, agent descriptions
-- **What's Next** — future work / remaining experiments
+### Architecture
+The dashboard is a React app (`src/dashboard/App.jsx`) using a modular
+component architecture. The old monolithic `NIDSDashboard.jsx` has been deleted.
 
-### Flow Inspector (the explainability centerpiece)
-Click any experiment → see all flows → click any flow → see:
-- Every agent's full reasoning text
-- Key evidence points per agent
-- Connected flows used by temporal agent
-- Devil's Advocate counter-argument
-- Orchestrator final synthesis and decision rationale
-- MITRE ATT&CK technique mapping
+### Top Tabs (in App.jsx)
+- **Briefing** → `SupervisorBriefing.jsx` — Pivot timeline, what was done, ablation findings
+- **Story** → `ResearchJourney.jsx` — Phase-by-phase experiment progression
+- **Research Questions** → `ResearchQuestions.jsx` — RQ1–RQ4 with evidence cards
+- **Results** (sub-tabs):
+  - Overview → `Overview.jsx` — Hero numbers, key findings, difficulty tiers, agent heatmap
+  - Stage 1 → `Stage1Results.jsx` — Per-attack recall (tier-grouped), results table, cost breakdown
+  - Ablation → `AblationStudy.jsx` — Agent removal experiments (loads `ablation_summary.json`)
+  - Clustering → `ClusteringResults.jsx` — Infiltration 0%→58% recovery
+  - MCP Comparison → `MCPAblation.jsx` — 7-config tool study, per-attack detection table
+- **Explainability** (sub-tabs):
+  - SHAP Comparison → `SHAPComparison.jsx` — RF SHAP vs AMATAS reasoning side-by-side
+  - Faithfulness → `FaithfulnessAudit.jsx` — 89.8% claim verification audit
+  - Flow Inspector → `FlowInspector.jsx` — Browse any experiment's flows + agent reasoning
+- **System** (sub-tabs):
+  - Architecture → `Architecture.jsx` — System diagram, dataset splits
+  - Pipeline → `Pipeline.jsx` — Step-by-step execution flow
+  - Agents → `AgentDocs.jsx` — Agent roles + expandable prompts
+  - Run Log → `RunLog.jsx` — Searchable pipeline execution log
+
+### Key Components
+- `ExperimentDetail.jsx` — Deep dive on one attack type (error attribution, agent summaries, flow table)
+- `ExplainabilityShowcase.jsx` — Curated agent reasoning chains (real flows from Stage 1)
+- `ErrorAttribution.jsx` — Visual funnel showing Tier 1 vs LLM error sources
+- `RoutingControl.jsx` — RF vs random filter control experiment
+- `AgentHeatmap.jsx` — 4 agents × 14 attacks performance grid (compact + full views)
+
+### Data Layer (`src/dashboard/data/`)
+- `experiments.js` — 24 phase experiments with narratives
+- `stage1.js` — STAGE1_SUMMARY, AGENT_COST_DATA, per-experiment cost breakdowns
+- `attacks.js` — 14 attack descriptions, DIFFICULTY_TIERS, EXPECTED_AGENT_BEHAVIOR
+- `mcpExtended.js` — 7 MCP configs, AMATAS_BASELINE, tool catalog
+- `ablation.js` — Ablation conditions and results
+- `agentPerformance.js` — Agent × attack cross-performance data
+- `faithfulness.js` — Claim verification audit data
+- `shapComparison.js` — SHAP flows for explainability comparison
+- `constants.js` — RESULTS_BASE URL, dataset splits, file maps
 
 ### Live Updates
-- Experiments push `live_status.json` to GitHub on every checkpoint
-- Dashboard reads from raw GitHub URLs
-- Auto-refreshes every 15 seconds
-
-### Files
-- `src/dashboard/NIDSDashboard.jsx` — main React component
-- `src/dashboard/data.js` — generated experiment data
-- `src/dashboard/server.py` — backend API
-- `scripts/prepare_dashboard_data.py` — data generator
+- `useLiveStatus` hook polls `live_status.json` + `running_summary.json` every 15s
+- `LiveBanner` component shows running/paused/complete experiment status
+- Toast notifications when new experiment results arrive
 
 ---
 
