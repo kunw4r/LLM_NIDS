@@ -1,21 +1,29 @@
+// Test-set evaluation: RF trained on dev+val (12M flows, all 14 attack types),
+// evaluated on held-out test split (8M flows, never seen by RF). No data leakage.
 export const STAGE1_SUMMARY = {
   experiments: [
-    { attack_type: "FTP-BruteForce", status: "complete", recall: 100, fpr: 0, f1: 100, cost: 2.13, cost_per_tp: 0.04, confusion: { tp: 50, fp: 0, tn: 950, fn: 0 } },
-    { attack_type: "SSH-Bruteforce", status: "complete", recall: 98, fpr: 0, f1: 99, cost: 2.16, cost_per_tp: 0.04, confusion: { tp: 49, fp: 0, tn: 950, fn: 1 } },
-    { attack_type: "DDoS_attacks-LOIC-HTTP", status: "complete", recall: 82, fpr: 0, f1: 90, cost: 1.57, cost_per_tp: 0.04, confusion: { tp: 41, fp: 0, tn: 950, fn: 9 } },
-    { attack_type: "DoS_attacks-Hulk", status: "complete", recall: 92, fpr: 0, f1: 96, cost: 2.17, cost_per_tp: 0.05, confusion: { tp: 46, fp: 0, tn: 950, fn: 4 } },
-    { attack_type: "DoS_attacks-SlowHTTPTest", status: "complete", recall: 100, fpr: 0, f1: 100, cost: 2.12, cost_per_tp: 0.04, confusion: { tp: 50, fp: 0, tn: 950, fn: 0 } },
-    { attack_type: "DoS_attacks-GoldenEye", status: "complete", recall: 92, fpr: 0, f1: 96, cost: 2.15, cost_per_tp: 0.05, confusion: { tp: 46, fp: 0, tn: 950, fn: 4 } },
+    { attack_type: "FTP-BruteForce", status: "complete", recall: 100, fpr: 0.1, f1: 99, cost: 2.16, cost_per_tp: 0.04, confusion: { tp: 50, fp: 1, tn: 949, fn: 0 } },
+    { attack_type: "SSH-Bruteforce", status: "complete", recall: 100, fpr: 0.1, f1: 99, cost: 2.20, cost_per_tp: 0.04, confusion: { tp: 50, fp: 1, tn: 949, fn: 0 } },
+    { attack_type: "DDoS_attacks-LOIC-HTTP", status: "complete", recall: 86, fpr: 0.1, f1: 91, cost: 1.62, cost_per_tp: 0.04, confusion: { tp: 43, fp: 1, tn: 949, fn: 7 } },
+    { attack_type: "DoS_attacks-Hulk", status: "complete", recall: 84, fpr: 0.1, f1: 90, cost: 2.18, cost_per_tp: 0.05, confusion: { tp: 42, fp: 1, tn: 949, fn: 8 } },
+    { attack_type: "DoS_attacks-SlowHTTPTest", status: "complete", recall: 100, fpr: 0.1, f1: 99, cost: 2.20, cost_per_tp: 0.04, confusion: { tp: 50, fp: 1, tn: 949, fn: 0 } },
+    { attack_type: "DoS_attacks-GoldenEye", status: "complete", recall: 90, fpr: 0, f1: 95, cost: 2.16, cost_per_tp: 0.05, confusion: { tp: 45, fp: 0, tn: 950, fn: 5 } },
     { attack_type: "DoS_attacks-Slowloris", status: "complete", recall: 100, fpr: 0, f1: 100, cost: 2.16, cost_per_tp: 0.04, confusion: { tp: 50, fp: 0, tn: 950, fn: 0 } },
-    { attack_type: "DDOS_attack-HOIC", status: "complete", recall: 58, fpr: 0, f1: 72, cost: 1.79, cost_per_tp: 0.06, confusion: { tp: 29, fp: 1, tn: 949, fn: 21 } },
-    { attack_type: "DDOS_attack-LOIC-UDP", status: "complete", recall: 100, fpr: 0, f1: 96, cost: 1.87, cost_per_tp: 0.04, confusion: { tp: 50, fp: 4, tn: 946, fn: 0 } },
-    { attack_type: "Bot", status: "complete", recall: 82, fpr: 1, f1: 85, cost: 2.30, cost_per_tp: 0.06, confusion: { tp: 41, fp: 6, tn: 944, fn: 9 } },
-    { attack_type: "Infilteration", status: "complete", recall: 0, fpr: 0, f1: 0, cost: 0.80, cost_per_tp: Infinity, confusion: { tp: 0, fp: 2, tn: 948, fn: 50 } },
-    { attack_type: "Brute_Force_-Web", status: "complete", recall: 86, fpr: 0, f1: 89, cost: 2.05, cost_per_tp: 0.05, confusion: { tp: 43, fp: 4, tn: 946, fn: 7 } },
-    { attack_type: "Brute_Force_-XSS", status: "complete", recall: 84, fpr: 0, f1: 89, cost: 2.09, cost_per_tp: 0.05, confusion: { tp: 42, fp: 2, tn: 948, fn: 8 } },
-    { attack_type: "SQL_Injection", status: "complete", recall: 98, fpr: 0, f1: 96, cost: 1.99, cost_per_tp: 0.04, confusion: { tp: 49, fp: 3, tn: 947, fn: 1 } },
+    { attack_type: "DDOS_attack-HOIC", status: "complete", recall: 66, fpr: 0, f1: 80, cost: 1.52, cost_per_tp: 0.05, confusion: { tp: 33, fp: 0, tn: 950, fn: 17 } },
+    { attack_type: "DDOS_attack-LOIC-UDP", status: "complete", recall: 100, fpr: 0.1, f1: 99, cost: 1.64, cost_per_tp: 0.03, confusion: { tp: 50, fp: 1, tn: 949, fn: 0 } },
+    { attack_type: "Bot", status: "complete", recall: 82, fpr: 0.4, f1: 86, cost: 1.75, cost_per_tp: 0.04, confusion: { tp: 41, fp: 4, tn: 946, fn: 9 } },
+    { attack_type: "Infilteration", status: "complete", recall: 34, fpr: 0, f1: 51, cost: 0.64, cost_per_tp: 0.04, confusion: { tp: 17, fp: 0, tn: 950, fn: 33 } },
+    { attack_type: "Brute_Force_-Web", status: "complete", recall: 52, fpr: 0.1, f1: 68, cost: 1.04, cost_per_tp: 0.04, confusion: { tp: 26, fp: 1, tn: 949, fn: 24 } },
+    { attack_type: "Brute_Force_-XSS", status: "complete", recall: 86, fpr: 0.1, f1: 91, cost: 1.77, cost_per_tp: 0.04, confusion: { tp: 43, fp: 1, tn: 949, fn: 7 } },
+    { attack_type: "SQL_Injection", status: "complete", recall: 88, fpr: 0, f1: 94, cost: 1.71, cost_per_tp: 0.04, confusion: { tp: 44, fp: 0, tn: 950, fn: 6 } },
   ],
-  overall: { best_f1: 100, best_detected: "FTP-BruteForce (+ 3 others)", total_flows: 14000, total_cost: 27.35, avg_fpr: 0.09, mean_recall: 91, mean_recall_ex_inf: 90, mean_f1: 86, mean_f1_ex_inf: 93 },
+  overall: { best_f1: 100, best_detected: "DoS-Slowloris", total_flows: 14000, total_cost: 24.75, avg_fpr: 0.09, mean_recall: 83, mean_f1: 89 },
+  evaluation: {
+    rf_trained_on: "development + validation (12M flows, all 14 attack types)",
+    evaluated_on: "held-out test split (8M flows, never seen by RF)",
+    data_separation: "No leakage — test split completely held out during RF training",
+    sample_size_note: "50 attack flows per type; 95% CI on 100% recall is [93%, 100%]",
+  },
 };
 
 export const AGENT_COST_DATA = {

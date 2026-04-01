@@ -101,10 +101,10 @@ export default function Overview({ s1, onNavigateToJourney, onNavigateToTab }) {
       {/* Hero Numbers */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { label: "AMATAS F1", value: `${avgF1}%`, sub: `vs 62.8% best single-agent` },
-          { label: "False Positive Rate", value: `${fpr}%`, sub: `across ${(totalFP + totalTN).toLocaleString()} benign flows` },
-          { label: "Evaluation Cost", value: dollar(s1.overall.total_cost), sub: `${s1.overall.total_flows.toLocaleString()} flows, 14 attack types` },
-          { label: "Cost Reduction", value: "94.6%", sub: `RF pre-filter saves ~$${(AGENT_COST_DATA.estWithoutTier1 - s1.overall.total_cost).toFixed(0)}` },
+          { label: "AMATAS F1", value: `${avgF1}%`, sub: `held-out test set, no leakage` },
+          { label: "False Positive Rate", value: `${fpr}%`, sub: `${totalFP} FP across ${(totalFP + totalTN).toLocaleString()} benign` },
+          { label: "Avg Recall", value: `${Math.round(s1.experiments.reduce((s, e) => s + (e.recall || 0), 0) / s1.experiments.length)}%`, sub: `${s1.experiments.filter(e => e.recall >= 80).length} of 14 types at 80%+` },
+          { label: "Total Cost", value: dollar(s1.overall.total_cost), sub: `$${(s1.overall.total_cost / s1.experiments.length).toFixed(2)}/batch avg` },
         ].map(h => (
           <div key={h.label} className="border border-gray-200 rounded-lg p-6">
             <div className="text-4xl font-bold tracking-tight text-gray-900">{h.value}</div>

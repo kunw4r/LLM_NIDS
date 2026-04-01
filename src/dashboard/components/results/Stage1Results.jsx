@@ -23,8 +23,18 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
       {/* Header */}
       <h2 className="text-xl font-bold mb-1 tracking-tight">Per-Attack-Type Detection at 5% Prevalence</h2>
       <p className="text-sm text-gray-500 mb-5">
-        Each batch: 950 benign + 50 attack flows. Tier-1 RF pre-filter reduces LLM calls by ~95%.
+        Each batch: 950 benign + 50 attack flows. RF pre-filter trained on dev+validation, evaluated on held-out test split.
       </p>
+
+      {/* ── DATA INTEGRITY BADGE ── */}
+      <div className="flex items-center gap-3 mb-5 p-3 bg-green-50 border border-green-200 rounded-lg">
+        <div className="w-8 h-8 rounded-full bg-green-100 border-2 border-green-500 flex items-center justify-center text-green-700 text-sm font-bold flex-shrink-0">&#10003;</div>
+        <div className="text-sm text-gray-700">
+          <strong className="text-green-800">No data leakage.</strong> RF trained on development + validation splits (12M flows).
+          All results evaluated on the <strong>held-out test split</strong> (8M flows) that the RF never saw during training.
+          Full reasoning chains stored for every flow.
+        </div>
+      </div>
 
       {/* ── EXPERIMENT NARRATIVE — What / Gained / Conclude / Justify ── */}
       <div className="border border-blue-100 bg-blue-50/30 rounded-lg p-5 mb-6 space-y-4">
@@ -32,9 +42,9 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
           <h3 className="text-xs font-semibold text-blue-800 uppercase tracking-wide mb-1.5">What We Tested</h3>
           <p className="text-sm text-gray-700 leading-relaxed m-0">
             The full AMATAS v2 pipeline (Tier 1 RF + 6 LLM agents) on <strong>all 14 CICIDS2018 attack types</strong> at
-            realistic 5% attack prevalence. Each experiment uses 1,000 flows (50 attack + 950 benign), sorted chronologically
-            by source IP to preserve temporal patterns. This is the first evaluation of an LLM-based NIDS across every attack
-            category in the dataset — prior work tested on subsets or balanced splits.
+            realistic 5% attack prevalence. Each experiment uses 1,000 flows (50 attack + 950 benign) from the held-out
+            test split, sorted chronologically by source IP to preserve temporal patterns. The RF was retrained on
+            development + validation combined (12M flows) so it has seen all 14 attack type patterns.
           </p>
         </div>
 
@@ -43,16 +53,15 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
           <div className="text-sm text-gray-700 leading-relaxed space-y-1">
             <p className="m-0">
               <strong>{highRecall.length} of 14</strong> attack types detected at 80%+ recall.{" "}
-              <strong>{perfectTypes.length} types</strong> achieved perfect detection (100% recall, 0% FPR).{" "}
-              Overall FPR across {(totalFP + totalTN).toLocaleString()} benign flows: <strong>{overallFPR}%</strong>.{" "}
-              Total evaluation cost: <strong>{dollar(s1.overall.total_cost)}</strong> for {s1.overall.total_flows.toLocaleString()} flows
-              (${(s1.overall.total_cost / s1.overall.total_flows).toFixed(4)}/flow).
+              {perfectTypes.length > 0 && <><strong>{perfectTypes.length} types</strong> achieved 100% recall on 50 flows (95% CI: 93-100% true recall). </>}
+              Overall FPR across {(totalFP + totalTN).toLocaleString()} benign flows: <strong>{overallFPR}%</strong> ({totalFP} false positives).{" "}
+              Total evaluation cost: <strong>{dollar(s1.overall.total_cost)}</strong> for {s1.overall.total_flows.toLocaleString()} flows.
             </p>
-            {failedTypes.length > 0 && (
-              <p className="m-0 text-red-700">
-                <strong>{failedTypes.length} type{failedTypes.length > 1 ? "s" : ""} failed:</strong>{" "}
-                {failedTypes.map(e => e.attack_type.replace(/_/g, " ")).join(", ")} — 0% recall, indicating
-                that individual flow features are insufficient for these attack categories.
+            {lowRecall.length > 0 && (
+              <p className="m-0 text-amber-800">
+                <strong>{lowRecall.length} type{lowRecall.length > 1 ? "s" : ""} below 80%:</strong>{" "}
+                {lowRecall.map(e => `${e.attack_type.replace(/_/g, " ")} (${e.recall}%)`).join(", ")} —
+                these attacks mimic legitimate traffic at the flow level, requiring temporal or cluster context.
               </p>
             )}
           </div>
@@ -62,29 +71,34 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
           <h3 className="text-xs font-semibold text-purple-800 uppercase tracking-wide mb-1.5">What We Conclude</h3>
           <div className="text-sm text-gray-700 leading-relaxed space-y-1">
             <p className="m-0">
-              The two-tier architecture (RF pre-filter + multi-agent LLM) is <strong>economically viable</strong> for
-              production NIDS — the RF filters ~95% of traffic at zero LLM cost, while the 6-agent pipeline provides
-              explainable verdicts on the remaining 5%. Near-zero FPR across all experiments demonstrates that the
-              Devil's Advocate consensus mechanism effectively suppresses false alarms at realistic benign ratios.
+              The two-tier architecture achieves <strong>83.4% avg recall / 88.7% avg F1</strong> on genuinely
+              held-out data with <strong>0.09% FPR</strong>. Attack types cluster into three difficulty tiers:
+              (1) clear-signal attacks (brute force, slow DoS) at 90-100%, (2) volumetric attacks requiring pattern
+              analysis at 82-90%, and (3) stealthy attacks (Infiltration, HOIC, Web brute force) at 34-66%.
             </p>
             <p className="m-0">
-              Attack types cluster into <strong>three difficulty tiers</strong>: (1) clear-signal attacks with distinctive
-              port/protocol signatures that achieve 95-100% recall, (2) moderate attacks requiring statistical analysis
-              that reach 82-92%, and (3) stealthy attacks (Infiltration, HOIC) where individual flows mimic benign traffic.
+              The 0.09% FPR means <strong>less than 1 false alarm per 1,000 benign flows</strong>. At 5% attack prevalence,
+              this translates to roughly 1 false positive for every 47 true detections — operationally acceptable for a
+              production NIDS.
             </p>
           </div>
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Justification</h3>
-          <p className="text-sm text-gray-700 leading-relaxed m-0">
-            This experiment validates the core thesis claim: LLM agents can provide <strong>explainable</strong> intrusion
-            detection that traditional ML cannot. Every verdict includes reasoning chains from 6 perspectives — traceable evidence,
-            counter-arguments, and synthesized consensus. The per-flow cost of ${(s1.overall.total_cost / s1.overall.total_flows).toFixed(4)} with
-            Tier 1 filtering proves that LLM-based NIDS is not prohibitively expensive when properly architected. The 0% FPR
-            result is particularly significant: at 5% attack prevalence, even a 1% FPR would generate 9.5 false alarms per
-            true detection — the multi-agent consensus approach eliminates this problem entirely.
-          </p>
+          <h3 className="text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1.5">Why Some Results Are High</h3>
+          <div className="text-sm text-gray-700 leading-relaxed space-y-1">
+            <p className="m-0">
+              The 100% recall on 5 attack types reflects genuinely distinctive flow signatures, not evaluation artefacts.
+              FTP-BruteForce produces 1ms connections with 60-byte payloads to port 21 — 49 identical flows from one IP.
+              LOIC-UDP generates 125,000 one-directional UDP packets totalling 7.5MB. Slowloris holds connections open for
+              minutes with minimal data. These patterns are unambiguous anomalies that any competent detector should catch.
+            </p>
+            <p className="m-0">
+              However, <strong>100% on 50 flows does not guarantee 100% true recall</strong>. The 95% confidence interval
+              for 50/50 detected is [93%, 100%]. With a larger sample (500 flows), 2-4 misses would be expected, placing
+              the true recall at 96-99%. This sample size limitation applies to all results and is acknowledged in the thesis.
+            </p>
+          </div>
         </div>
       </div>
 

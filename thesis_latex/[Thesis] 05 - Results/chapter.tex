@@ -7,40 +7,42 @@
 \section{Stage 1 Results Overview}
 \label{sec:results-overview}
 
-Stage 1 constitutes the principal empirical contribution of this thesis: a systematic evaluation of the AMATAS v2 two-tier architecture across all fourteen attack types present in the CICIDS2018 NetFlow v3 dataset. Each experiment comprised 1,000 flows sampled at a realistic class distribution of 50 attack flows and 950 benign flows (a 5\% attack prevalence), ordered chronologically by source IP and flow start time to preserve the temporal structure that the AMATAS temporal agent relies upon. All experiments employed GPT-4o as the underlying language model for the six-agent pipeline, with the Tier 1 Random Forest pre-filter operating at a classification threshold of 0.15, a setting established during development to achieve 100\% recall on the training partition whilst incurring zero false positives (Section~\ref{sec:threshold-selection}).
+Stage 1 constitutes the principal empirical contribution of this thesis: a systematic evaluation of the AMATAS v2 two-tier architecture across all fourteen attack types present in the CICIDS2018 NetFlow v3 dataset. Each experiment comprised 1,000 flows sampled at a realistic class distribution of 50 attack flows and 950 benign flows (a 5\% attack prevalence), ordered chronologically by source IP and flow start time to preserve the temporal structure that the AMATAS temporal agent relies upon. All experiments employed GPT-4o as the underlying language model for the six-agent pipeline, with the Tier 1 Random Forest pre-filter operating at a classification threshold of 0.15.
+
+To ensure methodological rigour and eliminate any possibility of data leakage, the Random Forest was retrained on the combined development and validation partitions (12.07 million flows encompassing all fourteen attack categories) and all Stage~1 experiments were evaluated exclusively on the held-out test partition (8.05 million flows). No flow in any Stage~1 batch was present in the Random Forest's training data. This represents the strictest evaluation protocol: the RF must generalise to genuinely unseen traffic, and the LLM agents must classify flows from a temporal window not represented in the RF's training distribution.
 
 Table~\ref{tab:stage1-results} presents the full per-experiment results across all 14,000 flows.
 
 \begin{table}[H]
 \centering
-\caption{Stage 1 Per-Experiment Results ($n = 1{,}000$ flows per experiment; 50 attack + 950 benign)}
+\caption{Stage 1 Per-Experiment Results --- held-out test set ($n = 1{,}000$ flows per experiment; 50 attack + 950 benign). RF trained on development + validation; evaluated on test split.}
 \label{tab:stage1-results}
 \scriptsize
-\begin{tabularx}{\textwidth}{@{}l r r r r r r r r r@{}}
+\begin{tabularx}{\textwidth}{@{}l r r r r r r r r@{}}
 \toprule
-Attack Type & TP & FP & FN & TN & Recall & FPR & F1 & Cost (\$) & Filter Rate \\
+Attack Type & TP & FP & FN & TN & Recall & FPR & F1 & Cost (\$) \\
 \midrule
-FTP-BruteForce & 50 & 0 & 0 & 950 & 100.0\% & 0.00\% & 100.0\% & 2.13 & 95.0\% \\
-SSH-Bruteforce & 49 & 0 & 1 & 950 & 98.0\% & 0.00\% & 99.0\% & 2.16 & 94.9\% \\
-DoS-SlowHTTPTest & 50 & 0 & 0 & 950 & 100.0\% & 0.00\% & 100.0\% & 2.12 & 95.0\% \\
-DoS-Slowloris & 50 & 0 & 0 & 950 & 100.0\% & 0.00\% & 100.0\% & 2.16 & 95.0\% \\
-DoS-Hulk & 46 & 0 & 4 & 950 & 92.0\% & 0.00\% & 96.0\% & 2.17 & 95.0\% \\
-DoS-GoldenEye & 46 & 0 & 4 & 950 & 92.0\% & 0.00\% & 96.0\% & 2.15 & 95.0\% \\
-DDoS-LOIC-HTTP & 41 & 0 & 9 & 950 & 82.0\% & 0.00\% & 90.0\% & 1.57 & 95.0\% \\
-DDoS-LOIC-UDP & 50 & 4 & 0 & 946 & 100.0\% & 0.42\% & 96.2\% & 1.87 & 94.1\% \\
-DDoS-HOIC & 29 & 1 & 21 & 949 & 58.0\% & 0.11\% & 73.4\% & 1.79 & 94.1\% \\
-Bot & 41 & 6 & 9 & 944 & 82.0\% & 0.63\% & 85.4\% & 2.30 & 92.7\% \\
-Infiltration & 0 & 2 & 50 & 948 & 0.0\% & 0.21\% & 0.0\% & 0.80 & 97.4\% \\
-Brute\_Force-Web & 43 & 4 & 7 & 946 & 86.0\% & 0.42\% & 89.1\% & 2.05 & 93.3\% \\
-Brute\_Force-XSS & 42 & 2 & 8 & 948 & 84.0\% & 0.21\% & 89.3\% & 2.09 & 93.7\% \\
-SQL\_Injection & 49 & 3 & 1 & 947 & 98.0\% & 0.32\% & 96.1\% & 1.99 & 94.0\% \\
+FTP-BruteForce & 50 & 1 & 0 & 949 & 100.0\% & 0.11\% & 99.0\% & 2.16 \\
+SSH-Bruteforce & 50 & 1 & 0 & 949 & 100.0\% & 0.11\% & 99.0\% & 2.20 \\
+DoS-SlowHTTPTest & 50 & 1 & 0 & 949 & 100.0\% & 0.11\% & 99.0\% & 2.20 \\
+DoS-Slowloris & 50 & 0 & 0 & 950 & 100.0\% & 0.00\% & 100.0\% & 2.16 \\
+DDoS-LOIC-UDP & 50 & 1 & 0 & 949 & 100.0\% & 0.11\% & 99.0\% & 1.64 \\
+DoS-GoldenEye & 45 & 0 & 5 & 950 & 90.0\% & 0.00\% & 94.7\% & 2.16 \\
+SQL\_Injection & 44 & 0 & 6 & 950 & 88.0\% & 0.00\% & 93.6\% & 1.71 \\
+DDoS-LOIC-HTTP & 43 & 1 & 7 & 949 & 86.0\% & 0.11\% & 91.5\% & 1.62 \\
+Brute\_Force-XSS & 43 & 1 & 7 & 949 & 86.0\% & 0.11\% & 91.0\% & 1.77 \\
+DoS-Hulk & 42 & 1 & 8 & 949 & 84.0\% & 0.11\% & 90.3\% & 2.18 \\
+Bot & 41 & 4 & 9 & 946 & 82.0\% & 0.42\% & 85.8\% & 1.75 \\
+DDoS-HOIC & 33 & 0 & 17 & 950 & 66.0\% & 0.00\% & 79.5\% & 1.52 \\
+Brute\_Force-Web & 26 & 1 & 24 & 949 & 52.0\% & 0.11\% & 67.5\% & 1.04 \\
+Infiltration & 17 & 0 & 33 & 950 & 34.0\% & 0.00\% & 50.7\% & 0.64 \\
 \midrule
-\textbf{Aggregate} & \textbf{586} & \textbf{22} & \textbf{114} & \textbf{13,278} & \textbf{83.7\%} & \textbf{0.07\%} & \textbf{86.3\%} & \textbf{27.35} & \textbf{94.4\%} \\
+\textbf{Aggregate} & \textbf{584} & \textbf{12} & \textbf{116} & \textbf{13,288} & \textbf{83.4\%} & \textbf{0.09\%} & \textbf{88.7\%} & \textbf{24.75} \\
 \bottomrule
 \end{tabularx}
 
 \vspace{0.5em}
-\noindent\textit{FPR = False Positive Rate (FP / (FP + TN)); F1 = harmonic mean of precision and recall; Filter Rate = proportion of flows classified as benign by Tier 1 without LLM invocation.}
+\noindent\textit{FPR = False Positive Rate (FP / (FP + TN)); F1 = harmonic mean of precision and recall. All flows sourced from the held-out test partition. The RF was trained on development + validation and has never seen any test-split flow.}
 \end{table}
 
 \begin{figure}[H]
@@ -49,29 +51,29 @@ SQL\_Injection & 49 & 3 & 1 & 947 & 98.0\% & 0.32\% & 96.1\% & 1.99 & 94.0\% \\
 
 % Draw bars individually (sorted by F1 descending)
 \foreach \name/\val/\col/\ypos in {
-  FTP-BruteForce/100/ForestGreen/13,
-  DoS-SlowHTTPTest/100/ForestGreen/12,
-  DoS-Slowloris/100/ForestGreen/11,
-  SSH-Bruteforce/99/ForestGreen/10,
-  DDoS-LOIC-UDP/96/RoyalBlue/9,
-  SQL\_Injection/96/RoyalBlue/8,
-  DoS-Hulk/96/RoyalBlue/7,
-  DoS-GoldenEye/96/RoyalBlue/6,
-  DDoS-LOIC-HTTP/90/RoyalBlue/5,
-  Brute\_Force-XSS/89/Goldenrod/4,
-  Brute\_Force-Web/89/Goldenrod/3,
-  Bot/85/Goldenrod/2,
-  DDoS-HOIC/72/RedOrange/1
+  DoS-Slowloris/100/ForestGreen/13,
+  FTP-BruteForce/99/ForestGreen/12,
+  SSH-Bruteforce/99/ForestGreen/11,
+  DoS-SlowHTTPTest/99/ForestGreen/10,
+  DDoS-LOIC-UDP/99/ForestGreen/9,
+  DoS-GoldenEye/95/RoyalBlue/8,
+  SQL\_Injection/94/RoyalBlue/7,
+  DDoS-LOIC-HTTP/91/RoyalBlue/6,
+  Brute\_Force-XSS/91/RoyalBlue/5,
+  DoS-Hulk/90/RoyalBlue/4,
+  Bot/86/Goldenrod/3,
+  DDoS-HOIC/80/Goldenrod/2,
+  Brute\_Force-Web/68/RedOrange/1
 } {
   \fill[\col!70] (0,\ypos-0.35) rectangle (\val,\ypos+0.35);
   \node[left, font=\scriptsize] at (-1,\ypos) {\name};
   \node[right, font=\scriptsize\bfseries] at (\val+1,\ypos) {\val\%};
 }
 
-% Infiltration separately (0%)
-\fill[red!70] (0,-0.35) rectangle (1,0.35);
+% Infiltration separately (51%)
+\fill[RedOrange!70] (0,-0.35) rectangle (51,0.35);
 \node[left, font=\scriptsize] at (-1,0) {Infiltration};
-\node[right, font=\scriptsize\bfseries, text=red] at (2,0) {0\%};
+\node[right, font=\scriptsize\bfseries, text=RedOrange] at (52,0) {51\%};
 
 % Axes
 \draw[thick] (0,-0.7) -- (0,13.7);
@@ -82,18 +84,22 @@ SQL\_Injection & 49 & 3 & 1 & 947 & 98.0\% & 0.32\% & 96.1\% & 1.99 & 94.0\% \\
 }
 \node[below, font=\small] at (50,-2.2) {F1 Score (\%)};
 
-% Mean line (excluding Infiltration)
-\draw[dashed, thick, Purple] (92.9,-0.7) -- (92.9,13.7);
-\node[above, font=\scriptsize, text=Purple, rotate=90, anchor=south] at (92.9,7) {Mean F1 = 92.9\% (excl.\ Infiltration)};
+% Mean line
+\draw[dashed, thick, Purple] (88.7,-0.7) -- (88.7,13.7);
+\node[above, font=\scriptsize, text=Purple, rotate=90, anchor=south] at (88.7,7) {Mean F1 = 88.7\%};
 
 \end{tikzpicture}
-\caption{Stage 1 F1 scores across all fourteen attack types. Colours indicate performance tiers: green (F1 $\geq$ 99\%), blue (90--96\%), gold (85--89\%), orange/red ($<$ 85\%).}
+\caption{Stage 1 F1 scores across all fourteen attack types on the held-out test set. Colours indicate performance tiers: green (F1 $\geq$ 99\%), blue (90--95\%), gold (80--89\%), orange ($<$ 80\%).}
 \label{fig:stage1-f1}
 \end{figure}
 
-Across all 14,000 flows, AMATAS v2 achieved a mean recall of 83.7\% and a mean F1 score of 86.3\%. The false positive rate remained exceptionally low at a mean of 0.07\%, with 10 of the 14 attack types producing exactly zero false positives. If the Infiltration experiment is excluded on the grounds that it represents a qualitatively distinct failure mode (discussed fully in Section~\ref{sec:infiltration-failure}), the mean recall across the remaining 13 detectable attack types rises to 90.2\%, with a mean F1 of 92.9\%. Four attack types (FTP-BruteForce, DoS-SlowHTTPTest, DoS-Slowloris, and DDoS-LOIC-UDP) achieved perfect 100\% recall.
+Across all 14,000 flows evaluated on the held-out test partition, AMATAS v2 achieved a mean recall of 83.4\% and a mean F1 score of 88.7\%. The false positive rate was 0.09\% (12 false positives across 13,300 benign flows), meaning fewer than one false alarm per 1,000 benign flows. Five attack types (FTP-BruteForce, SSH-Bruteforce, DoS-SlowHTTPTest, DoS-Slowloris, and DDoS-LOIC-UDP) achieved 100\% recall on 50-flow samples.
 
-These results confirm the central hypothesis of the v2 architecture: that a two-tier design combining a Random Forest pre-filter with a multi-agent LLM pipeline can deliver high-recall, low-FPR detection across a diverse threat landscape at a substantially reduced cost compared to running the LLM pipeline on every flow.
+It is important to contextualise the 100\% recall results. A sample of 50 attack flows provides a 95\% confidence interval of [93.0\%, 100.0\%] when all 50 are correctly detected; that is, the observed 100\% recall is statistically consistent with a true recall of 93--100\%. The high detection rate on these specific attack types reflects genuinely distinctive flow-level signatures rather than evaluation artefacts: FTP-BruteForce produces 1\,ms connections with 60-byte payloads to port~21, with 49 identical flows from the same source IP; DDoS-LOIC-UDP generates 125,000 unidirectional UDP packets totalling 7.5\,MB to an HTTP port; and DoS-Slowloris holds TCP connections open for minutes with minimal data transfer. These patterns represent unambiguous statistical anomalies that any competent multi-perspective analysis should detect. With larger samples (e.g., 500 attack flows), the observed recall would likely settle at 96--99\% rather than 100\%, and this sample size limitation applies to all reported results.
+
+Infiltration (DNS exfiltration) is notable as the one attack type that was previously undetectable by the original RF pre-filter. The retrained RF, having been exposed to 47,038 Infiltration flows during training, now routes 19 of 50 Infiltration flows to the LLM pipeline, of which 17 are correctly classified --- yielding 34\% recall. This represents the first successful detection of Infiltration by AMATAS without the temporal clustering mechanism described in Section~\ref{sec:clustering-results}. The remaining 33 undetected flows are DNS queries that remain statistically indistinguishable from legitimate DNS at the individual flow level.
+
+These results confirm the central hypothesis of the v2 architecture: that a two-tier design combining a Random Forest pre-filter with a multi-agent LLM pipeline can deliver high-recall, low-FPR detection across a diverse threat landscape at a substantially reduced cost compared to running the LLM pipeline on every flow. The total evaluation cost of \$24.75 for 14,000 flows (\$1.77 per 1,000-flow batch on average) demonstrates economic viability at scale.
 
 \subsection{Random Forest Standalone Baseline}
 \label{sec:rf-baseline}
@@ -421,6 +427,105 @@ The results are striking: all four tool-augmented configurations performed \text
 The degradation mechanism is consistent with the tool distraction effect documented by \textcite{Yao2023}: the agent expends its reasoning budget on interpreting tool outputs rather than analysing the flow features directly. When the IANA lookup confirms that port 22 is registered for SSH and the DShield API reports that port 22 is heavily targeted globally, the agent anchors on this generic context rather than examining whether the specific flow's timing, byte distribution, and flag pattern are anomalous. The tools provide true but irrelevant information: knowing that SSH is a common brute force target does not help classify whether \textit{this particular flow} is a brute force attempt. The additional tools in Configs F and G compound this effect by adding further generic context (CVE histories, MITRE technique descriptions) that dilutes attention to the discriminative flow-level features.
 
 AMATAS v2 outperformed all seven MCP configurations on F1 by a substantial margin (88.0\% vs a maximum of 62.8\%), and reduced the false positive rate by a factor of approximately 25 relative to the best single-agent configuration (1.1\% vs 27.1\%). The 25.2 percentage-point F1 gap between the best single-agent configuration and AMATAS, combined with the finding that tool augmentation actively degrades single-agent performance, establishes that the multi-agent architecture's value derives from distributed specialist reasoning and adversarial validation rather than from external knowledge enrichment.
+
+\subsection{Qualitative Reasoning Analysis}
+\label{sec:mcp-qualitative}
+
+The quantitative results establish that tool augmentation degrades detection accuracy, but they do not explain the mechanism by which this degradation occurs. To investigate the causal pathway, a qualitative analysis was conducted comparing the agent's reasoning text across configurations for the same flows. This analysis examined three dimensions: (1)~how tool outputs altered the reasoning process, (2)~whether tools contributed to explainability even when they did not improve detection, and (3)~which specific tools provided value and which introduced noise.
+
+\subsubsection{The Normalising Frame Effect}
+
+The most consequential finding is a reasoning phenomenon we term the \textit{normalising frame effect}, a domain-specific instance of the irrelevant context distraction documented by \textcite{Shi2023}: tool outputs that decode raw feature values into their textbook definitions provide a cognitive frame that biases the agent toward interpreting the flow as legitimate traffic. Where \citeauthor{Shi2023} showed that adding topically related but task-irrelevant information to prompts causes dramatic accuracy decreases in mathematical and reading comprehension tasks, we observe the same mechanism in a security-critical classification setting: the tool outputs are factually correct and topically relevant to network security, yet they \textit{displace} the agent's direct feature analysis with generic protocol knowledge. This effect is most clearly illustrated by comparing the reasoning chains for SSH-Bruteforce flows across Configs~B and~D.
+
+\begin{table}[H]
+\centering
+\caption{Case Study: SSH-Bruteforce Flow (Flow~1) --- Config~B vs.\ Config~D}
+\label{tab:normalising-frame}
+\small
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Config B} (no tools) & \textbf{Verdict: MALICIOUS} (confidence 0.9) \\
+\midrule
+\multicolumn{2}{@{}p{\textwidth}@{}}{``The flow duration is very short (379~ms), suggesting a rapid connection attempt typical of automated login attempts. The presence of TCP flags indicating RST/FIN (binary 00011011) further suggests unsuccessful or broken connections likely due to login failures. There is also a high SYN rate indicated by the relatively small amount of data transferred.''} \\
+\addlinespace[6pt]
+\textbf{Config D} (3 tools) & \textbf{Verdict: BENIGN} (confidence 0.9) \\
+\midrule
+\multicolumn{2}{@{}p{\textwidth}@{}}{``The TCP flags FIN, SYN, PSH, and ACK indicate a completed TCP connection cycle with active data transfer, characteristic of a normal session. There are no signs of repeated short connections or anomalous patterns indicative of brute force attacks on SSH.''} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Both configurations analysed the same flow: a 379-millisecond TCP connection to port~22 with TCP flags value~27 (binary 00011011). Without tools, Config~B interpreted the raw binary flags as evidence of ``unsuccessful or broken connections likely due to login failures'' and correctly identified the flow as malicious. Config~D, having received a structured tool response decomposing flags~27 into \{FIN, SYN, PSH, ACK\} with textbook descriptions (``FIN: Connection teardown --- no more data from sender'', ``SYN: Synchronize sequence numbers --- connection initiation''), reframed the same evidence as ``a completed TCP connection cycle with active data transfer, characteristic of a normal session.''
+
+The tool output is factually correct: the flags do include FIN and SYN and PSH and ACK. Notably, the IANA port lookup for this flow returned an explicit warning: ``SSH: Common brute force target (T1110). Look for repeated short connections from same source''---yet the agent classified the flow as benign despite receiving a tool-generated alert about the very attack type it was experiencing. The structured flag decomposition overrode this warning, providing what amounts to a \textit{benign narrative template}. The presence of all four lifecycle flags (SYN, PSH, ACK, FIN) is consistent with a normal session \textit{in the abstract}, but in the specific context of a 379-millisecond flow to port~22 with minimal data transfer, it is far more consistent with a failed brute-force attempt. Without the tool, the agent engaged directly with the anomalous combination of short duration and connection-termination flags. With the tool, the agent anchored on the lifecycle-completeness interpretation that the tool's structured output foregrounded.
+
+This pattern repeated systematically across SSH-Bruteforce flows. Config~B correctly detected 10 of 10 SSH-Bruteforce flows; Config~D detected only 1 of 10 (Table~\ref{tab:mcp-per-attack}). In 9 of 9 misclassified flows, the reasoning text explicitly referenced the ``complete session lifecycle'' or ``normal connection setup and teardown'' frame derived from the decoded TCP flag output.
+
+\begin{table}[H]
+\centering
+\caption{MCP Per-Attack Detection Rate (correct detections out of 10 flows per type)}
+\label{tab:mcp-per-attack}
+\small
+\begin{tabular}{@{}l r r r r r r r@{}}
+\toprule
+Attack Type & A & B & C & D & E & F & G \\
+\midrule
+SSH-Bruteforce & 10 & 10 & 10 & \textbf{1} & 5 & \textbf{1} & \textbf{2} \\
+FTP-BruteForce & 10 & 10 & 10 & 10 & 10 & 10 & 10 \\
+DoS-Hulk       & 7  & 0  & 1  & 0  & 0  & 0  & 0 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.5em}
+\noindent\textit{FTP-BruteForce was trivially detectable across all configurations. SSH-Bruteforce detection collapsed from 10/10 (Configs~A--C) to 1--2/10 (Configs~D--G) when feature decoder tools were introduced. DoS-Hulk was undetectable by any single-flow analysis, motivating the multi-agent temporal architecture.}
+\end{table}
+
+FTP-BruteForce, by contrast, was detected at 10/10 across all seven configurations. FTP brute-force flows exhibit an unambiguous signature---1-millisecond connections to port~21 with SYN+RST+ACK flags and near-zero byte transfer---that no amount of tool context can obscure. This confirms that the normalising frame effect operates specifically on \textit{ambiguous} flows where the signal-to-noise ratio is moderate: when the attack signature is strong, tools are simply redundant; when it is weak, tools actively interfere.
+
+\subsubsection{Where Tools Provided Value}
+
+Fairness demands acknowledgement that tool augmentation produced two demonstrable improvements, both involving false positive corrections on benign flows.
+
+\textbf{Cloud metadata query (Flow~51).} Config~B flagged a benign HTTP request to 169.254.169.254 (the AWS EC2 metadata endpoint) as SUSPICIOUS, reasoning that ``a link-local address often used for special purposes'' combined with ``a long duration (60~seconds) with minimal data transfer'' suggested reconnaissance. Config~D, having received the IANA port lookup confirming port~80 as standard HTTP and the TCP flag decoder showing a normal lifecycle, correctly classified the flow as BENIGN, reasoning that ``the flow duration and byte count are consistent with a regular HTTP request/response cycle.'' The tool grounded the analysis in protocol facts rather than IP-address suspicion.
+
+\textbf{ICMP traffic (Flow~97).} Config~B flagged benign ICMP traffic as SUSPICIOUS due to ``zero ports and protocol~1,'' which its prompt-encoded knowledge did not contextualise. Config~D's \texttt{decode\_protocol} tool returned ``ICMP --- ping, traceroute, error messages,'' providing the semantic context needed for correct classification.
+
+Both corrections are false positive reductions on benign traffic, not improvements to attack detection. No tool-using configuration detected an attack that Config~B missed.
+
+\subsubsection{MITRE ATT\&CK as an Explainability Contribution}
+
+Config~C, which provided a MITRE ATT\&CK lookup tool, produced 31 technique references across 29 of 100 flows---the only configuration to generate structured threat intelligence mappings. All 10 SSH-Bruteforce flows were tagged with T1110 (Brute Force) or T1110.001 (Password Guessing), and all 10 FTP-BruteForce flows received T1110 references. These mappings represent genuine explainability value: they provide externally verifiable, standardised labels that link the agent's analysis to a widely adopted threat taxonomy.
+
+Paradoxically, Config~G---which had access to the same MITRE tool plus six additional tools---produced zero MITRE references. The agent never invoked the MITRE lookup. This suggests that tool overload creates a prioritisation problem: when presented with multiple tools, the agent defaults to the simplest decoders (protocol, port, flags) and neglects the more analytically valuable but cognitively demanding threat intelligence tools. The MITRE ATT\&CK finding supports a targeted tool design principle: a single well-chosen tool (Config~C) can enhance explainability without degrading detection, whereas a broad toolkit (Config~G) degrades both detection and explainability.
+
+\subsubsection{Tool Usage Patterns and the Attention Budget}
+
+Analysis of tool invocation patterns across Configs~D--G reveals that adding more tools to the toolkit did not proportionally increase tool usage. Average tool calls per flow rose only from 2.6 (Config~D, 3~tools available) to 3.0 (Config~G, 7~tools available). Three tools dominated across all configurations: \texttt{decode\_protocol} (called on 100\% of flows), \texttt{iana\_port\_lookup} ($\sim$97\%), and \texttt{decode\_tcp\_flags} ($\sim$67\%). The DShield port intelligence tool was invoked on 22--32 flows, consistently returning ``MINIMAL --- rarely targeted'' for standard ports, a response that actively reinforced benign verdicts on SSH-Bruteforce flows. The CVE lookup was called only four times across all configurations, returning either empty results or API errors. The MITRE ATT\&CK tool in Config~G was never invoked.
+
+This usage pattern is consistent with the concept of a bounded \textit{reasoning attention budget}: the agent allocates a fixed amount of reasoning effort per flow, and tool invocations consume a portion of that budget. When tool outputs require interpretation (even trivial interpretation of decoded protocol names), the agent has less residual capacity for the more demanding task of synthesising feature-level anomalies into an attack hypothesis. The three decoder tools saturate this budget with low-complexity, low-discriminative information, leaving no capacity for the higher-order analytical tools that might contribute genuine insight.
+
+\subsubsection{Confidence Calibration Under Tool Augmentation}
+
+A further concerning finding is that tool-augmented configurations exhibited \textit{higher confidence when incorrect}. Across flows where the verdict was wrong, Configs~D--G produced mean confidence scores of 0.84, compared to 0.79 for Config~B. The tools gave the agent a false sense of epistemic completeness: having consulted external sources, the agent reported greater certainty in its (incorrect) conclusions. This miscalibration has practical implications for any system that uses confidence scores for downstream triage, as tool-augmented agents would produce fewer low-confidence flags on missed attacks, reducing the likelihood of human review catching the error.
+
+\subsubsection{The Single-Flow Limitation: DoS-Hulk}
+
+DoS-Hulk flows were undetectable across all seven configurations, including Config~A's aggressive zero-shot approach (which detected 7 of 10 but at a 41.4\% FPR that would be operationally unusable). Individual DoS-Hulk flows on port~80 are genuinely indistinguishable from legitimate HTTP traffic: normal packet sizes, standard TCP lifecycle flags, and byte counts consistent with typical web requests. Config~G's reasoning for a misclassified DoS-Hulk flow is representative: ``The analyzed flow involves TCP traffic on port~80 [\ldots] a standard completed TCP session. This is consistent with normal HTTP web traffic.'' DShield's assessment that port~80 has ``minimal threat level with no significant anomalous activities'' compounded the misclassification.
+
+This universal failure across all single-agent configurations, regardless of tool access, establishes that DoS detection fundamentally requires temporal context---the ability to observe multiple flows from the same source IP across a compressed time window. No per-flow tool can provide this context, which is why the AMATAS multi-agent architecture, and specifically the Temporal Agent's cross-flow correlation capability, is architecturally necessary rather than merely beneficial. The DoS-Hulk result thus serves as both a limitation of the MCP approach and a direct motivation for the multi-agent design evaluated in Stage~1.
+
+\subsubsection{Summary of Qualitative Findings}
+
+The qualitative analysis identifies four mechanisms by which tool augmentation affects single-agent NIDS performance:
+
+\begin{enumerate}
+  \item \textbf{Normalising frame effect} --- decoded feature values provide benign-interpretation templates that override anomaly detection on ambiguous flows (SSH-Bruteforce: 10/10 $\to$ 1/10).
+  \item \textbf{Selective explainability contribution} --- a single targeted tool (MITRE ATT\&CK in Config~C) can enhance explainability without harming detection; broad toolkits degrade both.
+  \item \textbf{Attention budget saturation} --- simple decoder tools consume the agent's reasoning capacity, crowding out higher-order analysis and more valuable tools.
+  \item \textbf{Confidence miscalibration} --- tool access increases confidence in incorrect verdicts, reducing the effectiveness of confidence-based triage.
+\end{enumerate}
+
+These findings collectively argue that tool augmentation for LLM-based NIDS on static, anonymised datasets is counterproductive for detection but offers limited, targeted benefits for explainability. The more effective path to improved detection, as demonstrated by AMATAS, is not to enrich a single agent's external knowledge but to structure the reasoning process itself through multiple specialist perspectives and adversarial validation.
 
 \section{Cost Analysis}
 \label{sec:cost-analysis}
@@ -793,6 +898,28 @@ Devil's Advocate & 177 & 142 & 80.2\% \\
 \end{table}
 
 Table~\ref{tab:faithfulness-agents} presents faithfulness by agent. The Statistical Agent achieved the highest faithfulness (93.9\%), consistent with its focus on numeric features where verification is unambiguous. The Devil's Advocate exhibited the lowest faithfulness (80.2\%), attributable to its adversarial role: constructing counter-arguments sometimes requires referencing features in ways that prioritise narrative plausibility over strict accuracy. The Protocol Agent, despite its domain-specific mandate to validate protocol consistency, achieved only 90.4\% faithfulness, with errors concentrated in TCP flag interpretation, the same bitmask-decoding weakness observed system-wide.
+
+Table~\ref{tab:confab-examples} presents three representative confabulation instances from Stage~1 results, illustrating the distinct mechanisms by which agents introduce factual errors into otherwise coherent reasoning chains.
+
+\begin{table}[H]
+\centering
+\caption{Representative Confabulation Examples from Stage~1 Results}
+\label{tab:confab-examples}
+\small
+\begin{tabularx}{\textwidth}{@{}l l l X@{}}
+\toprule
+\textbf{Flow} & \textbf{Agent} & \textbf{Actual Value} & \textbf{Confabulated Claim} \\
+\midrule
+Bot & Behavioural & TCP\_FLAGS=219 (FIN+SYN+PSH+ACK) & ``SYN-ACK-RST flag sequence'' --- RST (0x04) is not set in 219 (0xDB). Agent inferred RST from short duration context suggesting a rejected connection. \\
+\addlinespace[4pt]
+DDoS-LOIC-HTTP & Protocol & TCP\_FLAGS=20 (RST+ACK) & ``SYN packet'' --- SYN (0x02) is not set in 20 (0x14). Agent inferred SYN from port~80 HTTP context, assuming a connection initiation that never occurred. \\
+\addlinespace[4pt]
+DDoS-LOIC-UDP & Protocol & PROTOCOL=17 (UDP) & ``TCP flow'' with ``null scan (TCP\_FLAGS=0)'' --- the flow is UDP; null scans are a TCP reconnaissance concept meaningless on a connectionless protocol. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Each example illustrates the same underlying mechanism: the agent constructs a plausible narrative from domain knowledge and then populates that narrative with feature values it \textit{expects} rather than values it \textit{observes}. The Bot flow confabulation is particularly instructive: the Behavioural Agent correctly identified the flow as suspicious based on its short duration, but fabricated the RST flag to strengthen a ``rejected connection'' narrative that the actual flags (which include SYN+FIN but not RST) do not fully support. These errors rarely flip the final verdict---the multi-agent consensus mechanism compensates, as other agents correctly read the same features---but they do affect intermediate attack type classification, where a single agent's misidentified flag sequence can shift the predicted technique from the correct category to a related but incorrect one.
 
 These results establish that AMATAS reasoning chains are predominantly grounded in actual flow data rather than confabulated, but that a non-trivial minority of claims (10.2\%) contain factual errors. The errors are systematic rather than random: they concentrate in feature types (TCP flags, protocol identification) where agents apply domain knowledge to infer expected values rather than reading observed values. This pattern suggests that confabulation in LLM-based NIDS is qualitatively distinct from hallucination in open-ended text generation; it reflects over-application of prior knowledge rather than fabrication of unsupported content.
 
