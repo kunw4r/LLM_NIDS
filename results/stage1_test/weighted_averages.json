@@ -1,0 +1,145 @@
+{
+  "description": "Weighted and unweighted averages across 14 attack types (test-set evaluation)",
+  "source": "results/stage1_test/running_summary_test.json",
+  "n_attack_types": 14,
+  "total_attack_flows_in_dataset": 2600903,
+  "macro_average": {
+    "recall": 83.43,
+    "f1": 88.71,
+    "fpr": 0.086,
+    "description": "Simple arithmetic mean across 14 attack types (each type weighted equally)"
+  },
+  "weighted_average": {
+    "recall": 77.85,
+    "f1": 85.61,
+    "fpr": 0.073,
+    "description": "Weighted by dataset prevalence (more common attacks have more influence)"
+  },
+  "micro_average": {
+    "precision": 97.99,
+    "recall": 83.43,
+    "f1": 90.12,
+    "fpr": 0.09,
+    "pooled_confusion": {
+      "tp": 584,
+      "fp": 12,
+      "fn": 116,
+      "tn": 13288
+    },
+    "description": "Pooled confusion matrix across all 14 experiments (700 attack + 13300 benign flows)"
+  },
+  "per_attack": [
+    {
+      "attack_type": "DDOS_attack-LOIC-UDP",
+      "recall": 100,
+      "f1": 99,
+      "fpr": 0.1,
+      "weight": 0.0013,
+      "dataset_flows": 3450
+    },
+    {
+      "attack_type": "DoS_attacks-SlowHTTPTest",
+      "recall": 100,
+      "f1": 99,
+      "fpr": 0.1,
+      "weight": 0.0406,
+      "dataset_flows": 105550
+    },
+    {
+      "attack_type": "DoS_attacks-Slowloris",
+      "recall": 100,
+      "f1": 100,
+      "fpr": 0.0,
+      "weight": 0.0139,
+      "dataset_flows": 36040
+    },
+    {
+      "attack_type": "FTP-BruteForce",
+      "recall": 100,
+      "f1": 99,
+      "fpr": 0.1,
+      "weight": 0.1487,
+      "dataset_flows": 386720
+    },
+    {
+      "attack_type": "SSH-Bruteforce",
+      "recall": 100,
+      "f1": 99,
+      "fpr": 0.1,
+      "weight": 0.0725,
+      "dataset_flows": 188474
+    },
+    {
+      "attack_type": "DoS_attacks-GoldenEye",
+      "recall": 90,
+      "f1": 95,
+      "fpr": 0.0,
+      "weight": 0.0236,
+      "dataset_flows": 61300
+    },
+    {
+      "attack_type": "SQL_Injection",
+      "recall": 88,
+      "f1": 94,
+      "fpr": 0.0,
+      "weight": 0.0002,
+      "dataset_flows": 440
+    },
+    {
+      "attack_type": "Brute_Force_-XSS",
+      "recall": 86,
+      "f1": 91,
+      "fpr": 0.1,
+      "weight": 0.0002,
+      "dataset_flows": 480
+    },
+    {
+      "attack_type": "DDoS_attacks-LOIC-HTTP",
+      "recall": 86,
+      "f1": 91,
+      "fpr": 0.1,
+      "weight": 0.111,
+      "dataset_flows": 288589
+    },
+    {
+      "attack_type": "DoS_attacks-Hulk",
+      "recall": 84,
+      "f1": 90,
+      "fpr": 0.1,
+      "weight": 0.0385,
+      "dataset_flows": 100076
+    },
+    {
+      "attack_type": "Bot",
+      "recall": 82,
+      "f1": 86,
+      "fpr": 0.4,
+      "weight": 0.0799,
+      "dataset_flows": 207703
+    },
+    {
+      "attack_type": "DDOS_attack-HOIC",
+      "recall": 66,
+      "f1": 80,
+      "fpr": 0.0,
+      "weight": 0.3969,
+      "dataset_flows": 1032311
+    },
+    {
+      "attack_type": "Brute_Force_-Web",
+      "recall": 52,
+      "f1": 68,
+      "fpr": 0.1,
+      "weight": 0.0006,
+      "dataset_flows": 1618
+    },
+    {
+      "attack_type": "Infilteration",
+      "recall": 34,
+      "f1": 51,
+      "fpr": 0.0,
+      "weight": 0.0723,
+      "dataset_flows": 188152
+    }
+  ]
+}

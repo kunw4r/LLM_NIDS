@@ -4,6 +4,8 @@ import { RF_TRAINED_TYPES, RF_CAUGHT_UNSEEN, DATASET_SPLITS, AGENT_KEYS, STAGE1_
 import { ATTACK_DESCRIPTIONS, DIFFICULTY_TIERS } from "../../data/attacks";
 import { dollar } from "../../lib/format";
 import ExplainabilityShowcase from "./ExplainabilityShowcase";
+import PerfectRecallExamples from "./PerfectRecallExamples";
+import DataLeakageExplainer from "./DataLeakageExplainer";
 
 export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectFlows, onOpenDetail, showCostBreakdown, setShowCostBreakdown }) {
   const [expandedS1Rows, setExpandedS1Rows] = useState({});
@@ -35,6 +37,8 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
           Full reasoning chains stored for every flow.
         </div>
       </div>
+
+      <DataLeakageExplainer />
 
       {/* ── EXPERIMENT NARRATIVE — What / Gained / Conclude / Justify ── */}
       <div className="border border-blue-100 bg-blue-50/30 rounded-lg p-5 mb-6 space-y-4">
@@ -101,6 +105,8 @@ export default function Stage1Results({ s1, leakySummary, liveStatus, onInspectF
           </div>
         </div>
       </div>
+
+      <PerfectRecallExamples />
 
       {/* Batch composition + split legend */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">

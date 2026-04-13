@@ -20,6 +20,7 @@ import SupervisorBriefing from "./components/journey/SupervisorBriefing";
 // Results pages
 import Overview from "./components/results/Overview";
 import Stage1Results from "./components/results/Stage1Results";
+import BalancedComparison from "./components/results/BalancedComparison";
 import ClusteringResults from "./components/results/ClusteringResults";
 import ExperimentDetail from "./components/results/ExperimentDetail";
 import MCPAblation from "./components/comparison/MCPAblation";
@@ -44,6 +45,7 @@ const SUB_TABS = {
   results: [
     ["overview", "Overview"],
     ["stage1", "Stage 1"],
+    ["balanced", "Balanced / Vanilla"],
     ["ablation", "Ablation"],
     ["clustering", "Clustering"],
     ["mcp", "MCP Comparison"],
@@ -216,6 +218,9 @@ export default function App() {
           inspector={inspector}
           onBack={closeDetailPage}
         />
+      )}
+      {topTab === "results" && subTab === "balanced" && (
+        <BalancedComparison />
       )}
       {topTab === "results" && subTab === "ablation" && (
         <AblationStudy />
