@@ -70,11 +70,15 @@ export default function BalancedComparison() {
             <h3 className="text-sm font-semibold text-emerald-900">AMATAS (6-agent, no Tier 1)</h3>
             <span className="text-[10px] uppercase tracking-wide text-emerald-700 font-semibold">{BALANCED_AGGREGATE.amatas.n_complete} batches</span>
           </div>
-          <div className="grid grid-cols-4 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-2 mb-2">
             <Metric label="Recall" value={`${BALANCED_AGGREGATE.amatas.avg_recall}%`} />
             <Metric label="Precision" value={`${BALANCED_AGGREGATE.amatas.avg_precision}%`} />
             <Metric label="F1" value={`${BALANCED_AGGREGATE.amatas.avg_f1}%`} />
+          </div>
+          <div className="grid grid-cols-3 gap-2 mb-2 pt-2 border-t border-emerald-200">
             <Metric label="FPR" value={`${BALANCED_AGGREGATE.amatas.avg_fpr}%`} />
+            <Metric label="Bal. Acc" value={`${BALANCED_AGGREGATE.amatas.avg_balanced_accuracy}%`} />
+            <Metric label="MCC" value={BALANCED_AGGREGATE.amatas.avg_mcc.toFixed(2)} />
           </div>
           <div className="text-xs text-emerald-800">
             Total cost: <strong>${BALANCED_AGGREGATE.amatas.total_cost}</strong>{" "}
@@ -87,16 +91,43 @@ export default function BalancedComparison() {
             <h3 className="text-sm font-semibold text-gray-800">Vanilla single-LLM</h3>
             <span className="text-[10px] uppercase tracking-wide text-gray-600 font-semibold">{BALANCED_AGGREGATE.vanilla.n_complete} batches</span>
           </div>
-          <div className="grid grid-cols-4 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-2 mb-2">
             <Metric label="Recall" value={`${BALANCED_AGGREGATE.vanilla.avg_recall}%`} />
             <Metric label="Precision" value={`${BALANCED_AGGREGATE.vanilla.avg_precision}%`} />
             <Metric label="F1" value={`${BALANCED_AGGREGATE.vanilla.avg_f1}%`} />
+          </div>
+          <div className="grid grid-cols-3 gap-2 mb-2 pt-2 border-t border-gray-200">
             <Metric label="FPR" value={`${BALANCED_AGGREGATE.vanilla.avg_fpr}%`} />
+            <Metric label="Bal. Acc" value={`${BALANCED_AGGREGATE.vanilla.avg_balanced_accuracy}%`} />
+            <Metric label="MCC" value={BALANCED_AGGREGATE.vanilla.avg_mcc.toFixed(2)} />
           </div>
           <div className="text-xs text-gray-700">
             Total cost: <strong>${BALANCED_AGGREGATE.vanilla.total_cost}</strong>{" "}
             <span className="text-gray-500">• 1 LLM call per flow</span>
           </div>
+        </div>
+      </div>
+
+      {/* ── Metric explainer ──────────────────────────────────────── */}
+      <div className="border border-blue-200 bg-blue-50/30 rounded-lg p-4 mb-6">
+        <h3 className="text-xs font-semibold text-blue-900 uppercase tracking-wide mb-2">Understanding the metrics (especially at 50/50 balance)</h3>
+        <div className="text-xs text-gray-700 leading-relaxed space-y-1.5">
+          <p className="m-0">
+            <strong>F1</strong> is the harmonic mean of precision and recall. At 50/50 balance, <em>always predicting attack</em> gives
+            F1 = 67% as a hard baseline — so any model scoring below that is worse than spam. Vanilla scores <strong className="text-red-700">below 67% on 5 attacks</strong>: Bot (29%),
+            Brute_Force_XSS (34%), HOIC (37%), GoldenEye (46%), Hulk (49%), Slowloris (56%), and SQL_Injection (13%). Several of these are
+            genuinely failing at both detection and FPR simultaneously.
+          </p>
+          <p className="m-0">
+            <strong>Balanced Accuracy</strong> = (Recall + Specificity) / 2. Its hard floor is <strong>50%</strong> (random or all-attack). AMATAS averages <strong>{BALANCED_AGGREGATE.amatas.avg_balanced_accuracy}%</strong>,
+            Vanilla <strong>{BALANCED_AGGREGATE.vanilla.avg_balanced_accuracy}%</strong>. This metric is immune to the "label everything" trick.
+          </p>
+          <p className="m-0">
+            <strong>MCC (Matthews Correlation Coefficient)</strong> ranges from −1 to +1: +1=perfect, 0=random, −1=inverse. It's the single most honest
+            metric for imbalanced binary classification because random guessing always gives 0 regardless of class ratio. AMATAS averages
+            <strong> {BALANCED_AGGREGATE.amatas.avg_mcc.toFixed(2)}</strong>, Vanilla <strong>{BALANCED_AGGREGATE.vanilla.avg_mcc.toFixed(2)}</strong>. Bot vanilla scores <strong className="text-red-700">MCC = −0.21</strong> (worse than random) and
+            SQL Injection vanilla scores <strong className="text-red-700">MCC = −0.07</strong> — both architectures where the single LLM is failing both directions.
+          </p>
         </div>
       </div>
 
@@ -109,22 +140,24 @@ export default function BalancedComparison() {
           </p>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="w-full text-[11px]">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr className="text-gray-500 uppercase tracking-wide">
-                <th className="text-left px-4 py-2 font-semibold">Attack Type</th>
-                <th className="text-right px-3 py-2 font-semibold text-emerald-700" colSpan="3">AMATAS</th>
-                <th className="text-right px-3 py-2 font-semibold text-gray-600" colSpan="3">Vanilla</th>
-                <th className="text-right px-3 py-2 font-semibold">Δ F1</th>
+                <th className="text-left px-3 py-2 font-semibold">Attack Type</th>
+                <th className="text-right px-2 py-2 font-semibold text-emerald-700" colSpan="4">AMATAS</th>
+                <th className="text-right px-2 py-2 font-semibold text-gray-600" colSpan="4">Vanilla</th>
+                <th className="text-right px-2 py-2 font-semibold">Δ MCC</th>
               </tr>
-              <tr className="text-gray-400 text-[10px] border-t border-gray-100">
+              <tr className="text-gray-400 text-[9px] border-t border-gray-100">
                 <th></th>
-                <th className="text-right px-2 py-1 font-medium">Recall</th>
-                <th className="text-right px-2 py-1 font-medium">F1</th>
-                <th className="text-right px-2 py-1 font-medium">FPR</th>
-                <th className="text-right px-2 py-1 font-medium">Recall</th>
-                <th className="text-right px-2 py-1 font-medium">F1</th>
-                <th className="text-right px-2 py-1 font-medium">FPR</th>
+                <th className="text-right px-1 py-1 font-medium">Rec</th>
+                <th className="text-right px-1 py-1 font-medium">F1</th>
+                <th className="text-right px-1 py-1 font-medium">BalAcc</th>
+                <th className="text-right px-1 py-1 font-medium">MCC</th>
+                <th className="text-right px-1 py-1 font-medium">Rec</th>
+                <th className="text-right px-1 py-1 font-medium">F1</th>
+                <th className="text-right px-1 py-1 font-medium">BalAcc</th>
+                <th className="text-right px-1 py-1 font-medium">MCC</th>
                 <th></th>
               </tr>
             </thead>
@@ -132,21 +165,26 @@ export default function BalancedComparison() {
               {batchNames.map(b => {
                 const am = getRow(b, "amatas");
                 const va = getRow(b, "vanilla");
-                const delta = (am && va) ? (am.f1 - va.f1) : null;
+                const delta = (am && va) ? (am.mcc - va.mcc) : null;
                 const deltaClass = delta === null ? "text-gray-400" :
-                                   delta > 5 ? "text-emerald-700 font-semibold" :
-                                   delta < -5 ? "text-red-700 font-semibold" : "text-gray-600";
+                                   delta > 0.05 ? "text-emerald-700 font-semibold" :
+                                   delta < -0.05 ? "text-red-700 font-semibold" : "text-gray-600";
+                const mccClass = (val) => val < 0 ? "text-red-700 font-semibold" :
+                                          val < 0.1 ? "text-amber-700" :
+                                          val >= 0.5 ? "text-emerald-700 font-semibold" : "text-gray-700";
                 return (
                   <tr key={b} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-4 py-2 text-gray-800">{b.replace(/_/g, " ")}</td>
-                    <td className="text-right px-2 py-2 text-emerald-800">{am ? `${am.recall.toFixed(0)}%` : "—"}</td>
-                    <td className="text-right px-2 py-2 text-emerald-800 font-medium">{am ? `${am.f1.toFixed(1)}%` : "—"}</td>
-                    <td className="text-right px-2 py-2 text-gray-500">{am ? `${am.fpr.toFixed(0)}%` : "—"}</td>
-                    <td className="text-right px-2 py-2 text-gray-700">{va ? `${va.recall.toFixed(0)}%` : "—"}</td>
-                    <td className="text-right px-2 py-2 text-gray-700 font-medium">{va ? `${va.f1.toFixed(1)}%` : "—"}</td>
-                    <td className="text-right px-2 py-2 text-gray-500">{va ? `${va.fpr.toFixed(0)}%` : "—"}</td>
-                    <td className={`text-right px-3 py-2 ${deltaClass}`}>
-                      {delta !== null ? (delta > 0 ? `+${delta.toFixed(1)}` : delta.toFixed(1)) : "—"}
+                    <td className="px-3 py-2 text-gray-800">{b.replace(/_/g, " ")}</td>
+                    <td className="text-right px-1 py-2 text-emerald-800">{am ? `${am.recall.toFixed(0)}%` : "—"}</td>
+                    <td className="text-right px-1 py-2 text-emerald-800 font-medium">{am ? `${am.f1.toFixed(0)}%` : "—"}</td>
+                    <td className="text-right px-1 py-2 text-gray-600">{am ? `${am.balanced_accuracy.toFixed(0)}%` : "—"}</td>
+                    <td className={`text-right px-1 py-2 ${am ? mccClass(am.mcc) : "text-gray-400"}`}>{am ? am.mcc.toFixed(2) : "—"}</td>
+                    <td className="text-right px-1 py-2 text-gray-700">{va ? `${va.recall.toFixed(0)}%` : "—"}</td>
+                    <td className="text-right px-1 py-2 text-gray-700 font-medium">{va ? `${va.f1.toFixed(0)}%` : "—"}</td>
+                    <td className="text-right px-1 py-2 text-gray-500">{va ? `${va.balanced_accuracy.toFixed(0)}%` : "—"}</td>
+                    <td className={`text-right px-1 py-2 ${va ? mccClass(va.mcc) : "text-gray-400"}`}>{va ? va.mcc.toFixed(2) : "—"}</td>
+                    <td className={`text-right px-2 py-2 ${deltaClass}`}>
+                      {delta !== null ? (delta > 0 ? `+${delta.toFixed(2)}` : delta.toFixed(2)) : "—"}
                     </td>
                   </tr>
                 );
@@ -154,9 +192,38 @@ export default function BalancedComparison() {
             </tbody>
           </table>
         </div>
-        <div className="bg-gray-50 border-t border-gray-200 px-4 py-2 text-[11px] text-gray-500">
-          Missing rows (DDOS-HOIC, DDOS-LOIC-UDP, Infiltration, SQL Injection, SSH-Bruteforce, mixed_all) are still running.
-          The page will be updated with the full table when the background job completes.
+        <div className="bg-gray-50 border-t border-gray-200 px-4 py-2 text-[10px] text-gray-500 leading-relaxed">
+          <strong>MCC colour legend:</strong>{" "}
+          <span className="text-red-700 font-semibold">red = negative (worse than random)</span> ·{" "}
+          <span className="text-amber-700">amber = near-zero (weak signal)</span> ·{" "}
+          <span className="text-emerald-700 font-semibold">green = strong (≥ 0.5)</span>.
+          "BalAcc" is balanced accuracy: (Recall + Specificity) / 2.
+        </div>
+      </div>
+
+      {/* ── Why numbers differ from Stage 1 ───────────────────────── */}
+      <div className="border border-amber-200 bg-amber-50/30 rounded-lg p-5 mb-6">
+        <h3 className="text-sm font-bold text-amber-900 mb-2">Why these numbers don't match Stage 1</h3>
+        <div className="text-xs text-gray-700 leading-relaxed space-y-2">
+          <p className="m-0">
+            Stage 1 reports <strong>83% recall / 0.09% FPR</strong> at 5% attack prevalence with Tier 1 RF. This page reports
+            AMATAS at <strong>{BALANCED_AGGREGATE.amatas.avg_recall}% recall / {BALANCED_AGGREGATE.amatas.avg_fpr}% FPR</strong> at 50% prevalence without Tier 1. Both are correct — they answer different questions.
+          </p>
+          <p className="m-0">
+            Recall is roughly comparable; <strong>FPR differs by ~300×</strong>. The reason is the Tier 1 RF pre-filter:
+            in Stage 1, the RF silently auto-rejects ~95% of benign flows before they ever reach an LLM, so the agents only see
+            ambiguous cases. Here we strip away Tier 1 and force every benign flow through the LLM pipeline, so the agents have to
+            make the "this is normal" call themselves — and LLMs are conservative, preferring to flag anything slightly unusual.
+          </p>
+          <p className="m-0">
+            This is actually the <strong>strongest argument for the two-tier architecture</strong>: the RF is not just a cost
+            optimisation, it's load-bearing on false positive rate. Neither an LLM-only nor an RF-only system beats the combination.
+          </p>
+          <p className="m-0">
+            <strong>Second factor:</strong> at 50/50 class balance the LLM's implicit prior shifts ("a lot of these are attacks"),
+            making it more willing to flag. The engineered prompt is calibrated for 5% prevalence; flipping the ratio changes the
+            optimal decision boundary. This is a known phenomenon called <em>prior drift</em> — not a bug.
+          </p>
         </div>
       </div>
 
