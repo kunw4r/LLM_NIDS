@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SHAP_FLOWS } from "../../data/shapComparison";
-import { FAITHFULNESS_DATA, FAITHFULNESS_HEAD_TO_HEAD } from "../../data/faithfulness";
+import { FAITHFULNESS_DATA, FAITHFULNESS_HEAD_TO_HEAD, FAITHFULNESS_BALANCED } from "../../data/faithfulness";
 
 // ── Curated flows for "See It In Action" mini inspector ────────────────────
 const CURATED_FLOWS = [
@@ -140,8 +140,12 @@ export default function ExplainabilityPage() {
 
   // Faithfulness collapsible
   const [showClaimTypes, setShowClaimTypes] = useState(false);
+  // Stage 1 vs Balanced toggle for the breakdown charts
+  const [faithDataset, setFaithDataset] = useState("stage1"); // "stage1" | "balanced"
 
   const { summary, per_agent, per_claim_type, confabulation_examples } = FAITHFULNESS_DATA;
+  const activePerAgent = faithDataset === "balanced" ? FAITHFULNESS_BALANCED.per_agent : per_agent;
+  const activePerClaimType = faithDataset === "balanced" ? FAITHFULNESS_BALANCED.per_claim_type : per_claim_type;
 
   return (
     <div className="space-y-12">
@@ -450,11 +454,41 @@ export default function ExplainabilityPage() {
           </div>
         </div>
 
+        {/* ── Dataset toggle (Stage 1 vs Balanced) ────────────────── */}
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-[11px] uppercase tracking-wider font-semibold text-gray-500">Breakdown dataset:</span>
+          {[
+            { id: "stage1",   label: "Stage 1 (realistic 5% attack)", flows: 758, desc: "14 attacks × 1000 flows, LLM-analysed only" },
+            { id: "balanced", label: "Balanced (50/50)",              flows: 750, desc: "15 attacks × 50 flows, every flow to LLM" },
+          ].map(opt => (
+            <button
+              key={opt.id}
+              onClick={() => setFaithDataset(opt.id)}
+              className="px-3 py-1 rounded-md text-xs font-medium border cursor-pointer transition-colors"
+              style={{
+                background: faithDataset === opt.id ? "#eef2ff" : "white",
+                borderColor: faithDataset === opt.id ? "#6366f1" : "#e5e7eb",
+                color: faithDataset === opt.id ? "#3730a3" : "#6b7280",
+              }}
+              title={opt.desc}
+            >
+              {opt.label} <span className="ml-1 text-[10px] text-gray-400 font-normal">({opt.flows} flows)</span>
+            </button>
+          ))}
+        </div>
+
         {/* ── Per-agent bar chart (compact) ──────────────────────── */}
         <div className="border border-gray-200 rounded-lg p-5 mb-4">
-          <h3 className="text-sm font-bold tracking-tight mb-3">Faithfulness by Agent</h3>
+          <div className="flex items-baseline justify-between mb-3">
+            <h3 className="text-sm font-bold tracking-tight">Faithfulness by Agent</h3>
+            <span className="text-[10px] text-gray-400">
+              {faithDataset === "stage1"
+                ? "Across all 14 Stage 1 experiments, ~758 LLM-analysed flows"
+                : "Across all 15 balanced batches, 750 flows (every flow to LLM)"}
+            </span>
+          </div>
           <div className="space-y-2">
-            {per_agent.map(a => (
+            {activePerAgent.map(a => (
               <div key={a.agent} className="flex items-center gap-3">
                 <div className="w-28 text-xs text-gray-700 text-right font-medium">{a.agent}</div>
                 <div className="flex-1 h-5 bg-gray-100 rounded overflow-hidden">
@@ -462,6 +496,7 @@ export default function ExplainabilityPage() {
                     <span className="text-[10px] font-bold text-white">{a.rate}%</span>
                   </div>
                 </div>
+                <div className="w-20 text-[10px] text-gray-400 text-right">{a.correct}/{a.total}</div>
               </div>
             ))}
           </div>
@@ -473,7 +508,7 @@ export default function ExplainabilityPage() {
             Faithfulness by Claim Type
           </summary>
           <div className="p-5 border-t border-gray-200 space-y-1.5">
-            {per_claim_type.map(c => {
+            {activePerClaimType.map(c => {
               const barColor = c.rate >= 95 ? "#16a34a" : c.rate >= 85 ? "#d97706" : "#dc2626";
               return (
                 <div key={c.type} className="flex items-center gap-3">

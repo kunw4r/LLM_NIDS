@@ -60,3 +60,28 @@ export const FAITHFULNESS_HEAD_TO_HEAD = {
   takeaway:
     "Per-claim reliability is the same (~90% for both). AMATAS's advantage is depth: 1.78× more verifiable evidence per flow, each traceable to a specific agent.",
 };
+
+// Per-agent and per-claim-type breakdowns on the balanced 50/50 batches (AMATAS only).
+// Companion to FAITHFULNESS_DATA which is on Stage 1 (realistic 5% attack prevalence).
+export const FAITHFULNESS_BALANCED = {
+  per_agent: [
+    { agent: "Statistical",      total: 701,  correct: 642,  incorrect: 59,  rate: 91.6, color: "#8b5cf6" },
+    { agent: "Protocol",         total: 2699, correct: 2453, incorrect: 246, rate: 90.9, color: "#3b82f6" },
+    { agent: "Orchestrator",     total: 1345, correct: 1220, incorrect: 125, rate: 90.7, color: "#10b981" },
+    { agent: "Devil's Advocate", total: 47,   correct: 42,   incorrect: 5,   rate: 89.4, color: "#ef4444" },
+    { agent: "Temporal",         total: 153,  correct: 136,  incorrect: 17,  rate: 88.9, color: "#ec4899" },
+    { agent: "Behavioural",      total: 755,  correct: 644,  incorrect: 111, rate: 85.3, color: "#f59e0b" },
+  ],
+  per_claim_type: [
+    { type: "TCP flags (numeric)",        total: 94,   correct: 94,   incorrect: 0,   rate: 100.0 },
+    { type: "Ephemeral port",             total: 63,   correct: 63,   incorrect: 0,   rate: 100.0 },
+    { type: "Protocol (numeric)",         total: 83,   correct: 83,   incorrect: 0,   rate: 100.0 },
+    { type: "Port references",            total: 1754, correct: 1739, incorrect: 15,  rate: 99.1 },
+    { type: "Numeric (exact)",            total: 445,  correct: 439,  incorrect: 6,   rate: 98.7 },
+    { type: "Numeric (natural language)", total: 326,  correct: 318,  incorrect: 8,   rate: 97.5 },
+    { type: "Service-port mapping",       total: 650,  correct: 611,  incorrect: 39,  rate: 94.0 },
+    { type: "IP addresses",               total: 135,  correct: 125,  incorrect: 10,  rate: 92.6 },
+    { type: "Protocol naming",            total: 896,  correct: 750,  incorrect: 146, rate: 83.7 },
+    { type: "TCP flag names",             total: 1254, correct: 915,  incorrect: 339, rate: 73.0 },
+  ],
+};
