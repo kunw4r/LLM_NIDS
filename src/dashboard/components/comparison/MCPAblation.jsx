@@ -258,7 +258,7 @@ export default function MCPAblation({ s1, onInspectFlows }) {
             than real-time tool access when the data is anonymised.
           </p>
           <p>
-            AMATAS v2&apos;s 88% F1 with 1.1% FPR is achieved through <strong>specialised analytical roles</strong>,
+            AMATAS v2&apos;s 88.7% F1 with 0.09% FPR is achieved through <strong>specialised analytical roles</strong>,
             <strong> adversarial cross-checking</strong>, and <strong>weighted consensus</strong> — capabilities
             fundamentally unavailable to any single-agent approach, with or without tools.
           </p>

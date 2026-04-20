@@ -3,14 +3,14 @@ import React from "react";
 const ROADMAP_ITEMS = [
   {
     title: "Stage 1: All 14 Attack Types",
-    desc: "Per-attack evaluation across all 14 CICIDS2018 attack types. 1000 flows each (50 attack + 950 benign) with Tier-1 RF pre-filtering + GPT-4o 6-agent pipeline. 12/14 types detected at 82%+ recall. Total cost: $27.35.",
+    desc: "Per-attack evaluation across all 14 CICIDS2018 attack types. 1000 flows each (50 attack + 950 benign) with Tier-1 RF pre-filtering + GPT-4o 6-agent pipeline. 12/14 types detected at 80%+ recall on held-out test set. Total cost: $24.75.",
     status: "Complete",
     statusColor: "#16a34a",
     icon: "\u2713",
   },
   {
     title: "MCP Comparison Experiment",
-    desc: "Three single-agent configs tested: zero-shot (90% recall, 41% FPR), engineered prompt (67% recall, 27% FPR), + MITRE tool (70% recall, 30% FPR). AMATAS v2 achieves 88% F1 with 1.1% FPR.",
+    desc: "Three single-agent configs tested: zero-shot (90% recall, 41% FPR), engineered prompt (67% recall, 27% FPR), + MITRE tool (70% recall, 30% FPR). AMATAS v2 achieves 88.7% F1 with 0.09% FPR.",
     status: "Complete",
     statusColor: "#16a34a",
     icon: "\u2713",

@@ -1,8 +1,9 @@
 import React from "react";
-import { FAITHFULNESS_DATA } from "../../data/faithfulness";
+import { FAITHFULNESS_DATA, FAITHFULNESS_HEAD_TO_HEAD } from "../../data/faithfulness";
 
 export default function FaithfulnessAudit() {
   const { summary, per_agent, per_claim_type, confabulation_examples } = FAITHFULNESS_DATA;
+  const h2h = FAITHFULNESS_HEAD_TO_HEAD;
 
   const maxAgentTotal = Math.max(...per_agent.map(a => a.total));
 
@@ -15,6 +16,119 @@ export default function FaithfulnessAudit() {
           This audit extracted and verified {summary.total_claims.toLocaleString()} verifiable claims
           from {summary.flows_audited} flows across all 14 Stage 1 experiments.
         </p>
+      </div>
+
+      {/* Head-to-head: AMATAS vs Vanilla single-agent */}
+      <div className="border border-indigo-200 rounded-lg bg-gradient-to-br from-indigo-50 to-white overflow-hidden">
+        <div className="px-6 pt-5 pb-3 border-b border-indigo-100">
+          <div className="flex items-baseline justify-between flex-wrap gap-2">
+            <h3 className="text-base font-bold tracking-tight text-indigo-900">
+              AMATAS vs Vanilla Single-Agent — Head-to-Head
+            </h3>
+            <span className="text-[10px] uppercase tracking-wider text-indigo-600 font-semibold">
+              Same model · Same flows · Architecture only
+            </span>
+          </div>
+          <p className="text-xs text-indigo-800/70 mt-1 leading-relaxed">
+            Balanced batches (25 attack + 25 benign per type, 15 batches, 750 flows each).
+            Both modes audited with the identical claim-extractor pipeline.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-indigo-100">
+          {/* AMATAS column */}
+          <div className="p-5 md:p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-2 w-2 rounded-full bg-indigo-600"></div>
+              <div className="text-xs font-bold uppercase tracking-wider text-indigo-700">AMATAS</div>
+            </div>
+            <div className="text-4xl font-bold tracking-tight text-indigo-700">
+              {h2h.amatas.claims_per_flow}
+            </div>
+            <div className="text-xs text-gray-500 mt-0.5">verifiable claims per flow</div>
+            <div className="mt-4 space-y-1.5">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Faithfulness</span>
+                <span className="font-bold text-gray-800">{h2h.amatas.faithfulness_rate_pct}%</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Total claims</span>
+                <span className="font-mono text-gray-700">{h2h.amatas.total_claims.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Correct</span>
+                <span className="font-mono text-gray-700">{h2h.amatas.correct_claims.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Vanilla column */}
+          <div className="p-5 md:p-6">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-2 w-2 rounded-full bg-gray-400"></div>
+              <div className="text-xs font-bold uppercase tracking-wider text-gray-600">Vanilla (single-agent)</div>
+            </div>
+            <div className="text-4xl font-bold tracking-tight text-gray-700">
+              {h2h.vanilla.claims_per_flow}
+            </div>
+            <div className="text-xs text-gray-500 mt-0.5">verifiable claims per flow</div>
+            <div className="mt-4 space-y-1.5">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Faithfulness</span>
+                <span className="font-bold text-gray-800">{h2h.vanilla.faithfulness_rate_pct}%</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Total claims</span>
+                <span className="font-mono text-gray-700">{h2h.vanilla.total_claims.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-500">Correct</span>
+                <span className="font-mono text-gray-700">{h2h.vanilla.correct_claims.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Ratio callout */}
+          <div className="p-5 md:p-6 bg-indigo-50/50">
+            <div className="text-xs font-bold uppercase tracking-wider text-indigo-700 mb-3">Evidence ratio</div>
+            <div className="text-4xl font-bold tracking-tight text-indigo-700">
+              {h2h.evidence_ratio}×
+            </div>
+            <div className="text-xs text-gray-600 mt-0.5">more verifiable evidence per flow</div>
+            <div className="mt-4 text-[11px] text-indigo-900/80 leading-relaxed">
+              AMATAS is not more <em>reliable</em> per claim — it's more <em>substantive</em>. Each of its claims is traceable to a specific agent (protocol, statistical, behavioural, temporal, DA, orchestrator).
+            </div>
+          </div>
+        </div>
+
+        {/* Visual comparison bar */}
+        <div className="px-6 pt-3 pb-5 border-t border-indigo-100 bg-white">
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="text-[10px] uppercase tracking-wider font-semibold text-gray-500">Verifiable claims per flow</div>
+            <div className="text-[10px] text-gray-400">scaled to AMATAS</div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-20 text-xs font-medium text-indigo-700">AMATAS</div>
+              <div className="flex-1 h-6 bg-gray-100 rounded overflow-hidden">
+                <div className="h-full rounded flex items-center justify-end pr-2 bg-indigo-600" style={{ width: "100%" }}>
+                  <span className="text-[11px] font-bold text-white">{h2h.amatas.claims_per_flow}</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-20 text-xs font-medium text-gray-600">Vanilla</div>
+              <div className="flex-1 h-6 bg-gray-100 rounded overflow-hidden">
+                <div className="h-full rounded flex items-center justify-end pr-2 bg-gray-400" style={{ width: `${(h2h.vanilla.claims_per_flow / h2h.amatas.claims_per_flow) * 100}%` }}>
+                  <span className="text-[11px] font-bold text-white">{h2h.vanilla.claims_per_flow}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-gray-600 mt-3 leading-relaxed">
+            <strong className="text-gray-800">Takeaway:</strong> {h2h.takeaway}
+          </p>
+        </div>
       </div>
 
       {/* Hero number */}

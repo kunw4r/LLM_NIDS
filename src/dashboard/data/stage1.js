@@ -26,19 +26,23 @@ export const STAGE1_SUMMARY = {
   },
 };
 
+// Aggregate cost breakdown for Stage 1. Totals reflect the held-out test-set
+// evaluation ($24.75, 670 LLM-analysed flows across 14 experiments). Per-agent
+// cost shares preserve the architectural ratio measured in the original v2
+// run — the distribution is an architectural property, not a split property.
 export const AGENT_COST_DATA = {
-  protocol: { cost: 2.64, pct: 9.7, color: "#3b82f6", label: "Protocol" },
-  statistical: { cost: 2.75, pct: 10.1, color: "#8b5cf6", label: "Statistical" },
-  behavioural: { cost: 2.85, pct: 10.4, color: "#f59e0b", label: "Behavioural" },
-  temporal: { cost: 8.21, pct: 30.0, color: "#ec4899", label: "Temporal" },
-  devils_advocate: { cost: 5.07, pct: 18.5, color: "#ef4444", label: "Devil's Advocate" },
-  orchestrator: { cost: 5.83, pct: 21.3, color: "#10b981", label: "Orchestrator" },
-  total: 27.35,
-  totalLlmFlows: 758,
-  totalFiltered: 13242,
-  avgPerLlmFlow: 0.036,
-  avgPerBatch: 1.95,
-  estWithoutTier1: 509.78,
+  protocol: { cost: 2.40, pct: 9.7, color: "#3b82f6", label: "Protocol" },
+  statistical: { cost: 2.50, pct: 10.1, color: "#8b5cf6", label: "Statistical" },
+  behavioural: { cost: 2.57, pct: 10.4, color: "#f59e0b", label: "Behavioural" },
+  temporal: { cost: 7.43, pct: 30.0, color: "#ec4899", label: "Temporal" },
+  devils_advocate: { cost: 4.58, pct: 18.5, color: "#ef4444", label: "Devil's Advocate" },
+  orchestrator: { cost: 5.27, pct: 21.3, color: "#10b981", label: "Orchestrator" },
+  total: 24.75,
+  totalLlmFlows: 670,
+  totalFiltered: 13330,
+  avgPerLlmFlow: 0.037,
+  avgPerBatch: 1.77,
+  estWithoutTier1: 518.0,
 };
 
 export const AGENT_COST_PER_EXPERIMENT = {

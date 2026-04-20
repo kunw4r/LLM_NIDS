@@ -45,10 +45,10 @@ export default function Overview({ s1, onNavigateToJourney, onNavigateToTab }) {
       {onNavigateToTab && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { rq: "RQ1", label: "Accuracy", value: "86.3% F1", color: "#16a34a", tab: "stage1" },
+            { rq: "RQ1", label: "Accuracy", value: "88.7% F1", color: "#16a34a", tab: "stage1" },
             { rq: "RQ2", label: "Cost", value: "94.6% saved", color: "#2563eb", tab: "overview" },
             { rq: "RQ3", label: "Reasoning", value: "89.8% faithful", color: "#7c3aed", tab: "faithfulness" },
-            { rq: "RQ4", label: "Variation", value: "0–100% F1", color: "#dc2626", tab: "stage1" },
+            { rq: "RQ4", label: "Variation", value: "51–100% F1", color: "#dc2626", tab: "stage1" },
           ].map(rq => (
             <button
               key={rq.rq}
@@ -180,9 +180,10 @@ export default function Overview({ s1, onNavigateToJourney, onNavigateToTab }) {
           <div className="border-l-[3px] border-red-600 pl-4">
             <div className="text-sm font-bold text-gray-900 mb-1">4. Infiltration: flow-level limitation solved by clustering</div>
             <div className="text-sm text-gray-700 leading-relaxed">
-              Infiltration attacks (DNS exfiltration) achieved 0% recall — individual flows are statistically
-              identical to legitimate DNS queries. Temporal clustering (v3) recovered detection to 58% by grouping
-              flows per source IP and injecting aggregate context.
+              Infiltration attacks (DNS exfiltration) achieved only 34% recall on the test set even after retraining
+              the RF on the full attack catalogue — individual flows are statistically similar to legitimate DNS
+              queries. Temporal clustering (v3) recovered detection to 58% recall by grouping flows per source IP
+              and injecting aggregate context.
               {onNavigateToTab && (
                 <button onClick={() => onNavigateToTab("clustering")} className="text-red-600 font-semibold ml-1 cursor-pointer bg-transparent border-none p-0 text-sm">
                   See Clustering Results &rarr;

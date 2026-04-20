@@ -27,7 +27,7 @@ const PHASE_META = {
   },
   "Stage 1 — Per-Attack Evaluation": {
     color: "#16a34a",
-    conclusion: "Architecture generalizes across 14 attack types. 92.9% mean F1, 0.07% FPR, $27.35 total cost.",
+    conclusion: "Architecture generalizes across 14 attack types. 88.7% mean F1, 0.09% FPR, $24.75 total cost (test-set, clean rerun).",
     linkTab: "stage1", linkLabel: "See Full Results",
   },
   "Clustering — Infiltration v3": {

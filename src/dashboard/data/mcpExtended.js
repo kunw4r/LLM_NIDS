@@ -75,7 +75,7 @@ export const AMATAS_BASELINE = {
   id: "AMATAS", label: "AMATAS v2", model: "GPT-4o (6-agent + RF)",
   category: "multi-agent", color: "#16a34a", bg: "#f0fdf4",
   description: "Six specialist agents + Devil's Advocate + Orchestrator with Tier-1 RF pre-filter. The full AMATAS architecture.",
-  metrics: { recall: 85, precision: 97, f1: 88, fpr: 1.1, cost: 27.35, costPerFlow: 0.0020 },
+  metrics: { recall: 83, precision: 98, f1: 89, fpr: 0.09, cost: 24.75, costPerFlow: 0.0018 },
 };
 
 // All tools across all configs with metadata

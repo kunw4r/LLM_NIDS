@@ -27,7 +27,7 @@ const PIVOT_TIMELINE = [
   },
   {
     phase: "Results: The Pivot Worked",
-    what: "AMATAS achieved 88% F1 with 1.1% FPR across 14 attack types at realistic 5% attack prevalence. Best single-agent: 62.8% F1 with 41% FPR. The 25.2pp F1 gap + near-zero FPR validated that multi-agent debate, not tool access, is the mechanism that works.",
+    what: "AMATAS achieved 88.7% F1 with 0.09% FPR across 14 attack types at realistic 5% attack prevalence (held-out test set). Best single-agent: 62.8% F1 with 41% FPR. The 25.9pp F1 gap + near-zero FPR validated that multi-agent debate, not tool access, is the mechanism that works.",
     hypothesis: null,
     color: "#16a34a",
   },
@@ -49,8 +49,8 @@ const WHAT_WAS_DONE = [
       "Designed and built 6-agent pipeline with weighted consensus",
       "14 x 1,000-flow experiments across all CICIDS2018 attack types",
       "Two-tier ML+LLM architecture (RF pre-filter + agent pipeline)",
-      "94.6% cost reduction ($27.35 actual vs $509.78 without pre-filter)",
-      "88% F1 with 0.09% FPR across 14,000 flows",
+      "~95% cost reduction ($24.75 actual vs ~$504 without pre-filter)",
+      "88.7% mean F1 with 0.09% FPR across 14,000 held-out test flows",
     ],
   },
   {
@@ -119,8 +119,8 @@ const CRITICAL_QUESTIONS = [
     severity: "medium",
   },
   {
-    question: "The Infiltration failure (0% recall) — is this a fair evaluation given that individual flows are genuinely indistinguishable? Or does it undermine the 'comparable accuracy' claim in RQ1?",
-    context: "Excluding Infiltration, mean F1 is 92.9%. Including it, 86.3%. The thesis argues this is a fundamental flow-level limitation, not a system failure. The clustering recovery (58%) supports this.",
+    question: "Infiltration is the weakest attack type (34% recall, 51% F1 on the held-out test set) — is this a fair evaluation given that individual flows are genuinely indistinguishable from legitimate DNS? Or does it undermine the 'comparable accuracy' claim in RQ1?",
+    context: "Excluding Infiltration, mean F1 is 91.6%. Including it, 88.7%. The thesis argues this is a fundamental flow-level limitation, not a system failure. The clustering recovery (to 58% recall) supports this.",
     severity: "medium",
   },
   {

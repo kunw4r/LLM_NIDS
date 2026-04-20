@@ -127,7 +127,7 @@ export const ATTACK_DESCRIPTIONS = {
     howItWorks: "Malware exfiltrates data by encoding it into DNS query subdomains (e.g., encoded-data.evil.com). Each DNS query carries a small payload. Individually indistinguishable from legitimate DNS — detection requires observing the aggregate pattern of many queries from one host.",
     signature: "High volume of DNS queries (port 53, UDP) from a single IP, small uniform packet sizes (63-457 bytes), 1 packet per flow. Individually identical to normal DNS lookups.",
     difficulty: "Hardest",
-    difficultyReason: "Individual flows are statistically identical to benign DNS. 0% recall in Stage 1; requires temporal clustering to detect aggregate patterns.",
+    difficultyReason: "Individual flows are statistically similar to benign DNS. Only 34% recall in Stage 1 (test set) even with retrained RF; temporal clustering recovers this to 58% recall.",
     totalInDataset: 188152,
     datasetSplit: "test",
     batchComposition: { attack: 50, benign: 950, total: 1000 },
@@ -276,7 +276,7 @@ export const EXPECTED_AGENT_BEHAVIOR = {
     behavioural: "Cannot detect at single-flow level — data is encoded in subdomains not visible in NetFlow",
     temporal: "Only hope: aggregate pattern of unusually many DNS queries from one IP over time",
     devils_advocate: "Overwhelming case: every flow metric matches legitimate DNS exactly",
-    orchestrator: "Expected 0% recall in Stage 1 — temporal clustering (v3) needed for detection",
+    orchestrator: "Low recall in Stage 1 (34% on test set) — temporal clustering (v3) needed to lift it further",
   },
   "Brute_Force_-Web": {
     protocol: "HTTP POST to standard web ports; legitimate protocol usage",

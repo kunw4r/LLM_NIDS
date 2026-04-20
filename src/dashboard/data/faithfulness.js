@@ -37,3 +37,26 @@ export const FAITHFULNESS_DATA = {
     { type: "Port reference", detail: "Claimed port=53 when actual ports were src=123 dst=123", agent: "Temporal", attack: "Bot" },
   ],
 };
+
+// Head-to-head audit on balanced 50-flow batches: AMATAS vs single-agent vanilla GPT-4o.
+// Same model, same flows, same seed — only the architecture differs.
+// Source: results/analysis/faithfulness_balanced.json
+export const FAITHFULNESS_HEAD_TO_HEAD = {
+  amatas: {
+    flows_audited: 750,
+    total_claims: 5700,
+    correct_claims: 5137,
+    faithfulness_rate_pct: 90.1,
+    claims_per_flow: 7.6,
+  },
+  vanilla: {
+    flows_audited: 750,
+    total_claims: 3198,
+    correct_claims: 2908,
+    faithfulness_rate_pct: 90.9,
+    claims_per_flow: 4.26,
+  },
+  evidence_ratio: 1.78, // AMATAS produces 1.78x more verifiable claims per flow
+  takeaway:
+    "Per-claim reliability is the same (~90% for both). AMATAS's advantage is depth: 1.78× more verifiable evidence per flow, each traceable to a specific agent.",
+};
