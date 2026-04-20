@@ -525,43 +525,60 @@ export default function ExplainabilityPage() {
           </div>
         </details>
 
-        {/* ── Stage 1 vs Balanced comparison ──────────────────────── */}
+        {/* ── Stage 1 vs Balanced comparison (plain language) ───── */}
         <div className="border border-indigo-200 rounded-lg p-5 mb-4 bg-indigo-50/40">
-          <div className="flex items-baseline justify-between mb-3">
-            <h3 className="text-sm font-bold tracking-tight text-indigo-900">Stage 1 vs Balanced &mdash; What We Learned</h3>
-            <span className="text-[10px] uppercase tracking-wider text-indigo-600 font-semibold">cross-setting comparison</span>
+          <h3 className="text-sm font-bold tracking-tight text-indigo-900 mb-2">Does the LLM behave differently on different test setups?</h3>
+          <p className="text-xs text-gray-700 leading-relaxed mb-3">
+            We ran the same audit on two different test setups to check whether the agent errors are consistent, or whether they&rsquo;re caused by the way we set up the test.
+          </p>
+
+          {/* Plain-language explainer of the two setups */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+            <div className="bg-white rounded-lg p-3 border border-indigo-100">
+              <div className="text-[11px] font-bold text-indigo-800 mb-1">Stage 1 (realistic)</div>
+              <div className="text-[11px] text-gray-600 leading-relaxed">
+                Mimics a real network: <strong>95% benign traffic, 5% attacks.</strong> 14,000 flows across 14 attack types. This is what a real security tool would face in production.
+              </div>
+            </div>
+            <div className="bg-white rounded-lg p-3 border border-indigo-100">
+              <div className="text-[11px] font-bold text-indigo-800 mb-1">Balanced (50/50)</div>
+              <div className="text-[11px] text-gray-600 leading-relaxed">
+                Artificially balanced: <strong>50% attacks, 50% benign.</strong> 750 flows across 15 attack types. Easier to study the LLM&rsquo;s raw detection behaviour because it&rsquo;s not swamped by benign traffic.
+              </div>
+            </div>
           </div>
 
-          {/* Delta table */}
+          {/* Delta table with plain-language column headers */}
           <div className="overflow-x-auto mb-3">
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-indigo-200">
-                  <th className="px-2 py-1.5 text-left font-semibold text-gray-500 text-[11px]">Claim Type</th>
-                  <th className="px-2 py-1.5 text-right font-semibold text-gray-500 text-[11px]">Stage 1 (realistic)</th>
-                  <th className="px-2 py-1.5 text-right font-semibold text-gray-500 text-[11px]">Balanced (50/50)</th>
-                  <th className="px-2 py-1.5 text-right font-semibold text-gray-500 text-[11px]">Δ</th>
+                  <th className="px-2 py-1.5 text-left font-semibold text-gray-500 text-[11px]">What the agent talked about</th>
+                  <th className="px-2 py-1.5 text-right font-semibold text-gray-500 text-[11px]">Stage 1</th>
+                  <th className="px-2 py-1.5 text-right font-semibold text-gray-500 text-[11px]">Balanced</th>
+                  <th className="px-2 py-1.5 text-right font-semibold text-gray-500 text-[11px]">Difference</th>
                 </tr>
               </thead>
               <tbody className="text-[11px]">
                 {[
-                  { type: "TCP flag names",            s1: 77.6, bal: 73.0 },
-                  { type: "Protocol naming",           s1: 80.6, bal: 83.7 },
-                  { type: "Service-port mapping",      s1: 89.2, bal: 94.0 },
-                  { type: "IP addresses",              s1: 95.9, bal: 92.6 },
-                  { type: "Port references",           s1: 98.1, bal: 99.1 },
-                  { type: "Numeric (exact)",           s1: 98.8, bal: 98.7 },
-                  { type: "Numeric (natural lang.)",   s1: 98.4, bal: 97.5 },
+                  { type: "TCP connection flags (decoded names)", s1: 77.6, bal: 73.0 },
+                  { type: "Protocol names (TCP/UDP)",             s1: 80.6, bal: 83.7 },
+                  { type: "What service a port belongs to",       s1: 89.2, bal: 94.0 },
+                  { type: "IP addresses",                         s1: 95.9, bal: 92.6 },
+                  { type: "Port numbers",                         s1: 98.1, bal: 99.1 },
+                  { type: "Exact numbers (bytes, packets)",       s1: 98.8, bal: 98.7 },
+                  { type: "Numbers described in plain words",     s1: 98.4, bal: 97.5 },
                 ].map(row => {
                   const delta = (row.bal - row.s1).toFixed(1);
                   const dColor = Math.abs(delta) < 1 ? "#6b7280" : delta > 0 ? "#16a34a" : "#dc2626";
+                  const arrow = Math.abs(delta) < 1 ? "≈" : (delta > 0 ? "↑" : "↓");
                   return (
                     <tr key={row.type} className="border-b border-indigo-100">
                       <td className="px-2 py-1.5 text-gray-800">{row.type}</td>
                       <td className="px-2 py-1.5 text-right font-mono text-gray-700">{row.s1}%</td>
                       <td className="px-2 py-1.5 text-right font-mono text-gray-700">{row.bal}%</td>
                       <td className="px-2 py-1.5 text-right font-mono font-bold" style={{ color: dColor }}>
-                        {delta > 0 ? "+" : ""}{delta}pp
+                        {arrow} {delta > 0 ? "+" : ""}{delta}%
                       </td>
                     </tr>
                   );
@@ -570,66 +587,122 @@ export default function ExplainabilityPage() {
             </table>
           </div>
 
-          {/* Takeaway bullets */}
+          {/* Plain-English takeaways */}
+          <div className="text-[11px] font-bold text-gray-700 mb-2">What this means, in plain English:</div>
           <ul className="text-xs text-gray-800 leading-relaxed space-y-1.5 list-disc pl-4">
             <li>
-              <strong>Error patterns are stable across both settings.</strong> TCP flag names and Protocol naming are the worst categories in both, in the same order &mdash; this is a model-level limitation, not an artefact of the 5% vs 50% attack ratio.
+              <strong>The agents make the same kinds of mistakes in both setups.</strong> In both tests, the two weakest categories are TCP flags and Protocol names &mdash; in the same order. So the weakness is in the model itself, not caused by our test setup.
             </li>
             <li>
-              <strong>TCP flag confabulation gets slightly worse on balanced (-4.6pp).</strong> Balanced batches expose agents to more diverse TCP flag combinations (many attack types mean many bitmask values); Stage 1&rsquo;s easier benign-heavy mix hides some of the weakness.
+              <strong>Anywhere the agent just copies a number directly, it&rsquo;s nearly perfect (98%+).</strong> Port numbers, byte counts, flow durations &mdash; these are values that appear as-is in the flow record, and the agent copies them correctly almost every time.
             </li>
             <li>
-              <strong>Protocol and port reference accuracy is near-ceiling in both (&gt;98%).</strong> When agents reference a specific port number or exact byte count, they almost never get it wrong &mdash; these are the features actually driving the verdict.
+              <strong>Errors happen when the agent has to translate a number into a word.</strong> For example: the PROTOCOL field stores the number 6, but humans call that &ldquo;TCP&rdquo;. The agent has to do that translation in its head, and sometimes gets it wrong.
             </li>
             <li>
-              <strong>Confabulation concentrates on the hardest-to-decode fields.</strong> TCP_FLAGS is a bitmask; protocol names require a numeric-to-name lookup. The agent can&rsquo;t see these as symbolic tokens &mdash; it has to decode them, and that&rsquo;s where it stumbles.
+              <strong>TCP flags is the hardest category in both setups.</strong> It&rsquo;s also the most common kind of translation, so it has the most errors (335 in Stage 1 alone). The next section explains exactly why.
             </li>
           </ul>
         </div>
 
-        {/* ── Where confabulation concentrates (expanded with worked example) ────────── */}
+        {/* ── What the agents got wrong — plain-language version ───────── */}
         <div className="border border-red-200 rounded-lg overflow-hidden bg-red-50">
           <div className="px-5 py-3 border-b border-red-200">
-            <div className="text-sm font-bold text-red-800">Where Confabulation Concentrates &mdash; In Simple Terms</div>
+            <div className="text-sm font-bold text-red-800">What the agents got wrong &mdash; explained simply</div>
+            <div className="text-[11px] text-red-800/70 mt-0.5">
+              About 10% of factual claims contain errors. The errors are not random &mdash; they cluster on specific types of facts. Here&rsquo;s what that actually looks like.
+            </div>
           </div>
-          <div className="p-5 space-y-4">
-            {/* Worked example */}
+
+          <div className="p-5 space-y-5">
+            {/* Primer: what TCP flags actually are */}
             <div className="bg-white rounded-lg p-4 border border-red-200">
-              <div className="text-[10px] font-bold uppercase tracking-wider text-red-700 mb-2">Worked example &mdash; real flow from Stage 1</div>
-              <div className="space-y-2 text-xs text-gray-800 leading-relaxed">
-                <div>A flow had <code className="bg-gray-100 px-1 rounded font-mono">TCP_FLAGS = 22</code>.</div>
-                <div>The Protocol agent wrote: <em className="text-gray-600">&ldquo;The TCP flags value of 22 consists of <strong className="text-red-700">SYN+PSH</strong>...&rdquo;</em></div>
-                <div>
-                  But 22 decoded as a bitmask is <code className="bg-gray-100 px-1 rounded font-mono">0001 0110</code> = <strong className="text-gray-900">SYN (2) + RST (4) + ACK (16)</strong>. The PSH bit (8) is <strong className="text-red-700">not set</strong>.
+              <div className="text-[10px] font-bold uppercase tracking-wider text-gray-600 mb-2">First, what are &ldquo;TCP flags&rdquo;?</div>
+              <div className="text-xs text-gray-800 leading-relaxed space-y-2">
+                <p>
+                  When one computer talks to another over the internet using TCP (the most common protocol), every message has a tiny set of <strong>status labels</strong> called flags. Think of them as a row of light switches &mdash; each one is either on or off.
+                </p>
+                <p>
+                  There are 8 possible flags with names like <strong>SYN</strong> (start a connection), <strong>ACK</strong> (acknowledge), <strong>RST</strong> (reset / abort), <strong>FIN</strong> (finish), <strong>PSH</strong> (push data through), etc.
+                </p>
+                <p>
+                  Instead of recording 8 yes/no values, the network saves space by <strong>adding them up into a single number</strong>. Each flag has a value:
+                </p>
+                <div className="bg-gray-50 rounded px-3 py-2 font-mono text-[11px] text-gray-700">
+                  FIN = 1 · SYN = 2 · RST = 4 · PSH = 8 · ACK = 16 · URG = 32 · ECE = 64 · CWR = 128
                 </div>
-                <div className="text-gray-600 italic">
-                  The agent invented &ldquo;PSH&rdquo; because it&rsquo;s a plausible-sounding flag for this context. This is the single most common failure mode &mdash; responsible for ~53% of all confabulations.
-                </div>
+                <p>
+                  So if <strong>SYN + RST + ACK</strong> are on, the stored number is <code className="bg-gray-100 px-1 rounded">2 + 4 + 16 = 22</code>. That&rsquo;s the number the agent sees. Its job is to work backwards: given 22, which flags must be on?
+                </p>
               </div>
             </div>
 
-            {/* Bullet breakdown */}
+            {/* Worked example — the 22 = SYN+PSH mistake */}
+            <div className="bg-white rounded-lg p-4 border border-red-200">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-red-700 mb-2">Real example &mdash; where the agent messed up</div>
+              <div className="text-xs text-gray-800 leading-relaxed space-y-2">
+                <p>On one flow, the <code className="bg-gray-100 px-1 rounded">TCP_FLAGS</code> value was <strong>22</strong>.</p>
+                <p className="pl-3 border-l-2 border-red-300 italic text-gray-700">
+                  The Protocol agent wrote: <br />
+                  &ldquo;The TCP flags value of 22 consists of <strong className="text-red-700 not-italic">SYN + PSH</strong>...&rdquo;
+                </p>
+                <p>
+                  <strong>Let&rsquo;s check:</strong> The agent claimed SYN (value 2) and PSH (value 8) are on. If that were true, the stored number would be <code className="bg-gray-100 px-1 rounded">2 + 8 = 10</code>, not 22. So the agent&rsquo;s claim can&rsquo;t be right.
+                </p>
+                <p>
+                  The <strong>actual</strong> flags that add up to 22 are <strong>SYN (2) + RST (4) + ACK (16)</strong>. The PSH flag is <strong className="text-red-700">not set</strong>.
+                </p>
+                <p className="text-gray-600 italic">
+                  The agent invented &ldquo;PSH&rdquo; because it&rsquo;s a common flag that sounds plausible in this context. This same type of mistake &mdash; inventing a reasonable-sounding flag &mdash; accounts for about 53% of all the errors we found.
+                </p>
+              </div>
+            </div>
+
+            {/* All four error categories in plain language */}
             <div>
-              <div className="text-[11px] font-bold text-gray-700 mb-2">What the agents actually got wrong:</div>
-              <ul className="text-xs text-gray-800 leading-relaxed space-y-2 list-disc pl-5">
-                <li>
-                  <strong>TCP flag names (77.6% faithful &mdash; 335 errors)</strong> &mdash; the TCP_FLAGS field is a single number (a bitmask). Agents have to mentally convert the number into a set of flag names. They guess wrong about which flags are set, usually inventing familiar flags like PSH or URG that &ldquo;fit the story&rdquo;.
+              <div className="text-[11px] font-bold text-gray-700 mb-2">The four kinds of mistakes we see:</div>
+              <ul className="text-xs text-gray-800 leading-relaxed space-y-3 list-none pl-0">
+
+                <li className="bg-white rounded-lg p-3 border border-gray-200">
+                  <div className="font-bold text-gray-900">1. Decoding TCP flags <span className="text-red-600">(77.6% right &mdash; 335 errors)</span></div>
+                  <div className="text-gray-700 mt-1">
+                    Like the example above. The agent sees a number (say 22 or 219) and has to mentally unpack it into a list of flag names. It often guesses wrong &mdash; usually by inventing an extra flag like PSH or URG that sounds right for the situation. This is by far the most common error.
+                  </div>
                 </li>
-                <li>
-                  <strong>Protocol naming (80.6% faithful &mdash; 182 errors)</strong> &mdash; the PROTOCOL field is a number (6 = TCP, 17 = UDP, 1 = ICMP). Agents sometimes write &ldquo;TCP&rdquo; in a UDP flow or vice versa. This happens most often when the agent is talking about &ldquo;TCP flags&rdquo; as a concept in a UDP context &mdash; the word leaks into the reasoning.
+
+                <li className="bg-white rounded-lg p-3 border border-gray-200">
+                  <div className="font-bold text-gray-900">2. Naming the protocol <span className="text-red-600">(80.6% right &mdash; 182 errors)</span></div>
+                  <div className="text-gray-700 mt-1">
+                    The flow record stores the protocol as a number: <strong>6 means TCP</strong>, <strong>17 means UDP</strong>, <strong>1 means ICMP</strong>. The agent has to translate that number into the name when it writes its reasoning. Sometimes it writes &ldquo;TCP&rdquo; when the flow is actually UDP (or vice versa) &mdash; usually when it&rsquo;s describing concepts like &ldquo;TCP flags&rdquo; and the wrong word slips into a UDP-flow discussion.
+                  </div>
                 </li>
-                <li>
-                  <strong>Service-port mapping (89.2% faithful &mdash; 66 errors)</strong> &mdash; agents sometimes call port 123 &ldquo;DNS&rdquo; (DNS is 53, NTP is 123), or call port 8080 &ldquo;HTTPS&rdquo; (HTTPS is 443, 8080 is HTTP-alt). Agents rely on well-known port associations and occasionally pick the wrong one.
+
+                <li className="bg-white rounded-lg p-3 border border-gray-200">
+                  <div className="font-bold text-gray-900">3. Guessing what service uses a port <span className="text-red-600">(89.2% right &mdash; 66 errors)</span></div>
+                  <div className="text-gray-700 mt-1">
+                    Certain services have well-known port numbers: <strong>port 22 is SSH, 80 is web, 443 is secure web, 53 is DNS, 123 is NTP (time sync)</strong>. The agent memorised these but occasionally mixes them up &mdash; e.g. calling port 123 &ldquo;DNS&rdquo; (it&rsquo;s actually NTP) or port 8080 &ldquo;HTTPS&rdquo; (it&rsquo;s actually an alternate web port).
+                  </div>
                 </li>
-                <li>
-                  <strong>IP address references (95.9% faithful &mdash; 13 errors)</strong> &mdash; occasional slip-ups where the agent confuses source and destination IPs, or misremembers an IP mentioned earlier in its own reasoning.
+
+                <li className="bg-white rounded-lg p-3 border border-gray-200">
+                  <div className="font-bold text-gray-900">4. IP addresses <span className="text-red-600">(95.9% right &mdash; 13 errors)</span></div>
+                  <div className="text-gray-700 mt-1">
+                    Rare slip-ups where the agent confuses which IP was the sender vs the receiver, or misremembers an IP it mentioned earlier in its own reasoning. Almost always an easy copy-paste mistake rather than a real misunderstanding.
+                  </div>
                 </li>
+
               </ul>
             </div>
 
             {/* Why it matters */}
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-900 leading-relaxed">
-              <strong>Why the errors are concentrated here:</strong> these are all fields that require the agent to <em>decode</em> a number into a name &mdash; bitmask&nbsp;→&nbsp;flag list, protocol number&nbsp;→&nbsp;protocol name, port number&nbsp;→&nbsp;service. Anywhere the agent just cites a number directly (port 21, 540 bytes, 1ms duration), faithfulness is 98%+. The confabulation isn&rsquo;t random &mdash; it&rsquo;s systematic to fields that need symbolic lookup.
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-xs text-amber-900 leading-relaxed">
+              <div className="font-bold mb-1">The pattern behind every error:</div>
+              <p>
+                All four error types share one thing: the agent is <strong>converting a number into a name</strong>. Bitmask 22&nbsp;→&nbsp;&ldquo;SYN+RST+ACK&rdquo;. Protocol 6&nbsp;→&nbsp;&ldquo;TCP&rdquo;. Port 53&nbsp;→&nbsp;&ldquo;DNS&rdquo;.
+              </p>
+              <p className="mt-1.5">
+                Anywhere the agent just <strong>copies a number directly</strong> (&ldquo;port 21&rdquo;, &ldquo;540 bytes&rdquo;, &ldquo;1ms&rdquo;), it&rsquo;s right 98%+ of the time. So the confabulation is systematic, not random. It&rsquo;s a translation problem, not a reasoning problem.
+              </p>
             </div>
           </div>
         </div>
