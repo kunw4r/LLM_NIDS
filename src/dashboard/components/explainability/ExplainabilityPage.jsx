@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SHAP_FLOWS } from "../../data/shapComparison";
-import { FAITHFULNESS_DATA } from "../../data/faithfulness";
+import { FAITHFULNESS_DATA, FAITHFULNESS_HEAD_TO_HEAD } from "../../data/faithfulness";
 
 // ── Curated flows for "See It In Action" mini inspector ────────────────────
 const CURATED_FLOWS = [
@@ -357,6 +357,97 @@ export default function ExplainabilityPage() {
               <div className="text-sm font-semibold text-gray-600 mt-1">{h.label}</div>
             </div>
           ))}
+        </div>
+
+        {/* ── AMATAS vs Vanilla head-to-head panel ────────────────── */}
+        <div className="border-2 border-indigo-200 rounded-lg overflow-hidden mb-5 bg-gradient-to-br from-indigo-50 to-white">
+          <div className="px-5 pt-4 pb-3 border-b border-indigo-100">
+            <div className="flex items-baseline justify-between flex-wrap gap-2">
+              <h3 className="text-base font-bold tracking-tight text-indigo-900">
+                AMATAS vs Vanilla Single-Agent — Head-to-Head
+              </h3>
+              <span className="text-[10px] uppercase tracking-wider text-indigo-600 font-semibold">
+                Same model · Same flows · Architecture only
+              </span>
+            </div>
+            <p className="text-xs text-indigo-800/70 mt-1 leading-relaxed">
+              Balanced 50/50 batches, 15 attack types, 750 flows each mode. Both audited with the identical claim-extractor pipeline.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-indigo-100">
+            {/* AMATAS */}
+            <div className="p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-2 w-2 rounded-full bg-indigo-600"></div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-700">AMATAS</div>
+              </div>
+              <div className="text-3xl font-bold tracking-tight text-indigo-700">{FAITHFULNESS_HEAD_TO_HEAD.amatas.claims_per_flow}</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">verifiable claims per flow</div>
+              <div className="mt-3 space-y-1">
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-gray-500">Faithfulness</span>
+                  <span className="font-bold text-gray-800">{FAITHFULNESS_HEAD_TO_HEAD.amatas.faithfulness_rate_pct}%</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-gray-500">Total claims</span>
+                  <span className="font-mono text-gray-700">{FAITHFULNESS_HEAD_TO_HEAD.amatas.total_claims.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Vanilla */}
+            <div className="p-5">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-2 w-2 rounded-full bg-gray-400"></div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-gray-600">Vanilla (single-agent)</div>
+              </div>
+              <div className="text-3xl font-bold tracking-tight text-gray-700">{FAITHFULNESS_HEAD_TO_HEAD.vanilla.claims_per_flow}</div>
+              <div className="text-[11px] text-gray-500 mt-0.5">verifiable claims per flow</div>
+              <div className="mt-3 space-y-1">
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-gray-500">Faithfulness</span>
+                  <span className="font-bold text-gray-800">{FAITHFULNESS_HEAD_TO_HEAD.vanilla.faithfulness_rate_pct}%</span>
+                </div>
+                <div className="flex justify-between text-[11px]">
+                  <span className="text-gray-500">Total claims</span>
+                  <span className="font-mono text-gray-700">{FAITHFULNESS_HEAD_TO_HEAD.vanilla.total_claims.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Ratio */}
+            <div className="p-5 bg-indigo-50/60">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 mb-2">Evidence ratio</div>
+              <div className="text-3xl font-bold tracking-tight text-indigo-700">{FAITHFULNESS_HEAD_TO_HEAD.evidence_ratio}×</div>
+              <div className="text-[11px] text-gray-600 mt-0.5">more verifiable evidence per flow</div>
+              <div className="mt-3 text-[10px] text-indigo-900/80 leading-snug">
+                Per-claim reliability is tied. AMATAS&rsquo;s advantage is <em>depth</em>, not <em>accuracy</em> &mdash; and each claim is traceable to a named agent.
+              </div>
+            </div>
+          </div>
+
+          {/* Bar comparison */}
+          <div className="px-5 pt-3 pb-4 border-t border-indigo-100 bg-white">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-3">
+                <div className="w-16 text-[11px] font-medium text-indigo-700">AMATAS</div>
+                <div className="flex-1 h-5 bg-gray-100 rounded overflow-hidden">
+                  <div className="h-full rounded flex items-center justify-end pr-2 bg-indigo-600" style={{ width: "100%" }}>
+                    <span className="text-[10px] font-bold text-white">{FAITHFULNESS_HEAD_TO_HEAD.amatas.claims_per_flow}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-16 text-[11px] font-medium text-gray-600">Vanilla</div>
+                <div className="flex-1 h-5 bg-gray-100 rounded overflow-hidden">
+                  <div className="h-full rounded flex items-center justify-end pr-2 bg-gray-400" style={{ width: `${(FAITHFULNESS_HEAD_TO_HEAD.vanilla.claims_per_flow / FAITHFULNESS_HEAD_TO_HEAD.amatas.claims_per_flow) * 100}%` }}>
+                    <span className="text-[10px] font-bold text-white">{FAITHFULNESS_HEAD_TO_HEAD.vanilla.claims_per_flow}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ── Per-agent bar chart (compact) ──────────────────────── */}
